@@ -39,6 +39,6 @@ ApplicationWindow {
                 lastX = mouse.x
                 lastY = mouse.y
             }
-}
+        }
     }
 }
