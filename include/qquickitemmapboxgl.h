@@ -59,12 +59,14 @@ class QQuickItemMapboxGL : public QQuickItem
   Q_PROPERTY(qreal zoomLevel READ zoomLevel WRITE setZoomLevel NOTIFY zoomLevelChanged)
   Q_PROPERTY(QGeoCoordinate center READ center WRITE setCenter NOTIFY centerChanged)
   Q_PROPERTY(QString errorString READ errorString NOTIFY errorChanged)
+  Q_PROPERTY(qreal pixelRatio READ pixelRatio WRITE setPixelRatio NOTIFY pixelRatioChanged)
 
 public:
   QQuickItemMapboxGL(QQuickItem *parent = nullptr);
   ~QQuickItemMapboxGL();
 
-  /// Interaction with QML
+  /// Interaction with QML through properties
+  ///
   void setMinimumZoomLevel(qreal minimumZoomLevel);
   qreal minimumZoomLevel() const;
 
@@ -78,6 +80,11 @@ public:
 
   QString errorString() const;
 
+  void setPixelRatio(qreal pixelRatio);
+  qreal pixelRatio() const;
+
+  /// Callable methods from QML
+  ///
   Q_INVOKABLE void pan(int dx, int dy);
 
 signals:
@@ -90,6 +97,7 @@ signals:
   void zoomLevelChanged(qreal zoomLevel);
   void centerChanged(const QGeoCoordinate &coordinate);
   void errorChanged();
+  void pixelRatioChanged(qreal pixelRatio);
 
 public slots:
   void setCenter(const QGeoCoordinate &center);
@@ -115,6 +123,8 @@ private:
 
   QString m_errorString;
 
+  qreal m_pixelRatio;
+
   qreal m_bearing = 0;
   qreal m_pitch = 0;
 
@@ -126,6 +136,7 @@ private:
     PanNeedsSync     = 1 << 3,
     BearingNeedsSync = 1 << 4,
     PitchNeedsSync   = 1 << 5,
+    PixelRatioNeedsSync = 1 << 6
   };
   int m_syncState = NothingNeedsSync;
 };

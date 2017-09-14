@@ -60,6 +60,8 @@ QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
   m_settings.setCacheDatabaseMaximumSize(20 * 1024 * 1024);
   m_settings.setViewportMode(QMapboxGLSettings::DefaultViewport);
 
+  m_pixelRatio = 1;
+
   m_timer.setInterval(250);
   connect(&m_timer, &QTimer::timeout, this, &QQuickItemMapboxGL::update);
   connect(this, SIGNAL(startRefreshTimer()), &m_timer, SLOT(start()));
@@ -156,6 +158,18 @@ void QQuickItemMapboxGL::pan(int dx, int dy)
   update();
 }
 
+qreal QQuickItemMapboxGL::pixelRatio() const
+{
+  return m_pixelRatio;
+}
+
+void QQuickItemMapboxGL::setPixelRatio(qreal pixelRatio)
+{
+  m_pixelRatio = qMax((qreal)1.0, pixelRatio);
+  m_syncState |= PixelRatioNeedsSync;
+  update();
+  emit pixelRatioChanged(m_pixelRatio);
+}
 
 QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData *)
 {
@@ -163,11 +177,14 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
   QSize sz(width(), height());
 
   if (!n)
-    n = new QSGMapboxGLTextureNode(m_settings, m_styleUrl, sz, window()->devicePixelRatio(), this);
-
-  if (sz != m_last_size)
     {
-      n->resize(sz, window()->devicePixelRatio());
+      n = new QSGMapboxGLTextureNode(m_settings, m_styleUrl, sz, window()->devicePixelRatio(), this);
+      m_syncState = CenterNeedsSync | ZoomNeedsSync;
+    }
+
+  if (sz != m_last_size || m_syncState & PixelRatioNeedsSync)
+    {
+      n->resize(sz, m_pixelRatio);
       m_last_size = sz;
     }
 
@@ -182,7 +199,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   if (m_syncState & PanNeedsSync)
     {
-      map->moveBy(m_pan);
+      map->moveBy(m_pan / m_pixelRatio);
       m_pan = QPointF();
       m_center = QGeoCoordinate(map->latitude(), map->longitude());
       emit centerChanged(m_center);

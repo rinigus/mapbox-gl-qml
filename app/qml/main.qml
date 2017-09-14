@@ -18,6 +18,7 @@ ApplicationWindow {
         zoomLevel: 12.25
         minimumZoomLevel: 0
         maximumZoomLevel: 20
+        pixelRatio: 3.0
 
         MouseArea {
             id: mouseArea
