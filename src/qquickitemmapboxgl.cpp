@@ -178,7 +178,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   if (!n)
     {
-      n = new QSGMapboxGLTextureNode(m_settings, m_styleUrl, sz, window()->devicePixelRatio(), this);
+      n = new QSGMapboxGLTextureNode(m_settings, m_styleUrl, sz, m_pixelRatio, this);
       m_syncState = CenterNeedsSync | ZoomNeedsSync;
     }
 
