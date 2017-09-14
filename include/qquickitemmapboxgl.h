@@ -47,25 +47,87 @@
 #include <QQuickItem>
 #include <QTimer>
 
+#include <QMapboxGL>
+#include <QGeoCoordinate>
+
 class QQuickItemMapboxGL : public QQuickItem
 {
   Q_OBJECT
+
+  Q_PROPERTY(qreal minimumZoomLevel READ minimumZoomLevel WRITE setMinimumZoomLevel NOTIFY minimumZoomLevelChanged)
+  Q_PROPERTY(qreal maximumZoomLevel READ maximumZoomLevel WRITE setMaximumZoomLevel NOTIFY maximumZoomLevelChanged)
+  Q_PROPERTY(qreal zoomLevel READ zoomLevel WRITE setZoomLevel NOTIFY zoomLevelChanged)
+  Q_PROPERTY(QGeoCoordinate center READ center WRITE setCenter NOTIFY centerChanged)
+  Q_PROPERTY(QString errorString READ errorString NOTIFY errorChanged)
 
 public:
   QQuickItemMapboxGL(QQuickItem *parent = nullptr);
   ~QQuickItemMapboxGL();
 
-  QSGNode *updatePaintNode(QSGNode *node, UpdatePaintNodeData *) override;
+  /// Interaction with QML
+  void setMinimumZoomLevel(qreal minimumZoomLevel);
+  qreal minimumZoomLevel() const;
+
+  void setMaximumZoomLevel(qreal maximumZoomLevel);
+  qreal maximumZoomLevel() const;
+
+  void setZoomLevel(qreal zoomLevel);
+  qreal zoomLevel() const;
+
+  QGeoCoordinate center() const;
+
+  QString errorString() const;
+
+  Q_INVOKABLE void pan(int dx, int dy);
 
 signals:
   void startRefreshTimer();
   void stopRefreshTimer();
 
+  // Map QML Type signals.
+  void minimumZoomLevelChanged();
+  void maximumZoomLevelChanged();
+  void zoomLevelChanged(qreal zoomLevel);
+  void centerChanged(const QGeoCoordinate &coordinate);
+  void errorChanged();
+
 public slots:
+  void setCenter(const QGeoCoordinate &center);
+
+protected:
+  QSGNode *updatePaintNode(QSGNode *node, UpdatePaintNodeData *) override;
+
 
 private:
-  QSize m_last_size;
-  QTimer m_timer;
+  QMapboxGLSettings m_settings;
+
+  QSize m_last_size; ///< Size of the item
+  QTimer m_timer;    ///< Timer used to refresh the map
+
+  qreal m_minimumZoomLevel = 0;
+  qreal m_maximumZoomLevel = 20;
+  qreal m_zoomLevel = 20;
+
+  QPointF m_pan;
+
+  QGeoCoordinate m_center;
+  QString m_styleUrl;
+
+  QString m_errorString;
+
+  qreal m_bearing = 0;
+  qreal m_pitch = 0;
+
+  enum SyncState {
+    NothingNeedsSync = 0,
+    ZoomNeedsSync    = 1 << 0,
+    CenterNeedsSync  = 1 << 1,
+    StyleNeedsSync   = 1 << 2,
+    PanNeedsSync     = 1 << 3,
+    BearingNeedsSync = 1 << 4,
+    PitchNeedsSync   = 1 << 5,
+  };
+  int m_syncState = NothingNeedsSync;
 };
 
 #endif // QQUICKITEMMAPBOXGL_H

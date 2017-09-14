@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
+import QtPositioning 5.0
 
 import QQuickItemMapboxGL 1.0
 
@@ -12,5 +13,32 @@ ApplicationWindow {
     MapboxMap {
         id: map
         anchors.fill: parent
+
+        center: QtPositioning.coordinate(60.170448, 24.942046) // Helsinki
+        zoomLevel: 12.25
+        minimumZoomLevel: 0
+        maximumZoomLevel: 20
+
+        MouseArea {
+            id: mouseArea
+            anchors.fill: parent
+
+            property var lastX: 0
+            property var lastY: 0
+
+            onWheel: map.zoomLevel += 0.2 * wheel.angleDelta.y / 120
+
+            onPressed: {
+                lastX = mouse.x
+                lastY = mouse.y
+            }
+
+            onPositionChanged: {
+                map.pan(mouse.x - lastX, mouse.y - lastY)
+
+                lastX = mouse.x
+                lastY = mouse.y
+            }
+}
     }
 }
