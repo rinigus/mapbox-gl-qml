@@ -46,6 +46,10 @@
 
 #include <mbgl/util/constants.hpp>
 
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonDocument>
+
 #include <QDebug>
 
 QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
@@ -54,6 +58,7 @@ QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
   setFlag(ItemHasContents);
 
   m_styleUrl = QMapbox::defaultStyles()[0].first;
+  m_styleJson = QString(); // empty
 
   m_settings.setViewportMode(QMapboxGLSettings::DefaultViewport);
 
@@ -69,13 +74,28 @@ QQuickItemMapboxGL::~QQuickItemMapboxGL()
 {
 }
 
+QString QQuickItemMapboxGL::defaultStyles() const
+{
+  QJsonArray array;
+  auto styles = QMapbox::defaultStyles();
+  for (const auto &i: styles)
+    {
+      QJsonObject o;
+      o.insert("url", i.first);
+      o.insert("name", i.second);
+      array.append(o);
+    }
+
+  return QJsonDocument(array).toJson();
+}
+
 /// Properties that have to be set during construction of the map
 QString QQuickItemMapboxGL::accessToken() const
 {
   return m_settings.accessToken();
 }
 
-void QQuickItemMapboxGL::setAccessToken(QString token)
+void QQuickItemMapboxGL::setAccessToken(const QString &token)
 {
   m_settings.setAccessToken(token);
   emit accessTokenChanged(accessToken());
@@ -86,7 +106,7 @@ QString QQuickItemMapboxGL::apiBaseUrl() const
   return m_settings.apiBaseUrl();
 }
 
-void QQuickItemMapboxGL::setApiBaseUrl(QString url)
+void QQuickItemMapboxGL::setApiBaseUrl(const QString &url)
 {
   m_settings.setApiBaseUrl(url);
   emit apiBaseUrlChanged(apiBaseUrl());
@@ -97,7 +117,7 @@ QString QQuickItemMapboxGL::assetPath() const
   return m_settings.assetPath();
 }
 
-void QQuickItemMapboxGL::setAssetPath(QString path)
+void QQuickItemMapboxGL::setAssetPath(const QString &path)
 {
   m_settings.setAssetPath(path);
   emit assetPathChanged(assetPath());
@@ -108,7 +128,7 @@ QString QQuickItemMapboxGL::cacheDatabasePath() const
   return m_settings.cacheDatabasePath();
 }
 
-void QQuickItemMapboxGL::setCacheDatabasePath(QString path)
+void QQuickItemMapboxGL::setCacheDatabasePath(const QString &path)
 {
   m_settings.setCacheDatabasePath(path);
   emit cacheDatabasePathChanged(cacheDatabasePath());
@@ -254,6 +274,36 @@ void QQuickItemMapboxGL::setPixelRatio(qreal pixelRatio)
   emit pixelRatioChanged(m_pixelRatio);
 }
 
+QString QQuickItemMapboxGL::styleJson() const
+{
+  return m_styleJson;
+}
+
+void QQuickItemMapboxGL::setStyleJson(const QString &json)
+{
+  m_styleJson = json;
+  m_styleUrl = QString();
+  m_syncState |= StyleNeedsSync;
+  update();
+  emit styleJsonChanged(json);
+  emit styleUrlChanged(QString());
+}
+
+QString QQuickItemMapboxGL::styleUrl() const
+{
+  return m_styleUrl;
+}
+
+void QQuickItemMapboxGL::setStyleUrl(const QString &url)
+{
+  m_styleJson = QString();
+  m_styleUrl = url;
+  m_syncState |= StyleNeedsSync;
+  update();
+  emit styleJsonChanged(QString());
+  emit styleUrlChanged(url);
+}
+
 /// Update map
 QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData *)
 {
@@ -293,6 +343,14 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       m_pan = QPointF();
       m_center = QGeoCoordinate(map->latitude(), map->longitude());
       emit centerChanged(m_center);
+    }
+
+  if (m_syncState & StyleNeedsSync)
+    {
+      if (m_styleJson.isEmpty())
+        map->setStyleUrl(m_styleUrl);
+      else
+        map->setStyleJson(m_styleJson);
     }
 
   // settings done

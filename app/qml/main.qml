@@ -28,6 +28,8 @@ ApplicationWindow {
         cacheDatabaseMaximalSize: 20*1024*1024
         cacheDatabasePath: "/tmp/mbgl-cache.db"
 
+        styleUrl: "mapbox://styles/mapbox/satellite-streets-v10"
+
         MouseArea {
             id: mouseArea
             anchors.fill: parent
@@ -58,7 +60,7 @@ ApplicationWindow {
         clip: true
     }
 
-    ColumnLayout {
+    Column {
         id: menu
 
         anchors.right: parent.right

@@ -62,6 +62,8 @@ class QQuickItemMapboxGL : public QQuickItem
   Q_PROPERTY(qreal zoomLevel READ zoomLevel WRITE setZoomLevel NOTIFY zoomLevelChanged)
 
   Q_PROPERTY(qreal pixelRatio READ pixelRatio WRITE setPixelRatio NOTIFY pixelRatioChanged)
+  Q_PROPERTY(QString styleJson READ styleJson WRITE setStyleJson)
+  Q_PROPERTY(QString styleUrl READ styleUrl WRITE setStyleUrl)
 
   // error
   Q_PROPERTY(QString errorString READ errorString NOTIFY errorChanged)
@@ -98,21 +100,27 @@ public:
 
   QString errorString() const;
 
+  QString styleJson() const;
+  void setStyleJson(const QString &json);
+
+  QString styleUrl() const;
+  void setStyleUrl(const QString &url);
+
   void setPixelRatio(qreal pixelRatio);
   qreal pixelRatio() const;
 
   /// Settings related
   QString accessToken() const;
-  void setAccessToken(QString token);
+  void setAccessToken(const QString &token);
 
   QString apiBaseUrl() const;
-  void setApiBaseUrl(QString url);
+  void setApiBaseUrl(const QString &url);
 
   QString assetPath() const;
-  void setAssetPath(QString path);
+  void setAssetPath(const QString &path);
 
   QString cacheDatabasePath() const;
-  void setCacheDatabasePath(QString path);
+  void setCacheDatabasePath(const QString &path);
 
   int cacheDatabaseMaximalSize() const;
   void setCacheDatabaseMaximalSize(int sz);
@@ -120,6 +128,10 @@ public:
   /// Callable methods from QML
   ///
   Q_INVOKABLE void pan(int dx, int dy);
+
+  /// \brief List of default Mapbox styles returned as JSON array
+  ///
+  Q_INVOKABLE QString defaultStyles() const;
 
 signals:
   void startRefreshTimer();
@@ -132,7 +144,10 @@ signals:
   void maximumZoomLevelChanged();
   void zoomLevelChanged(qreal zoomLevel);
   void centerChanged(const QGeoCoordinate &coordinate);
+
   void pixelRatioChanged(qreal pixelRatio);
+  void styleJsonChanged(QString json);
+  void styleUrlChanged(QString url);
 
   void errorChanged();
 
@@ -165,11 +180,11 @@ private:
   qreal m_bearing = 0;
   qreal m_pitch = 0;
 
-  QString m_styleUrl;
-
   QString m_errorString;
 
   qreal m_pixelRatio;
+  QString m_styleUrl;
+  QString m_styleJson;
 
   enum SyncState {
     NothingNeedsSync = 0,
