@@ -18,7 +18,11 @@ ApplicationWindow {
         zoomLevel: 12.25
         minimumZoomLevel: 0
         maximumZoomLevel: 20
-        pixelRatio: 3.0
+        pixelRatio: 1.0
+
+        //accessToken: "INSERT_THE_TOKEN_OR_DEFINE_IN_ENVIRONMENT"
+        cacheDatabaseMaximalSize: 20*1024*1024
+        cacheDatabasePath: "/tmp/mbgl-cache.db"
 
         MouseArea {
             id: mouseArea

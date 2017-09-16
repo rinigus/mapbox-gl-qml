@@ -55,9 +55,6 @@ QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
 
   m_styleUrl = QMapbox::defaultStyles()[0].first;
 
-  m_settings.setAccessToken(qgetenv("MAPBOX_ACCESS_TOKEN"));
-  m_settings.setCacheDatabasePath("/tmp/mbgl-cache.db");
-  m_settings.setCacheDatabaseMaximumSize(20 * 1024 * 1024);
   m_settings.setViewportMode(QMapboxGLSettings::DefaultViewport);
 
   m_pixelRatio = 1;
@@ -66,6 +63,40 @@ QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
   connect(&m_timer, &QTimer::timeout, this, &QQuickItemMapboxGL::update);
   connect(this, SIGNAL(startRefreshTimer()), &m_timer, SLOT(start()));
   connect(this, &QQuickItemMapboxGL::stopRefreshTimer, &m_timer, &QTimer::stop);
+}
+
+/// Properties that have to be set during construction of the first map
+QString QQuickItemMapboxGL::accessToken() const
+{
+  return m_settings.accessToken();
+}
+
+void QQuickItemMapboxGL::setAccessToken(QString token)
+{
+  m_settings.setAccessToken(token);
+  emit accessTokenChanged(accessToken());
+}
+
+QString QQuickItemMapboxGL::cacheDatabasePath() const
+{
+  return m_settings.cacheDatabasePath();
+}
+
+void QQuickItemMapboxGL::setCacheDatabasePath(QString path)
+{
+  m_settings.setCacheDatabasePath(path);
+  emit cacheDatabasePathChanged(cacheDatabasePath());
+}
+
+int QQuickItemMapboxGL::cacheDatabaseMaximalSize() const
+{
+  return m_settings.cacheDatabaseMaximumSize();
+}
+
+void QQuickItemMapboxGL::setCacheDatabaseMaximalSize(int sz)
+{
+  m_settings.setCacheDatabaseMaximumSize(sz);
+  emit cacheDatabaseMaximalSizeChanged(cacheDatabaseMaximalSize());
 }
 
 QQuickItemMapboxGL::~QQuickItemMapboxGL()

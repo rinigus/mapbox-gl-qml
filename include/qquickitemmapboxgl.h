@@ -61,6 +61,11 @@ class QQuickItemMapboxGL : public QQuickItem
   Q_PROPERTY(QString errorString READ errorString NOTIFY errorChanged)
   Q_PROPERTY(qreal pixelRatio READ pixelRatio WRITE setPixelRatio NOTIFY pixelRatioChanged)
 
+  // used only on construction of the first map object
+  Q_PROPERTY(QString accessToken READ accessToken WRITE setAccessToken NOTIFY accessTokenChanged)
+  Q_PROPERTY(QString cacheDatabasePath READ cacheDatabasePath WRITE setCacheDatabasePath NOTIFY cacheDatabasePathChanged)
+  Q_PROPERTY(int cacheDatabaseMaximalSize READ cacheDatabaseMaximalSize WRITE setCacheDatabaseMaximalSize NOTIFY cacheDatabaseMaximalSizeChanged)
+
 public:
   QQuickItemMapboxGL(QQuickItem *parent = nullptr);
   ~QQuickItemMapboxGL();
@@ -83,6 +88,15 @@ public:
   void setPixelRatio(qreal pixelRatio);
   qreal pixelRatio() const;
 
+  QString accessToken() const;
+  void setAccessToken(QString token);
+
+  QString cacheDatabasePath() const;
+  void setCacheDatabasePath(QString path);
+
+  int cacheDatabaseMaximalSize() const;
+  void setCacheDatabaseMaximalSize(int sz);
+
   /// Callable methods from QML
   ///
   Q_INVOKABLE void pan(int dx, int dy);
@@ -96,8 +110,13 @@ signals:
   void maximumZoomLevelChanged();
   void zoomLevelChanged(qreal zoomLevel);
   void centerChanged(const QGeoCoordinate &coordinate);
-  void errorChanged();
   void pixelRatioChanged(qreal pixelRatio);
+
+  void errorChanged();
+
+  void accessTokenChanged(QString);
+  void cacheDatabasePathChanged(QString);
+  void cacheDatabaseMaximalSizeChanged(int);
 
 public slots:
   void setCenter(const QGeoCoordinate &center);
