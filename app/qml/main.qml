@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
+import QtQuick.Layouts 1.0
 import QtPositioning 5.0
 
 import QQuickItemMapboxGL 1.0
@@ -19,6 +20,9 @@ ApplicationWindow {
         minimumZoomLevel: 0
         maximumZoomLevel: 20
         pixelRatio: 1.0
+
+        bearing: bearingSlider.value
+        pitch: pitchSlider.value
 
         //accessToken: "INSERT_THE_TOKEN_OR_DEFINE_IN_ENVIRONMENT"
         cacheDatabaseMaximalSize: 20*1024*1024
@@ -46,4 +50,44 @@ ApplicationWindow {
             }
         }
     }
+
+    Rectangle {
+        anchors.fill: menu
+        anchors.margins: -20
+        radius: 30
+        clip: true
+    }
+
+    ColumnLayout {
+        id: menu
+
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.margins: 30
+
+        Label {
+            text: "Bearing:"
+        }
+
+        Slider {
+            id: bearingSlider
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            maximumValue: 180
+        }
+
+        Label {
+            text: "Pitch:"
+        }
+
+        Slider {
+            id: pitchSlider
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            maximumValue: 60
+        }
+    }
+
 }

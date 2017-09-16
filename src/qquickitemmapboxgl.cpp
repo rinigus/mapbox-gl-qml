@@ -65,6 +65,10 @@ QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
   connect(this, &QQuickItemMapboxGL::stopRefreshTimer, &m_timer, &QTimer::stop);
 }
 
+QQuickItemMapboxGL::~QQuickItemMapboxGL()
+{
+}
+
 /// Properties that have to be set during construction of the map
 QString QQuickItemMapboxGL::accessToken() const
 {
@@ -121,10 +125,13 @@ void QQuickItemMapboxGL::setCacheDatabaseMaximalSize(int sz)
   emit cacheDatabaseMaximalSizeChanged(cacheDatabaseMaximalSize());
 }
 
-QQuickItemMapboxGL::~QQuickItemMapboxGL()
+/// Error feedback
+QString QQuickItemMapboxGL::errorString() const
 {
+  return m_errorString;
 }
 
+/// Zoom properties
 void QQuickItemMapboxGL::setMinimumZoomLevel(qreal zoom)
 {
   zoom = qMax((qreal)mbgl::util::MIN_ZOOM, zoom);
@@ -181,6 +188,7 @@ qreal QQuickItemMapboxGL::zoomLevel() const
   return m_zoomLevel;
 }
 
+/// Position
 void QQuickItemMapboxGL::setCenter(const QGeoCoordinate &coordinate)
 {
   if (m_center == coordinate) return;
@@ -198,11 +206,6 @@ QGeoCoordinate QQuickItemMapboxGL::center() const
   return m_center;
 }
 
-QString QQuickItemMapboxGL::errorString() const
-{
-  return m_errorString;
-}
-
 void QQuickItemMapboxGL::pan(int dx, int dy)
 {
   m_pan += QPointF(dx, dy);
@@ -211,6 +214,33 @@ void QQuickItemMapboxGL::pan(int dx, int dy)
   update();
 }
 
+qreal QQuickItemMapboxGL::bearing() const
+{
+  return m_bearing;
+}
+
+void QQuickItemMapboxGL::setBearing(qreal b)
+{
+  m_bearing = b;
+  m_syncState |= BearingNeedsSync;
+  update();
+  emit bearingChanged(m_bearing);
+}
+
+qreal QQuickItemMapboxGL::pitch() const
+{
+  return m_pitch;
+}
+
+void QQuickItemMapboxGL::setPitch(qreal p)
+{
+  m_pitch = p;
+  m_syncState |= PitchNeedsSync;
+  update();
+  emit pitchChanged(p);
+}
+
+/// Rendering details
 qreal QQuickItemMapboxGL::pixelRatio() const
 {
   return m_pixelRatio;
@@ -224,6 +254,7 @@ void QQuickItemMapboxGL::setPixelRatio(qreal pixelRatio)
   emit pixelRatioChanged(m_pixelRatio);
 }
 
+/// Update map
 QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData *)
 {
   QSGMapboxGLTextureNode *n = static_cast<QSGMapboxGLTextureNode *>(node);
@@ -232,7 +263,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
   if (!n)
     {
       n = new QSGMapboxGLTextureNode(m_settings, m_styleUrl, sz, m_pixelRatio, this);
-      m_syncState = CenterNeedsSync | ZoomNeedsSync;
+      m_syncState = CenterNeedsSync | ZoomNeedsSync | BearingNeedsSync | PitchNeedsSync;
     }
 
   if (sz != m_last_size || m_syncState & PixelRatioNeedsSync)
@@ -249,6 +280,12 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       const auto& c = center();
       map->setCoordinateZoom({ c.latitude(), c.longitude() }, zoomLevel());
     }
+
+  if (m_syncState & BearingNeedsSync)
+    map->setBearing(m_bearing);
+
+  if (m_syncState & PitchNeedsSync)
+    map->setPitch(m_pitch);
 
   if (m_syncState & PanNeedsSync)
     {

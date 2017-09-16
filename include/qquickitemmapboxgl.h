@@ -54,12 +54,17 @@ class QQuickItemMapboxGL : public QQuickItem
 {
   Q_OBJECT
 
+  Q_PROPERTY(qreal bearing READ bearing WRITE setBearing NOTIFY bearingChanged)
+  Q_PROPERTY(QGeoCoordinate center READ center WRITE setCenter NOTIFY centerChanged)
+  Q_PROPERTY(qreal pitch READ pitch WRITE setPitch NOTIFY pitchChanged)
   Q_PROPERTY(qreal minimumZoomLevel READ minimumZoomLevel WRITE setMinimumZoomLevel NOTIFY minimumZoomLevelChanged)
   Q_PROPERTY(qreal maximumZoomLevel READ maximumZoomLevel WRITE setMaximumZoomLevel NOTIFY maximumZoomLevelChanged)
   Q_PROPERTY(qreal zoomLevel READ zoomLevel WRITE setZoomLevel NOTIFY zoomLevelChanged)
-  Q_PROPERTY(QGeoCoordinate center READ center WRITE setCenter NOTIFY centerChanged)
-  Q_PROPERTY(QString errorString READ errorString NOTIFY errorChanged)
+
   Q_PROPERTY(qreal pixelRatio READ pixelRatio WRITE setPixelRatio NOTIFY pixelRatioChanged)
+
+  // error
+  Q_PROPERTY(QString errorString READ errorString NOTIFY errorChanged)
 
   // used only on construction of the map object
   Q_PROPERTY(QString accessToken READ accessToken WRITE setAccessToken NOTIFY accessTokenChanged)
@@ -74,6 +79,12 @@ public:
 
   /// Interaction with QML through properties
   ///
+  qreal bearing() const;
+  void setBearing(qreal b);
+
+  qreal pitch() const;
+  void setPitch(qreal p);
+
   void setMinimumZoomLevel(qreal minimumZoomLevel);
   qreal minimumZoomLevel() const;
 
@@ -115,6 +126,8 @@ signals:
   void stopRefreshTimer();
 
   // Map QML Type signals.
+  void bearingChanged(qreal bearing);
+  void pitchChanged(qreal pitch);
   void minimumZoomLevelChanged();
   void maximumZoomLevelChanged();
   void zoomLevelChanged(qreal zoomLevel);
@@ -149,14 +162,14 @@ private:
   QPointF m_pan;
 
   QGeoCoordinate m_center;
+  qreal m_bearing = 0;
+  qreal m_pitch = 0;
+
   QString m_styleUrl;
 
   QString m_errorString;
 
   qreal m_pixelRatio;
-
-  qreal m_bearing = 0;
-  qreal m_pitch = 0;
 
   enum SyncState {
     NothingNeedsSync = 0,
