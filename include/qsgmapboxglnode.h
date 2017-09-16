@@ -54,7 +54,7 @@
 class QSGMapboxGLTextureNode : public QSGSimpleTextureNode
 {
 public:
-    QSGMapboxGLTextureNode(const QMapboxGLSettings &, const QString &style, const QSize &, qreal pixelRatio, QQuickItem *item);
+    QSGMapboxGLTextureNode(const QMapboxGLSettings &, const QSize &, qreal pixelRatio, QQuickItem *item);
 
     QMapboxGL* map() const { return m_map.data(); }
 

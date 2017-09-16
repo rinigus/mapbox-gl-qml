@@ -188,6 +188,11 @@ qreal QQuickItemMapboxGL::maximumZoomLevel() const
   return m_maximumZoomLevel;
 }
 
+qreal QQuickItemMapboxGL::zoomLevel() const
+{
+  return m_zoomLevel;
+}
+
 void QQuickItemMapboxGL::setZoomLevel(qreal zoom)
 {
   zoom = qMin(m_maximumZoomLevel, zoom);
@@ -203,9 +208,18 @@ void QQuickItemMapboxGL::setZoomLevel(qreal zoom)
   emit zoomLevelChanged(m_zoomLevel);
 }
 
-qreal QQuickItemMapboxGL::zoomLevel() const
+qreal QQuickItemMapboxGL::scale() const
 {
-  return m_zoomLevel;
+  return m_scale;
+}
+
+void QQuickItemMapboxGL::setScale(qreal scale, const QPointF &center)
+{
+  m_scale = scale;
+  m_scalePoint = center;
+  m_syncState |= ScaleNeedsSync;
+  update();
+  emit scaleChanged(scale);
 }
 
 /// Position
@@ -312,8 +326,8 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   if (!n)
     {
-      n = new QSGMapboxGLTextureNode(m_settings, m_styleUrl, sz, m_pixelRatio, this);
-      m_syncState = CenterNeedsSync | ZoomNeedsSync | BearingNeedsSync | PitchNeedsSync;
+      n = new QSGMapboxGLTextureNode(m_settings, sz, m_pixelRatio, this);
+      m_syncState = CenterNeedsSync | ZoomNeedsSync | BearingNeedsSync | PitchNeedsSync | StyleNeedsSync;
     }
 
   if (sz != m_last_size || m_syncState & PixelRatioNeedsSync)
@@ -330,6 +344,9 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       const auto& c = center();
       map->setCoordinateZoom({ c.latitude(), c.longitude() }, zoomLevel());
     }
+
+  if (m_syncState & ScaleNeedsSync)
+    map->setScale(m_scale, m_scalePoint);
 
   if (m_syncState & BearingNeedsSync)
     map->setBearing(m_bearing);
@@ -355,6 +372,17 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   // settings done
   m_syncState = NothingNeedsSync;
+
+  // check scale
+  {
+    qreal scale = map->scale();
+    if (fabs(scale - m_scale) > 1e-8)
+      {
+        m_scale = scale;
+        emit scaleChanged(scale);
+        qDebug() << "Scale: " << scale;
+      }
+  }
 
   // render the map and trigger the timer if the map is not loaded fully
   bool loaded = n->render(window());

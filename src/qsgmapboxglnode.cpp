@@ -51,15 +51,13 @@
 static const QSize minTextureSize = QSize(64, 64);
 
 
-QSGMapboxGLTextureNode::QSGMapboxGLTextureNode(const QMapboxGLSettings &settings, const QString &style,
-                                               const QSize &size, qreal pixelRatio, QQuickItem *item)
+QSGMapboxGLTextureNode::QSGMapboxGLTextureNode(const QMapboxGLSettings &settings, const QSize &size, qreal pixelRatio, QQuickItem *item)
   : QSGSimpleTextureNode()
 {
   setTextureCoordinatesTransform(QSGSimpleTextureNode::MirrorVertically);
   setFiltering(QSGTexture::Linear);
 
   m_map.reset(new QMapboxGL(nullptr, settings, size.expandedTo(minTextureSize), pixelRatio));
-  m_map->setStyleUrl(style);
 
   QObject::connect(m_map.data(), &QMapboxGL::needsRendering, item, &QQuickItem::update);
   QObject::connect(m_map.data(), &QMapboxGL::copyrightsChanged, item, &QQuickItem::update);

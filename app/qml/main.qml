@@ -28,7 +28,7 @@ ApplicationWindow {
         cacheDatabaseMaximalSize: 20*1024*1024
         cacheDatabasePath: "/tmp/mbgl-cache.db"
 
-        styleUrl: "mapbox://styles/mapbox/satellite-streets-v10"
+        //styleUrl: "mapbox://styles/mapbox/satellite-streets-v10"
 
         MouseArea {
             id: mouseArea
@@ -37,7 +37,14 @@ ApplicationWindow {
             property var lastX: 0
             property var lastY: 0
 
-            onWheel: map.zoomLevel += 0.2 * wheel.angleDelta.y / 120
+            onWheel: {
+                console.log(map.scale, map.scale + 0.2 * wheel.angleDelta.y / 120, wheel.x, wheel.y )
+                map.zoomLevel += 0.2 * wheel.angleDelta.y / 120
+
+                ///////////////////////////////////////////////////////////////////////////////////////////////////
+                /// can be done with setscale, but would have to adjust for a relationship between zlevel and scale
+                //map.setScale( map.scale + 100 * wheel.angleDelta.y / 120, Qt.point(wheel.x, wheel.y) )
+            }
 
             onPressed: {
                 lastX = mouse.x

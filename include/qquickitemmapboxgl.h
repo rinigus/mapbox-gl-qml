@@ -46,6 +46,7 @@
 
 #include <QQuickItem>
 #include <QTimer>
+#include <QPointF>
 
 #include <QMapboxGL>
 #include <QGeoCoordinate>
@@ -57,6 +58,7 @@ class QQuickItemMapboxGL : public QQuickItem
   Q_PROPERTY(qreal bearing READ bearing WRITE setBearing NOTIFY bearingChanged)
   Q_PROPERTY(QGeoCoordinate center READ center WRITE setCenter NOTIFY centerChanged)
   Q_PROPERTY(qreal pitch READ pitch WRITE setPitch NOTIFY pitchChanged)
+  Q_PROPERTY(qreal scale READ scale WRITE setScale NOTIFY scaleChanged)
   Q_PROPERTY(qreal minimumZoomLevel READ minimumZoomLevel WRITE setMinimumZoomLevel NOTIFY minimumZoomLevelChanged)
   Q_PROPERTY(qreal maximumZoomLevel READ maximumZoomLevel WRITE setMaximumZoomLevel NOTIFY maximumZoomLevelChanged)
   Q_PROPERTY(qreal zoomLevel READ zoomLevel WRITE setZoomLevel NOTIFY zoomLevelChanged)
@@ -86,6 +88,9 @@ public:
 
   qreal pitch() const;
   void setPitch(qreal p);
+
+  qreal scale() const;
+  Q_INVOKABLE void setScale(qreal scale, const QPointF &center = QPointF());
 
   void setMinimumZoomLevel(qreal minimumZoomLevel);
   qreal minimumZoomLevel() const;
@@ -140,6 +145,7 @@ signals:
   // Map QML Type signals.
   void bearingChanged(qreal bearing);
   void pitchChanged(qreal pitch);
+  void scaleChanged(qreal scale);
   void minimumZoomLevelChanged();
   void maximumZoomLevelChanged();
   void zoomLevelChanged(qreal zoomLevel);
@@ -179,6 +185,8 @@ private:
   QGeoCoordinate m_center;
   qreal m_bearing = 0;
   qreal m_pitch = 0;
+  qreal m_scale = 0;
+  QPointF m_scalePoint;
 
   QString m_errorString;
 
@@ -194,7 +202,8 @@ private:
     PanNeedsSync     = 1 << 3,
     BearingNeedsSync = 1 << 4,
     PitchNeedsSync   = 1 << 5,
-    PixelRatioNeedsSync = 1 << 6
+    PixelRatioNeedsSync = 1 << 6,
+    ScaleNeedsSync = 1 << 7
   };
   int m_syncState = NothingNeedsSync;
 };
