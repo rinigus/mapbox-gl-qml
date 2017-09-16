@@ -38,12 +38,8 @@ ApplicationWindow {
             property var lastY: 0
 
             onWheel: {
-                console.log(map.scale, map.scale + 0.2 * wheel.angleDelta.y / 120, wheel.x, wheel.y )
-                map.zoomLevel += 0.2 * wheel.angleDelta.y / 120
-
-                ///////////////////////////////////////////////////////////////////////////////////////////////////
-                /// can be done with setscale, but would have to adjust for a relationship between zlevel and scale
-                //map.setScale( map.scale + 100 * wheel.angleDelta.y / 120, Qt.point(wheel.x, wheel.y) )
+                //map.zoomLevel += 0.2 * wheel.angleDelta.y / 120
+                map.scaleBy( 0.2 * wheel.angleDelta.y / 120, Qt.point(wheel.x, wheel.y) )
             }
 
             onPressed: {

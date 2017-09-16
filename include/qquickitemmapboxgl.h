@@ -58,7 +58,6 @@ class QQuickItemMapboxGL : public QQuickItem
   Q_PROPERTY(qreal bearing READ bearing WRITE setBearing NOTIFY bearingChanged)
   Q_PROPERTY(QGeoCoordinate center READ center WRITE setCenter NOTIFY centerChanged)
   Q_PROPERTY(qreal pitch READ pitch WRITE setPitch NOTIFY pitchChanged)
-  Q_PROPERTY(qreal scale READ scale WRITE setScale NOTIFY scaleChanged)
   Q_PROPERTY(qreal minimumZoomLevel READ minimumZoomLevel WRITE setMinimumZoomLevel NOTIFY minimumZoomLevelChanged)
   Q_PROPERTY(qreal maximumZoomLevel READ maximumZoomLevel WRITE setMaximumZoomLevel NOTIFY maximumZoomLevelChanged)
   Q_PROPERTY(qreal zoomLevel READ zoomLevel WRITE setZoomLevel NOTIFY zoomLevelChanged)
@@ -88,9 +87,6 @@ public:
 
   qreal pitch() const;
   void setPitch(qreal p);
-
-  qreal scale() const;
-  Q_INVOKABLE void setScale(qreal scale, const QPointF &center = QPointF());
 
   void setMinimumZoomLevel(qreal minimumZoomLevel);
   qreal minimumZoomLevel() const;
@@ -134,6 +130,8 @@ public:
   ///
   Q_INVOKABLE void pan(int dx, int dy);
 
+  Q_INVOKABLE void scaleBy(qreal scale, const QPointF &center = QPointF());
+
   /// \brief List of default Mapbox styles returned as JSON array
   ///
   Q_INVOKABLE QString defaultStyles() const;
@@ -145,7 +143,6 @@ signals:
   // Map QML Type signals.
   void bearingChanged(qreal bearing);
   void pitchChanged(qreal pitch);
-  void scaleChanged(qreal scale);
   void minimumZoomLevelChanged();
   void maximumZoomLevelChanged();
   void zoomLevelChanged(qreal zoomLevel);

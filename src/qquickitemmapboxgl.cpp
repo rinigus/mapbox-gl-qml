@@ -50,6 +50,8 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 
+#include <math.h>
+
 #include <QDebug>
 
 QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
@@ -208,18 +210,12 @@ void QQuickItemMapboxGL::setZoomLevel(qreal zoom)
   emit zoomLevelChanged(m_zoomLevel);
 }
 
-qreal QQuickItemMapboxGL::scale() const
-{
-  return m_scale;
-}
-
-void QQuickItemMapboxGL::setScale(qreal scale, const QPointF &center)
+void QQuickItemMapboxGL::scaleBy(qreal scale, const QPointF &center)
 {
   m_scale = scale;
   m_scalePoint = center;
   m_syncState |= ScaleNeedsSync;
   update();
-  emit scaleChanged(scale);
 }
 
 /// Position
@@ -346,7 +342,13 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
     }
 
   if (m_syncState & ScaleNeedsSync)
-    map->setScale(m_scale, m_scalePoint);
+    {
+      qreal zoom = map->zoom();
+      qreal newscale = pow(2.0, zoom + m_scale);
+      map->setScale(newscale, m_scalePoint);
+      m_scale = 0;
+      m_scalePoint = QPointF();
+    }
 
   if (m_syncState & BearingNeedsSync)
     map->setBearing(m_bearing);
@@ -372,17 +374,6 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   // settings done
   m_syncState = NothingNeedsSync;
-
-  // check scale
-  {
-    qreal scale = map->scale();
-    if (fabs(scale - m_scale) > 1e-8)
-      {
-        m_scale = scale;
-        emit scaleChanged(scale);
-        qDebug() << "Scale: " << scale;
-      }
-  }
 
   // render the map and trigger the timer if the map is not loaded fully
   bool loaded = n->render(window());
