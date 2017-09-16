@@ -65,7 +65,7 @@ QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
   connect(this, &QQuickItemMapboxGL::stopRefreshTimer, &m_timer, &QTimer::stop);
 }
 
-/// Properties that have to be set during construction of the first map
+/// Properties that have to be set during construction of the map
 QString QQuickItemMapboxGL::accessToken() const
 {
   return m_settings.accessToken();
@@ -75,6 +75,28 @@ void QQuickItemMapboxGL::setAccessToken(QString token)
 {
   m_settings.setAccessToken(token);
   emit accessTokenChanged(accessToken());
+}
+
+QString QQuickItemMapboxGL::apiBaseUrl() const
+{
+  return m_settings.apiBaseUrl();
+}
+
+void QQuickItemMapboxGL::setApiBaseUrl(QString url)
+{
+  m_settings.setApiBaseUrl(url);
+  emit apiBaseUrlChanged(apiBaseUrl());
+}
+
+QString QQuickItemMapboxGL::assetPath() const
+{
+  return m_settings.assetPath();
+}
+
+void QQuickItemMapboxGL::setAssetPath(QString path)
+{
+  m_settings.setAssetPath(path);
+  emit assetPathChanged(assetPath());
 }
 
 QString QQuickItemMapboxGL::cacheDatabasePath() const

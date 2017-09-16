@@ -61,8 +61,10 @@ class QQuickItemMapboxGL : public QQuickItem
   Q_PROPERTY(QString errorString READ errorString NOTIFY errorChanged)
   Q_PROPERTY(qreal pixelRatio READ pixelRatio WRITE setPixelRatio NOTIFY pixelRatioChanged)
 
-  // used only on construction of the first map object
+  // used only on construction of the map object
   Q_PROPERTY(QString accessToken READ accessToken WRITE setAccessToken NOTIFY accessTokenChanged)
+  Q_PROPERTY(QString apiBaseUrl READ apiBaseUrl WRITE setApiBaseUrl NOTIFY apiBaseUrlChanged)
+  Q_PROPERTY(QString assetPath READ assetPath WRITE setAssetPath NOTIFY assetPathChanged)
   Q_PROPERTY(QString cacheDatabasePath READ cacheDatabasePath WRITE setCacheDatabasePath NOTIFY cacheDatabasePathChanged)
   Q_PROPERTY(int cacheDatabaseMaximalSize READ cacheDatabaseMaximalSize WRITE setCacheDatabaseMaximalSize NOTIFY cacheDatabaseMaximalSizeChanged)
 
@@ -88,8 +90,15 @@ public:
   void setPixelRatio(qreal pixelRatio);
   qreal pixelRatio() const;
 
+  /// Settings related
   QString accessToken() const;
   void setAccessToken(QString token);
+
+  QString apiBaseUrl() const;
+  void setApiBaseUrl(QString url);
+
+  QString assetPath() const;
+  void setAssetPath(QString path);
 
   QString cacheDatabasePath() const;
   void setCacheDatabasePath(QString path);
@@ -115,6 +124,8 @@ signals:
   void errorChanged();
 
   void accessTokenChanged(QString);
+  void apiBaseUrlChanged(QString);
+  void assetPathChanged(QString);
   void cacheDatabasePathChanged(QString);
   void cacheDatabaseMaximalSizeChanged(int);
 
