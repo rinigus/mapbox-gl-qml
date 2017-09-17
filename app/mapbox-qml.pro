@@ -10,7 +10,7 @@ RESOURCES += qml.qrc
 include(../mapbox-gl-qml.pri)
 
 INCLUDEPATH += ../../mapbox-gl-native/platform/qt/include ../../mapbox-gl-native/include
-LIBS += -L../../mapbox-gl-native/build -lqmapboxgl
+LIBS += -L../../mapbox-gl-native/build -lqmapboxgl -lz
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
