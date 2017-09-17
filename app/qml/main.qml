@@ -39,7 +39,7 @@ ApplicationWindow {
 
             onWheel: {
                 //map.zoomLevel += 0.2 * wheel.angleDelta.y / 120
-                map.scaleBy( 0.2 * wheel.angleDelta.y / 120, Qt.point(wheel.x, wheel.y) )
+                map.setZoomLevel( map.zoomLevel + 0.2 * wheel.angleDelta.y / 120, Qt.point(wheel.x, wheel.y) )
             }
 
             onPressed: {

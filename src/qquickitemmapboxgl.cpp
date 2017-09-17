@@ -195,7 +195,7 @@ qreal QQuickItemMapboxGL::zoomLevel() const
   return m_zoomLevel;
 }
 
-void QQuickItemMapboxGL::setZoomLevel(qreal zoom)
+void QQuickItemMapboxGL::setZoomLevel(qreal zoom, const QPointF &center)
 {
   zoom = qMin(m_maximumZoomLevel, zoom);
   zoom = qMax(m_minimumZoomLevel, zoom);
@@ -203,19 +203,12 @@ void QQuickItemMapboxGL::setZoomLevel(qreal zoom)
   if (m_zoomLevel == zoom) return;
 
   m_zoomLevel = zoom;
+  m_zoomLevelPoint = center;
 
   m_syncState |= ZoomNeedsSync;
   update();
 
   emit zoomLevelChanged(m_zoomLevel);
-}
-
-void QQuickItemMapboxGL::scaleBy(qreal scale, const QPointF &center)
-{
-  m_scale = scale;
-  m_scalePoint = center;
-  m_syncState |= ScaleNeedsSync;
-  update();
 }
 
 /// Position
@@ -335,19 +328,22 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
   // update all settings
   QMapboxGL *map = n->map();
 
-  if (m_syncState & CenterNeedsSync || m_syncState & ZoomNeedsSync)
+  if (m_syncState & CenterNeedsSync)
     {
       const auto& c = center();
       map->setCoordinateZoom({ c.latitude(), c.longitude() }, zoomLevel());
     }
 
-  if (m_syncState & ScaleNeedsSync)
+  if (m_syncState & ZoomNeedsSync)
     {
-      qreal zoom = map->zoom();
-      qreal newscale = pow(2.0, zoom + m_scale);
-      map->setScale(newscale, m_scalePoint);
-      m_scale = 0;
-      m_scalePoint = QPointF();
+      if (m_zoomLevelPoint.isNull())
+        map->setZoom(zoomLevel());
+      else
+        {
+          qreal newscale = pow(2.0, zoomLevel());
+          map->setScale(newscale, m_zoomLevelPoint);
+          m_zoomLevelPoint = QPointF();
+        }
     }
 
   if (m_syncState & BearingNeedsSync)

@@ -94,7 +94,7 @@ public:
   void setMaximumZoomLevel(qreal maximumZoomLevel);
   qreal maximumZoomLevel() const;
 
-  void setZoomLevel(qreal zoomLevel);
+  Q_INVOKABLE void setZoomLevel(qreal zoomLevel, const QPointF &center = QPointF());
   qreal zoomLevel() const;
 
   QGeoCoordinate center() const;
@@ -129,8 +129,6 @@ public:
   /// Callable methods from QML
   ///
   Q_INVOKABLE void pan(int dx, int dy);
-
-  Q_INVOKABLE void scaleBy(qreal scale, const QPointF &center = QPointF());
 
   /// \brief List of default Mapbox styles returned as JSON array
   ///
@@ -176,14 +174,13 @@ private:
   qreal m_minimumZoomLevel = 0;
   qreal m_maximumZoomLevel = 20;
   qreal m_zoomLevel = 20;
+  QPointF m_zoomLevelPoint;
 
   QPointF m_pan;
 
   QGeoCoordinate m_center;
   qreal m_bearing = 0;
   qreal m_pitch = 0;
-  qreal m_scale = 0;
-  QPointF m_scalePoint;
 
   QString m_errorString;
 
@@ -199,8 +196,7 @@ private:
     PanNeedsSync     = 1 << 3,
     BearingNeedsSync = 1 << 4,
     PitchNeedsSync   = 1 << 5,
-    PixelRatioNeedsSync = 1 << 6,
-    ScaleNeedsSync = 1 << 7
+    PixelRatioNeedsSync = 1 << 6
   };
   int m_syncState = NothingNeedsSync;
 };
