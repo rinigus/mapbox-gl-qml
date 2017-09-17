@@ -19,7 +19,7 @@ ApplicationWindow {
         zoomLevel: 12.25
         minimumZoomLevel: 0
         maximumZoomLevel: 20
-        pixelRatio: 1.0
+        pixelRatio: 1.5
 
         bearing: bearingSlider.value
         pitch: pitchSlider.value

@@ -341,7 +341,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       else
         {
           qreal newscale = pow(2.0, zoomLevel());
-          map->setScale(newscale, m_zoomLevelPoint);
+          map->setScale(newscale, m_zoomLevelPoint / m_pixelRatio);
           m_zoomLevelPoint = QPointF();
         }
     }
