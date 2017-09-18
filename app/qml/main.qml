@@ -64,6 +64,8 @@ ApplicationWindow {
 //                var o = styles[i];
 //                console.log(o["name"] + " -> " + o["url"])
 //            }
+
+            map.setMargins(0, 0.5, 0, 0);
         }
     }
 

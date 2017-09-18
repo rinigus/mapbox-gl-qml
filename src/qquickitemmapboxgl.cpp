@@ -53,7 +53,8 @@
 #include <QDebug>
 
 QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
-  QQuickItem(parent)
+  QQuickItem(parent),
+  m_margins(0, 0, 0, 0)
 {
   setFlag(ItemHasContents);
 
@@ -261,6 +262,16 @@ void QQuickItemMapboxGL::setPitch(qreal p)
   emit pitchChanged(p);
 }
 
+void QQuickItemMapboxGL::setMargins(qreal left, qreal top, qreal right, qreal bottom)
+{
+  m_margins.setLeft(left);
+  m_margins.setTop(top);
+  m_margins.setRight(right);
+  m_margins.setBottom(bottom);
+  m_syncState |= MarginsNeedSync;
+  update();
+}
+
 /// Rendering details
 qreal QQuickItemMapboxGL::pixelRatio() const
 {
@@ -314,7 +325,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
   if (!n)
     {
       n = new QSGMapboxGLTextureNode(m_settings, sz, m_pixelRatio, this);
-      m_syncState = CenterNeedsSync | ZoomNeedsSync | BearingNeedsSync | PitchNeedsSync | StyleNeedsSync;
+      m_syncState = CenterNeedsSync | ZoomNeedsSync | BearingNeedsSync | PitchNeedsSync | StyleNeedsSync | MarginsNeedSync;
     }
 
   if (sz != m_last_size || m_syncState & PixelRatioNeedsSync)
@@ -325,6 +336,13 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   // update all settings
   QMapboxGL *map = n->map();
+
+  if (m_syncState & MarginsNeedSync)
+    {
+      QMargins margins(m_margins.left()*width(), m_margins.top()*height(), m_margins.right()*width(), m_margins.bottom()*height());
+      map->setMargins(margins);
+      m_syncState |= CenterNeedsSync; // center has to be updated after update of the margins
+    }
 
   if (m_syncState & CenterNeedsSync)
     {

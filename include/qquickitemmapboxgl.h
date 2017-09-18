@@ -47,6 +47,7 @@
 #include <QQuickItem>
 #include <QTimer>
 #include <QPointF>
+#include <QMarginsF>
 #include <QVariantList>
 
 #include <QMapboxGL>
@@ -131,6 +132,16 @@ public:
   ///
   Q_INVOKABLE void pan(int dx, int dy);
 
+  /// \brief Set relative margins that determine position of the center
+  ///
+  /// Margins are given relative to the widget width (left and right margin) and
+  /// height (top and bottom). By default, the margins are 0 for all. In this case,
+  /// the given center will be on the center of the widget. To shift the center to the
+  /// bottom by 25%, set the top margin to 0.5. Then the center will be found between
+  /// the middle line and the bottom. Margins allow to switch between navigation and
+  /// browsing mode, for example.
+  Q_INVOKABLE void setMargins(qreal left, qreal top, qreal right, qreal bottom);
+
   /// \brief List of default Mapbox styles returned as JSON array
   ///
   Q_INVOKABLE QVariantList defaultStyles() const;
@@ -182,6 +193,7 @@ private:
   QGeoCoordinate m_center;
   qreal m_bearing = 0;
   qreal m_pitch = 0;
+  QMarginsF m_margins;
 
   QString m_errorString;
 
@@ -197,7 +209,8 @@ private:
     PanNeedsSync     = 1 << 3,
     BearingNeedsSync = 1 << 4,
     PitchNeedsSync   = 1 << 5,
-    PixelRatioNeedsSync = 1 << 6
+    PixelRatioNeedsSync = 1 << 6,
+    MarginsNeedSync = 1 << 7
   };
   int m_syncState = NothingNeedsSync;
 };
