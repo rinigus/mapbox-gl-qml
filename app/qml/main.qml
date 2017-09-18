@@ -54,6 +54,17 @@ ApplicationWindow {
                 lastY = mouse.y
             }
         }
+
+        Component.onCompleted: {
+
+//            // List default styles
+//            var styles = map.defaultStyles()
+//            for (var i=0; i<styles.length; i++)
+//            {
+//                var o = styles[i];
+//                console.log(o["name"] + " -> " + o["url"])
+//            }
+        }
     }
 
     Rectangle {

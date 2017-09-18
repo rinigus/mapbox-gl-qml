@@ -47,6 +47,7 @@
 #include <QQuickItem>
 #include <QTimer>
 #include <QPointF>
+#include <QVariantList>
 
 #include <QMapboxGL>
 #include <QGeoCoordinate>
@@ -132,7 +133,7 @@ public:
 
   /// \brief List of default Mapbox styles returned as JSON array
   ///
-  Q_INVOKABLE QString defaultStyles() const;
+  Q_INVOKABLE QVariantList defaultStyles() const;
 
 signals:
   void startRefreshTimer();

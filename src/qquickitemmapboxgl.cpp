@@ -46,9 +46,7 @@
 
 #include <mbgl/util/constants.hpp>
 
-#include <QJsonArray>
-#include <QJsonObject>
-#include <QJsonDocument>
+#include <QVariantMap>
 
 #include <math.h>
 
@@ -76,19 +74,19 @@ QQuickItemMapboxGL::~QQuickItemMapboxGL()
 {
 }
 
-QString QQuickItemMapboxGL::defaultStyles() const
+QVariantList QQuickItemMapboxGL::defaultStyles() const
 {
-  QJsonArray array;
+  QVariantList array;
   auto styles = QMapbox::defaultStyles();
   for (const auto &i: styles)
     {
-      QJsonObject o;
-      o.insert("url", i.first);
-      o.insert("name", i.second);
+      QVariantMap o;
+      o.insert("url", QVariant(i.first));
+      o.insert("name", QVariant(i.second));
       array.append(o);
     }
 
-  return QJsonDocument(array).toJson();
+  return array;
 }
 
 /// Properties that have to be set during construction of the map
