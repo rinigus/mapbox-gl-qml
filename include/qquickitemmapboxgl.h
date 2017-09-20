@@ -53,6 +53,8 @@
 #include <QMapboxGL>
 #include <QGeoCoordinate>
 
+#include "qmapboxsync_p.h"
+
 class QQuickItemMapboxGL : public QQuickItem
 {
   Q_OBJECT
@@ -201,6 +203,11 @@ private:
   QString m_styleUrl;
   QString m_styleJson;
 
+  QMapboxSync::SourceList m_sources;
+  QMapboxSync::LayerList m_layers;
+  QMapboxSync::LayoutPropertyList m_layout_properties;
+  QMapboxSync::PaintPropertyList m_paint_properties;
+
   enum SyncState {
     NothingNeedsSync = 0,
     ZoomNeedsSync    = 1 << 0,
@@ -210,7 +217,8 @@ private:
     BearingNeedsSync = 1 << 4,
     PitchNeedsSync   = 1 << 5,
     PixelRatioNeedsSync = 1 << 6,
-    MarginsNeedSync = 1 << 7
+    MarginsNeedSync = 1 << 7,
+    DataNeedsSync = 1 << 8
   };
   int m_syncState = NothingNeedsSync;
 };

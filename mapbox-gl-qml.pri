@@ -1,4 +1,4 @@
-INCLUDEPATH += $$PWD/include
+INCLUDEPATH += $$PWD/include $$PWD/src
 DEPENDPATH += $$PWD/src
 
 SOURCES += \

@@ -26,25 +26,30 @@ namespace QMapboxSync
     Type m_type;
   };
 
+  //////////////////////////////////////////////////////////
+  /// General asset that covers source and layer support
 
-  class Source {
+  class Asset {
   public:
-    Source(const QString sourceID, const QVariantMap p = QVariantMap()):
-      id(sourceID), params(p) {}
+    Asset(const QString i, const QVariantMap p):
+      id(i), params(p) {}
 
   public:
     QString id;
     QVariantMap params;
   };
 
+  //////////////////////////////////////////////////////////
+  /// Source support
+
   class SourceList
   {
   public:
     SourceList() {}
 
-    void add(const QString &sourceID, const QVariantMap& params);
-    void update(const QString &sourceID, const QVariantMap& params);
-    void remove(const QString &sourceID);
+    void add(const QString &id, const QVariantMap& params);
+    void update(const QString &id, const QVariantMap& params);
+    void remove(const QString &id);
 
     void apply(QMapboxGL *map);
     void setup(QMapboxGL *map);
@@ -53,18 +58,95 @@ namespace QMapboxSync
 
     class SourceAction: public Action {
     public:
-      SourceAction(Type t, const QString sourceID, const QVariantMap params = QVariantMap());
+      SourceAction(Type t, const QString id, const QVariantMap params = QVariantMap());
       virtual void apply(QMapboxGL *map);
-      Source& source() { return m_source; }
+      Asset& asset() { return m_asset; }
 
     protected:
-      Source m_source;
+      Asset m_asset;
     };
 
   protected:
-    QList<Source> m_sources;
+    QList<Asset> m_assets;
     QList<SourceAction> m_action_stack;
   };
+
+  //////////////////////////////////////////////////////////
+  /// Layer support
+
+  class LayerList
+  {
+  public:
+    LayerList() {}
+
+    void add(const QString &id, const QVariantMap& params);
+    void remove(const QString &id);
+
+    void apply(QMapboxGL *map);
+    void setup(QMapboxGL *map);
+
+  protected:
+
+    class LayerAction: public Action {
+    public:
+      LayerAction(Type t, const QString id, const QVariantMap params = QVariantMap());
+      virtual void apply(QMapboxGL *map);
+      Asset& asset() { return m_asset; }
+
+    protected:
+      Asset m_asset;
+    };
+
+  protected:
+    QList<Asset> m_assets;
+    QList<LayerAction> m_action_stack;
+  };
+
+  ///////////////////////////////////////////////////////////
+  /// Properties support
+
+  class Property {
+  public:
+    Property(const QString &l, const QString &p, const QVariant &v):
+      layer(l), property(p), value(v) {}
+
+  public:
+    QString layer;
+    QString property;
+    QVariant value;
+  };
+
+  class PropertyList {
+  public:
+    PropertyList() {}
+
+    void add(const QString &layer, const QString &property, const QVariant& value);
+
+    void apply(QMapboxGL *map);
+    void setup(QMapboxGL *map);
+
+  protected:
+    virtual void apply_property(QMapboxGL *map, Property &p) = 0;
+
+  protected:
+    QList<Property> m_properties;
+    QList<Property> m_action_stack;
+  };
+
+  class LayoutPropertyList: public PropertyList {
+  public:
+    LayoutPropertyList(): PropertyList() {}
+  protected:
+    virtual void apply_property(QMapboxGL *map, Property &p);
+  };
+
+  class PaintPropertyList: public PropertyList {
+  public:
+    PaintPropertyList(): PropertyList() {}
+  protected:
+    virtual void apply_property(QMapboxGL *map, Property &p);
+  };
+
 }
 
 #endif // QMAPBOXSYNC_H
