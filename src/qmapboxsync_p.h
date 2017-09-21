@@ -6,6 +6,7 @@
 #include <QString>
 #include <QVariantMap>
 #include <QList>
+#include <QImage>
 
 namespace QMapboxSync
 {
@@ -31,12 +32,13 @@ namespace QMapboxSync
 
   class Asset {
   public:
-    Asset(const QString i, const QVariantMap p):
-      id(i), params(p) {}
+    Asset(const QString i, const QVariantMap p, const QString b = QString()):
+      id(i), params(p), before(b) {}
 
   public:
     QString id;
     QVariantMap params;
+    QString before;
   };
 
   //////////////////////////////////////////////////////////
@@ -79,7 +81,7 @@ namespace QMapboxSync
   public:
     LayerList() {}
 
-    void add(const QString &id, const QVariantMap& params);
+    void add(const QString &id, const QVariantMap& params, const QString &before);
     void remove(const QString &id);
 
     void apply(QMapboxGL *map);
@@ -89,7 +91,7 @@ namespace QMapboxSync
 
     class LayerAction: public Action {
     public:
-      LayerAction(Type t, const QString id, const QVariantMap params = QVariantMap());
+      LayerAction(Type t, const QString id, const QVariantMap params = QVariantMap(), const QString before = QString());
       virtual void apply(QMapboxGL *map);
       Asset& asset() { return m_asset; }
 
@@ -146,6 +148,48 @@ namespace QMapboxSync
   protected:
     virtual void apply_property(QMapboxGL *map, Property &p);
   };
+
+  ///////////////////////////////////////////////////////////
+  /// Images support
+
+  class Image {
+  public:
+    Image(const QString &i, const QImage &im):
+      id(i), image(im) {}
+
+  public:
+    QString id;
+    QImage image;
+    QVariant value;
+  };
+
+  class ImageList {
+  public:
+    ImageList() {}
+
+    void add(const QString &id, const QImage &sprite);
+    void remove(const QString &id);
+
+    void apply(QMapboxGL *map);
+    void setup(QMapboxGL *map);
+
+  protected:
+    class ImageAction: public Action {
+    public:
+      ImageAction(Type t, const QString id, const QImage image = QImage());
+      virtual void apply(QMapboxGL *map);
+      Image& image() { return m_image; }
+
+    protected:
+      Image m_image;
+    };
+
+
+  protected:
+    QList<Image> m_images;
+    QList<ImageAction> m_action_stack;
+  };
+
 
 }
 

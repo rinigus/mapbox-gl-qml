@@ -144,6 +144,24 @@ public:
   /// browsing mode, for example.
   Q_INVOKABLE void setMargins(qreal left, qreal top, qreal right, qreal bottom);
 
+  /////////////////////////////////////////////////////////////////////////////
+  /// Map interaction methods
+
+  Q_INVOKABLE void addSource(const QString &sourceID, const QVariantMap& params);
+  //Q_INVOKABLE bool sourceExists(const QString &sourceID);
+  Q_INVOKABLE void updateSource(const QString &sourceID, const QVariantMap& params);
+  Q_INVOKABLE void removeSource(const QString &sourceID);
+
+  Q_INVOKABLE void addLayer(const QString &id, const QVariantMap &params, const QString& before = QString());
+  //Q_INVOKABLE bool layerExists(const QString &id);
+  Q_INVOKABLE void removeLayer(const QString &id);
+
+  Q_INVOKABLE void addImage(const QString &name, const QImage &sprite);
+  Q_INVOKABLE void removeImage(const QString &name);
+
+  Q_INVOKABLE void setLayoutProperty(const QString &layer, const QString &property, const QVariant &value);
+  Q_INVOKABLE void setPaintProperty(const QString &layer, const QString &property, const QVariant &value);
+
   /// \brief List of default Mapbox styles returned as JSON array
   ///
   Q_INVOKABLE QVariantList defaultStyles() const;
@@ -207,6 +225,7 @@ private:
   QMapboxSync::LayerList m_layers;
   QMapboxSync::LayoutPropertyList m_layout_properties;
   QMapboxSync::PaintPropertyList m_paint_properties;
+  QMapboxSync::ImageList m_images;
 
   enum SyncState {
     NothingNeedsSync = 0,
@@ -218,7 +237,8 @@ private:
     PitchNeedsSync   = 1 << 5,
     PixelRatioNeedsSync = 1 << 6,
     MarginsNeedSync = 1 << 7,
-    DataNeedsSync = 1 << 8
+    DataNeedsSync = 1 << 8,
+    DataNeedsSetupSync = 1 << 9
   };
   int m_syncState = NothingNeedsSync;
 };

@@ -1,5 +1,7 @@
 #include "qmapboxsync_p.h"
 
+#include <QDebug>
+
 using namespace QMapboxSync;
 
 /// Source
@@ -87,9 +89,9 @@ void SourceList::setup(QMapboxGL *map)
 
 /// Layer
 
-LayerList::LayerAction::LayerAction(Type t, const QString id, const QVariantMap params):
+LayerList::LayerAction::LayerAction(Type t, const QString id, const QVariantMap params, const QString before):
   Action(t),
-  m_asset(id, params)
+  m_asset(id, params, before)
 {
   m_asset.params["id"] = id;
 }
@@ -97,16 +99,16 @@ LayerList::LayerAction::LayerAction(Type t, const QString id, const QVariantMap 
 void LayerList::LayerAction::apply(QMapboxGL *map)
 {
   if (type() == Add)
-    map->addLayer(m_asset.params);
+    map->addLayer(m_asset.params, m_asset.before);
   else if (type() == Remove)
     map->removeLayer(m_asset.id);
   else
     Q_ASSERT(0);
 }
 
-void LayerList::add(const QString &id, const QVariantMap &params)
+void LayerList::add(const QString &id, const QVariantMap &params, const QString &before)
 {
-  m_action_stack.append( LayerAction(Action::Add, id, params) );
+  m_action_stack.append( LayerAction(Action::Add, id, params, before) );
 }
 
 void LayerList::remove(const QString &id)
@@ -177,4 +179,64 @@ void LayoutPropertyList::apply_property(QMapboxGL *map, Property &p)
 void PaintPropertyList::apply_property(QMapboxGL *map, Property &p)
 {
   map->setPaintProperty(p.layer, p.property, p.value);
+}
+
+
+/// Images
+
+/// Layer
+
+ImageList::ImageAction::ImageAction(Type t, const QString id, const QImage im):
+  Action(t),
+  m_image(id, im)
+{
+}
+
+void ImageList::ImageAction::apply(QMapboxGL *map)
+{
+  if (type() == Add)
+    map->addImage(m_image.id, m_image.image);
+  else if (type() == Remove)
+    map->removeImage(m_image.id);
+  else
+    Q_ASSERT(0);
+}
+
+void ImageList::add(const QString &id, const QImage &sprite)
+{
+  m_action_stack.append( ImageAction(Action::Add, id, sprite) );
+}
+
+void ImageList::remove(const QString &id)
+{
+  m_action_stack.append( ImageAction(Action::Remove, id) );
+}
+
+void ImageList::apply(QMapboxGL *map)
+{
+  for (ImageAction &action: m_action_stack)
+    {
+      action.apply(map);
+
+      if (action.type() == Action::Add) m_images.append(action.image());
+
+      else if (action.type() == Action::Remove)
+        {
+          QMutableListIterator<Image> i(m_images);
+          while (i.hasNext())
+            if (i.next().id == action.image().id)
+              i.remove();
+        }
+    }
+
+  m_action_stack.clear();
+}
+
+void ImageList::setup(QMapboxGL *map)
+{
+  for (Image &image: m_images)
+    {
+      ImageAction action(Action::Add, image.id, image.image);
+      action.apply(map);
+    }
 }

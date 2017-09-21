@@ -316,6 +316,62 @@ void QQuickItemMapboxGL::setStyleUrl(const QString &url)
   emit styleUrlChanged(url);
 }
 
+/// Interaction with the map
+#define DATA_UPDATE { m_syncState |= DataNeedsSync; update(); }
+
+/// Sources
+
+void QQuickItemMapboxGL::addSource(const QString &sourceID, const QVariantMap &params)
+{
+  m_sources.add(sourceID,params); DATA_UPDATE;
+}
+
+void QQuickItemMapboxGL::updateSource(const QString &sourceID, const QVariantMap &params)
+{
+  m_sources.update(sourceID, params); DATA_UPDATE;
+}
+
+void QQuickItemMapboxGL::removeSource(const QString &sourceID)
+{
+  m_sources.remove(sourceID); DATA_UPDATE;
+}
+
+/// Layers
+
+void QQuickItemMapboxGL::addLayer(const QString &id, const QVariantMap &params, const QString &before)
+{
+  m_layers.add(id, params, before); DATA_UPDATE;
+}
+
+void QQuickItemMapboxGL::removeLayer(const QString &id)
+{
+  m_layers.remove(id); DATA_UPDATE;
+}
+
+/// Images
+
+void QQuickItemMapboxGL::addImage(const QString &name, const QImage &sprite)
+{
+  m_images.add(name, sprite); DATA_UPDATE;
+}
+
+void QQuickItemMapboxGL::removeImage(const QString &name)
+{
+  m_images.remove(name); DATA_UPDATE;
+}
+
+/// Properties
+
+void QQuickItemMapboxGL::setLayoutProperty(const QString &layer, const QString &property, const QVariant &value)
+{
+  m_layout_properties.add(layer, property, value); DATA_UPDATE;
+}
+
+void QQuickItemMapboxGL::setPaintProperty(const QString &layer, const QString &property, const QVariant &value)
+{
+  m_paint_properties.add(layer, property, value);
+}
+
 /// Update map
 QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData *)
 {
@@ -325,7 +381,9 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
   if (!n)
     {
       n = new QSGMapboxGLTextureNode(m_settings, sz, m_pixelRatio, this);
-      m_syncState = CenterNeedsSync | ZoomNeedsSync | BearingNeedsSync | PitchNeedsSync | StyleNeedsSync | MarginsNeedSync;
+      m_syncState = CenterNeedsSync | ZoomNeedsSync | BearingNeedsSync | PitchNeedsSync |
+          StyleNeedsSync | MarginsNeedSync |
+          DataNeedsSetupSync | DataNeedsSync;
     }
 
   if (sz != m_last_size || m_syncState & PixelRatioNeedsSync)
@@ -382,6 +440,25 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
         map->setStyleUrl(m_styleUrl);
       else
         map->setStyleJson(m_styleJson);
+    }
+
+  if (m_syncState & DataNeedsSetupSync)
+    {
+      // setup new map
+      m_sources.setup(map);
+      m_layers.setup(map);
+      m_images.setup(map);
+      m_layout_properties.setup(map);
+      m_paint_properties.setup(map);
+    }
+
+  if (m_syncState & DataNeedsSync)
+    {
+      m_sources.apply(map);
+      m_layers.apply(map);
+      m_images.apply(map);
+      m_layout_properties.apply(map);
+      m_paint_properties.apply(map);
     }
 
   // settings done
