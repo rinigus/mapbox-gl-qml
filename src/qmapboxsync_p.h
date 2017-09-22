@@ -10,6 +10,21 @@
 
 namespace QMapboxSync
 {
+  //////////////////////////////////////////////////////////////////////////
+  /// QMapboxSync namespace contains classes that are responsible
+  /// for application of dynamic settings, such as manipulation with
+  /// additional sources, layers, paint properties. All supported
+  /// assets have similar approach. On addition/update/removal, the request
+  /// is recorded into an action list. To apply the action list on the map,
+  /// call method apply. On application, all manipulations are also recorded
+  /// into an object variable that contains the list of all active assets.
+  /// This allows to setup all the assets (add sources, layers, ...) when
+  /// the map has been destroyed and recreated again. For that, call setup method.
+  ///
+  /// Externally, users are expected to use SourceList, LayerList, ... classes
+
+  //////////////////////////////////////////////////////////
+  /// General action that covers application of new setting
 
   class Action
   {

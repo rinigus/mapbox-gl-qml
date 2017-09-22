@@ -160,7 +160,9 @@ public:
   Q_INVOKABLE void removeImage(const QString &name);
 
   Q_INVOKABLE void setLayoutProperty(const QString &layer, const QString &property, const QVariant &value);
+  Q_INVOKABLE void setLayoutPropertyList(const QString &layer, const QString &property, const QVariantList &value);
   Q_INVOKABLE void setPaintProperty(const QString &layer, const QString &property, const QVariant &value);
+  Q_INVOKABLE void setPaintPropertyList(const QString &layer, const QString &property, const QVariantList &value);
 
   /// \brief List of default Mapbox styles returned as JSON array
   ///

@@ -119,6 +119,8 @@ ApplicationWindow {
             map.setLayoutProperty("routeCase", "line-cap", "round");
             map.setPaintProperty("routeCase", "line-color", "white");
             map.setPaintProperty("routeCase", "line-width", 20.0);
+            var dash = [1,2];
+            map.setPaintPropertyList("routeCase", "line-dasharray", dash);
         }
     }
 

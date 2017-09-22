@@ -367,7 +367,17 @@ void QQuickItemMapboxGL::setLayoutProperty(const QString &layer, const QString &
   m_layout_properties.add(layer, property, value); DATA_UPDATE;
 }
 
+void QQuickItemMapboxGL::setLayoutPropertyList(const QString &layer, const QString &property, const QVariantList &value)
+{
+  m_layout_properties.add(layer, property, value); DATA_UPDATE;
+}
+
 void QQuickItemMapboxGL::setPaintProperty(const QString &layer, const QString &property, const QVariant &value)
+{
+  m_paint_properties.add(layer, property, value);
+}
+
+void QQuickItemMapboxGL::setPaintPropertyList(const QString &layer, const QString &property, const QVariantList &value)
 {
   m_paint_properties.add(layer, property, value);
 }
