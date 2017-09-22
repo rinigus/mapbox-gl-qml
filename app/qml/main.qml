@@ -53,6 +53,62 @@ ApplicationWindow {
                 lastX = mouse.x
                 lastY = mouse.y
             }
+
+            onClicked: {
+//                var routeSource = {
+//                    "type": "geojson",
+//                    "data": '{
+//                        "type": "Feature",
+//                        "properties": {},
+//                        "geometry": {
+//                            "type": "LineString",
+//                            "coordinates": [
+//                                [24.942046, 60.170448],
+//                                [
+//                                    24.934420000000003,
+//                                    60.163500000000006
+//                                ],
+//                                [
+//                                    24.923490008921945,
+//                                    60.16159500239787
+//                                ],
+//                                [
+//                                    24.916150000000002,
+//                                    60.171530000000004
+//                                ],
+//                                [
+//                                    24.931620000000002,
+//                                    60.18218
+//                                ],
+//                                [
+//                                    24.961660000000002,
+//                                    60.17557000000001
+//                                ],
+//                                [
+//                                    24.954860000000004,
+//                                    60.158930000000005
+//                                ],
+//                                [
+//                                    24.943690000000004,
+//                                    60.155280000000005
+//                                ]
+//                            ]
+//                        }
+//                    }'
+//                }
+
+//                var layer_id = "routeCase"
+//                var layer = { "type": "line", "source": "route" }
+
+//                map.addSource("route", routeSource)
+//                map.addLayer(layer_id, layer)
+
+//                map.setLayoutProperty("routeCase", "line-join", "round");
+//                map.setLayoutProperty("routeCase", "line-cap", "round");
+//                map.setPaintProperty("routeCase", "line-color", "white");
+//                map.setPaintProperty("routeCase", "line-width", 20.0);
+//                console.log("Clicked")
+            }
         }
 
         Component.onCompleted: {
@@ -75,7 +131,6 @@ ApplicationWindow {
                     "geometry": {
                         "type": "LineString",
                         "coordinates": [
-                            [60.170448, 24.942046],
                             [24.942046, 60.170448],
                             [
                                 24.934420000000003,
@@ -118,10 +173,8 @@ ApplicationWindow {
 
             map.setLayoutProperty("routeCase", "line-join", "round");
             map.setLayoutProperty("routeCase", "line-cap", "round");
-            map.setPaintProperty("routeCase", "line-color", "#888");
+            map.setPaintProperty("routeCase", "line-color", "white");
             map.setPaintProperty("routeCase", "line-width", 20.0);
-
-            console.log("All added")
         }
     }
 

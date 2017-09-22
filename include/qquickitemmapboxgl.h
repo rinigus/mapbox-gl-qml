@@ -221,6 +221,7 @@ private:
   QString m_styleUrl;
   QString m_styleJson;
 
+  bool m_block_data_until_loaded{true}; ///< Blocks loading of additional data until base map is loaded
   QMapboxSync::SourceList m_sources;
   QMapboxSync::LayerList m_layers;
   QMapboxSync::LayoutPropertyList m_layout_properties;

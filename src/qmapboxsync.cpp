@@ -14,6 +14,15 @@ SourceList::SourceAction::SourceAction(Type t, const QString id, const QVariantM
 
 void SourceList::SourceAction::apply(QMapboxGL *map)
 {
+  // special treatment of "data" field
+  if (m_asset.params.contains("data"))
+    {
+      QVariant data_orig = m_asset.params["data"];
+      if (data_orig.type() == QMetaType::QString)
+        m_asset.params["data"] = data_orig.toString().toUtf8();
+    }
+
+  // apply
   if (type() == Add)
     map->addSource(m_asset.id, m_asset.params);
   else if (type() == Update)

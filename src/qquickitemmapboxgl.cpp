@@ -382,8 +382,8 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
     {
       n = new QSGMapboxGLTextureNode(m_settings, sz, m_pixelRatio, this);
       m_syncState = CenterNeedsSync | ZoomNeedsSync | BearingNeedsSync | PitchNeedsSync |
-          StyleNeedsSync | MarginsNeedSync |
-          DataNeedsSetupSync | DataNeedsSync;
+          StyleNeedsSync | MarginsNeedSync;
+      m_block_data_until_loaded = true;
     }
 
   if (sz != m_last_size || m_syncState & PixelRatioNeedsSync)
@@ -442,7 +442,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
         map->setStyleJson(m_styleJson);
     }
 
-  if (m_syncState & DataNeedsSetupSync)
+  if (!m_block_data_until_loaded && m_syncState & DataNeedsSetupSync)
     {
       // setup new map
       m_sources.setup(map);
@@ -452,7 +452,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       m_paint_properties.setup(map);
     }
 
-  if (m_syncState & DataNeedsSync)
+  if (!m_block_data_until_loaded && m_syncState & DataNeedsSync)
     {
       m_sources.apply(map);
       m_layers.apply(map);
@@ -466,6 +466,16 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   // render the map and trigger the timer if the map is not loaded fully
   bool loaded = n->render(window());
+
+  // check if we can add user-added sources, layers ...
+  if (loaded && m_block_data_until_loaded)
+    {
+      m_syncState |= DataNeedsSetupSync;
+      m_syncState |= DataNeedsSync;
+      m_block_data_until_loaded = false;
+      update();
+    }
+
   if (!loaded && !m_timer.isActive())
     emit startRefreshTimer();
   else if (loaded && m_timer.isActive())
