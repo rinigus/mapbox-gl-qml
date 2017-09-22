@@ -169,7 +169,7 @@ ApplicationWindow {
             var layer = { "type": "line", "source": "route" }
 
             map.addSource("route", routeSource)
-            map.addLayer(layer_id, layer)
+            map.addLayer(layer_id, layer, "waterway-label")
 
             map.setLayoutProperty("routeCase", "line-join", "round");
             map.setLayoutProperty("routeCase", "line-cap", "round");
