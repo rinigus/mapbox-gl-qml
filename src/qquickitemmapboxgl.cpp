@@ -331,14 +331,14 @@ void QQuickItemMapboxGL::addSource(const QString &sourceID, const QVariantMap &p
   m_sources.add(sourceID,params); DATA_UPDATE;
 }
 
-void QQuickItemMapboxGL::addSource(const QString &sourceID, const QGeoCoordinate &coordinate, const QString &name)
+void QQuickItemMapboxGL::addSourcePoint(const QString &sourceID, const QGeoCoordinate &coordinate, const QString &name)
 {
-  updateSource(sourceID, coordinate, name); // same as add for sources
+  updateSourcePoint(sourceID, coordinate, name); // same as add for sources
 }
 
-void QQuickItemMapboxGL::addSource(const QString &sourceID, qreal latitude, qreal longitude, const QString &name)
+void QQuickItemMapboxGL::addSourcePoint(const QString &sourceID, qreal latitude, qreal longitude, const QString &name)
 {
-  updateSource(sourceID, latitude, longitude, name);
+  updateSourcePoint(sourceID, latitude, longitude, name);
 }
 
 void QQuickItemMapboxGL::updateSource(const QString &sourceID, const QVariantMap &params)
@@ -346,12 +346,12 @@ void QQuickItemMapboxGL::updateSource(const QString &sourceID, const QVariantMap
   m_sources.update(sourceID, params); DATA_UPDATE;
 }
 
-void QQuickItemMapboxGL::updateSource(const QString &sourceID, const QGeoCoordinate &coordinate, const QString &name)
+void QQuickItemMapboxGL::updateSourcePoint(const QString &sourceID, const QGeoCoordinate &coordinate, const QString &name)
 {
-  updateSource(sourceID, coordinate.latitude(), coordinate.longitude(), name);
+  updateSourcePoint(sourceID, coordinate.latitude(), coordinate.longitude(), name);
 }
 
-void QQuickItemMapboxGL::updateSource(const QString &sourceID, qreal latitude, qreal longitude, const QString &name)
+void QQuickItemMapboxGL::updateSourcePoint(const QString &sourceID, qreal latitude, qreal longitude, const QString &name)
 {
   QVariantList coordinates({longitude, latitude});
   QVariantMap geometry({{"type", "Point"}, {"coordinates", coordinates}});

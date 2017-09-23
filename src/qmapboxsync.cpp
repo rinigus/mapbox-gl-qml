@@ -20,10 +20,10 @@ void SourceList::SourceAction::apply(QMapboxGL *map)
   if (m_asset.params.contains("data"))
     {
       QVariant data_orig = m_asset.params["data"];
-      if (data_orig.type() == QVariant::Map)
-        m_asset.params["data"] = QJsonDocument::fromVariant(data_orig).toJson();
       if (data_orig.type() == QVariant::String)
         m_asset.params["data"] = data_orig.toString().toUtf8();
+      else if (data_orig.type() == QVariant::Map)
+        m_asset.params["data"] = QJsonDocument::fromVariant(data_orig).toJson();
     }
 
   // apply

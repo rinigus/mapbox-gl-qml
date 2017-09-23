@@ -155,14 +155,14 @@ public:
   Q_INVOKABLE void addSource(const QString &sourceID, const QVariantMap& params);
 
   /// \brief Add source consisting of a single point coordinate
-  Q_INVOKABLE void addSource(const QString &sourceID, const QGeoCoordinate &coordinate, const QString &name = QString());
-  Q_INVOKABLE void addSource(const QString &sourceID, qreal latitude, qreal longitude, const QString &name = QString());
+  Q_INVOKABLE void addSourcePoint(const QString &sourceID, const QGeoCoordinate &coordinate, const QString &name = QString());
+  Q_INVOKABLE void addSourcePoint(const QString &sourceID, qreal latitude, qreal longitude, const QString &name = QString());
 
   Q_INVOKABLE void updateSource(const QString &sourceID, const QVariantMap& params);
 
   /// \brief Update source consisting of a single point coordinate
-  Q_INVOKABLE void updateSource(const QString &sourceID, const QGeoCoordinate &coordinate, const QString &name = QString());
-  Q_INVOKABLE void updateSource(const QString &sourceID, qreal latitude, qreal longitude, const QString &name = QString());
+  Q_INVOKABLE void updateSourcePoint(const QString &sourceID, const QGeoCoordinate &coordinate, const QString &name = QString());
+  Q_INVOKABLE void updateSourcePoint(const QString &sourceID, qreal latitude, qreal longitude, const QString &name = QString());
 
   Q_INVOKABLE void removeSource(const QString &sourceID);
 
