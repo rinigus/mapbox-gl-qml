@@ -1,7 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
-import QtPositioning 5.0
+import QtPositioning 5.3
 
 import QQuickItemMapboxGL 1.0
 
@@ -55,10 +55,10 @@ ApplicationWindow {
             }
 
             onClicked: {
-//                console.log("Clicked")
-//                map.querySourceExists("route");
-//                map.querySourceExists("route-shouldnt-be-there");
-//                map.queryLayerExists("routeCase");
+                //                console.log("Clicked")
+                //                map.querySourceExists("route");
+                //                map.querySourceExists("route-shouldnt-be-there");
+                //                map.queryLayerExists("routeCase");
             }
         }
 
@@ -116,18 +116,57 @@ ApplicationWindow {
                 }'
             }
 
-            var layer_id = "routeCase"
-            var layer = { "type": "line", "source": "route" }
-
             map.addSource("route", routeSource)
-            map.addLayer(layer_id, layer, "waterway-label")
 
+            map.addLayer("routeCase", { "type": "line", "source": "route" }, "waterway-label")
             map.setLayoutProperty("routeCase", "line-join", "round");
             map.setLayoutProperty("routeCase", "line-cap", "round");
             map.setPaintProperty("routeCase", "line-color", "white");
-            map.setPaintProperty("routeCase", "line-width", 20.0);
-            var dash = [1,2];
-            map.setPaintPropertyList("routeCase", "line-dasharray", dash);
+            map.setPaintProperty("routeCase", "line-width", 15.0);
+
+            map.addLayer("route", { "type": "line", "source": "route" }, "waterway-label")
+            map.setLayoutProperty("route", "line-join", "round");
+            map.setLayoutProperty("route", "line-cap", "round");
+            map.setPaintProperty("route", "line-color", "blue");
+            map.setPaintProperty("route", "line-width", 10.0);
+            map.setPaintPropertyList("route", "line-dasharray", [1,2]);
+
+            /// Location support
+            map.addSource("location", {"type": "geojson", "data":
+                              '{
+                                  "type": "Feature",
+                                  "properties": {"name": "My location"},
+                                  "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [
+                                      24.94,
+                                      60.16
+                                    ]
+                                  }
+                                }'
+                          } )
+
+            map.addLayer("location-uncertainty", {"type": "circle", "source": "location"}, "waterway-label")
+            map.setPaintProperty("location-uncertainty", "circle-radius", 20)
+            map.setPaintProperty("location-uncertainty", "circle-color", "#87cefa")
+            map.setPaintProperty("location-uncertainty", "circle-opacity", 0.25)
+
+            map.addLayer("location-case", {"type": "circle", "source": "location"}, "waterway-label")
+            map.setPaintProperty("location-case", "circle-radius", 10)
+            map.setPaintProperty("location-case", "circle-color", "white")
+
+            map.addLayer("location", {"type": "circle", "source": "location"}, "waterway-label")
+            map.setPaintProperty("location", "circle-radius", 5)
+            map.setPaintProperty("location", "circle-color", "blue")
+
+            map.addLayer("location-label", {"type": "symbol", "source": "location"})
+            map.setLayoutProperty("location-label", "text-field", "{name}")
+            map.setLayoutProperty("location-label", "text-justify", "left")
+            map.setLayoutProperty("location-label", "text-anchor", "top-left")
+            map.setLayoutPropertyList("location-label", "text-offset", [0.2, 0.2])
+            map.setPaintProperty("location-label", "text-halo-color", "white")
+            map.setPaintProperty("location-label", "text-halo-width", 2)
+
         }
 
         Connections {
@@ -186,4 +225,83 @@ ApplicationWindow {
         anchors.margins: 10
         text: "Scale: %0 m/pixel".arg(map.metersPerPixel.toFixed(2))
     }
+
+    //    PositionSource {
+    //        id: gps
+
+    //        active: true
+    //        updateInterval: 1000
+
+    //        function update() {
+    //            if (gps.position.longitudeValid && gps.position.latitudeValid)
+    //            {
+    //                map.updateSource("location", {"type": "geojson", "data":
+    //                                  '{
+    //                                      "type": "Feature",
+    //                                      "properties": {},
+    //                                      "geometry": {
+    //                                        "type": "Point",
+    //                                        "coordinates": [' +
+    //                                     gps.position.coordinate.longitude + ', ' +
+    //                                     gps.position.coordinate.latitude + '
+    //                                        ]
+    //                                      }
+    //                                    }'
+    //                                  } )
+    //                console.log("Location updated")
+    //            }
+
+    //            if (gps.position.horizontalAccuracyValid && gps.position.verticalAccuracyValid)
+    //            {
+    //                var accuracy = Math.max(gps.position.horizontalAccuracy, gps.position.verticalAccuracy)
+    //                map.setPaintProperty("location-uncertainty", "circle-radius", accuracy / map.metersPerPixel)
+    //                console.log("Uncertainty updated")
+    //            }
+
+    //            if (gps.position.directionValid)
+    //                map.bearing = gps.position.direction
+    //        }
+
+
+    //        onPositionChanged: {
+    //            update()
+    //        }
+
+    //        Component.onCompleted: {
+    //            update()
+    //        }
+    //    }
+
+    //    Connections {
+    //        target: map
+    //        onMetersPerPixelChanged: gps.update()
+    //    }
+
+    Timer {
+        property double angle: 0.0
+
+        interval: 25
+        running: true
+        repeat: true
+        onTriggered: {
+            angle += 1.0 / 180. * Math.PI
+            if (angle > Math.PI*2)
+                angle -= Math.PI*2
+
+            map.updateSource("location", {"type": "geojson", "data":
+                                 '{
+                                  "type": "Feature",
+                                  "properties": {"name": "hello, my angle is ' + (angle/Math.PI*180).toFixed(1) + '"},
+                                  "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [' +
+                                 (24.94 + 0.01*Math.cos(angle)) + ', ' +
+                                 (60.16 +  0.01*Math.sin(angle)) + '
+                                    ]
+                                  }
+                                }'
+                              } )
+        }
+    }
+
 }
