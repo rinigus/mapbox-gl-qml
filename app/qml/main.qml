@@ -289,21 +289,25 @@ ApplicationWindow {
                 angle -= Math.PI*2
 
             map.updateSource("location",
-                             {
-                                 "type": "geojson",
-                                 "data": {
-                                     "type": "Feature",
-                                     "properties": { "name": "hello, my angle is " + (angle/Math.PI*180).toFixed(1) },
-                                     "geometry": {
-                                       "type": "Point",
-                                       "coordinates": [
-                                             (24.94 + 0.01*Math.cos(angle)),
-                                             (60.16 +  0.01*Math.sin(angle))
-                                       ]
-                                     }
-                                 }
-                             }
-                             )
+                             QtPositioning.coordinate(60.16 +  0.01*Math.sin(angle), 24.94 + 0.01*Math.cos(angle)),
+                             "hello, my angle is " + (angle/Math.PI*180).toFixed(1));
+
+//            map.updateSource("location",
+//                             {
+//                                 "type": "geojson",
+//                                 "data": {
+//                                     "type": "Feature",
+//                                     "properties": { "name": "hello, my angle is " + (angle/Math.PI*180).toFixed(1) },
+//                                     "geometry": {
+//                                       "type": "Point",
+//                                       "coordinates": [
+//                                             (24.94 + 0.01*Math.cos(angle)),
+//                                             (60.16 +  0.01*Math.sin(angle))
+//                                       ]
+//                                     }
+//                                 }
+//                             }
+//                             )
         }
     }
 
