@@ -397,9 +397,14 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
           StyleNeedsSync | MarginsNeedSync;
       m_block_data_until_loaded = true;
 
+      /////////////////////////////////////////////////////
       /// connect all queries
+
       connect(n, &QSGMapboxGLTextureNode::replySourceExists, this, &QQuickItemMapboxGL::replySourceExists, Qt::QueuedConnection);
       connect(this, &QQuickItemMapboxGL::querySourceExists, n, &QSGMapboxGLTextureNode::querySourceExists, Qt::QueuedConnection);
+
+      connect(n, &QSGMapboxGLTextureNode::replyLayerExists, this, &QQuickItemMapboxGL::replyLayerExists, Qt::QueuedConnection);
+      connect(this, &QQuickItemMapboxGL::queryLayerExists, n, &QSGMapboxGLTextureNode::queryLayerExists, Qt::QueuedConnection);
     }
 
   if (sz != m_last_size || m_syncState & PixelRatioNeedsSync)

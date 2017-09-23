@@ -57,6 +57,8 @@ ApplicationWindow {
             onClicked: {
                 console.log("Clicked")
                 map.querySourceExists("route");
+                map.querySourceExists("route-shouldnt-be-there");
+                map.queryLayerExists("routeCase")
             }
         }
 
@@ -131,8 +133,10 @@ ApplicationWindow {
         Connections {
             target: map
             onReplySourceExists: {
-                console.log("Source: " + sourceID + " " + exists)
+                console.log("Source: " + id + " " + exists)
             }
+
+            onReplyLayerExists: console.log("Layer: " + id + " " + exists)
 
         }
     }

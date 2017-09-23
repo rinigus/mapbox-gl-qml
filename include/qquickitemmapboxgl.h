@@ -152,7 +152,6 @@ public:
   Q_INVOKABLE void removeSource(const QString &sourceID);
 
   Q_INVOKABLE void addLayer(const QString &id, const QVariantMap &params, const QString& before = QString());
-  //Q_INVOKABLE bool layerExists(const QString &id);
   Q_INVOKABLE void removeLayer(const QString &id);
 
   Q_INVOKABLE void addImage(const QString &name, const QImage &sprite);
@@ -191,10 +190,23 @@ signals:
   void cacheDatabasePathChanged(QString);
   void cacheDatabaseMaximalSizeChanged(int);
 
-  ////////////////////////////////////////////////////
-  /// queries
-  void querySourceExists(const QString &sourceID);
-  void replySourceExists(const QString &sourceID, bool exists);
+  ////////////////////////////////////////////////////////
+  /// Queries
+  ///
+  /// Queries are supported AFTER construction of the map.
+  /// As a practical limitation, queries filed during QML
+  /// Component.onCompleted will be not responded to. This
+  /// is due to the implementation limitations.
+  ///
+  /// To use queries, ask it via queryXXXX methods (implemented
+  /// as signals) and get the response via replyXXXX signals.
+  ///
+  void querySourceExists(const QString id);
+  void replySourceExists(const QString id, bool exists);
+
+  void queryLayerExists(const QString id);
+  void replyLayerExists(const QString id, bool exists);
+
 
 public slots:
   void setCenter(const QGeoCoordinate &center);

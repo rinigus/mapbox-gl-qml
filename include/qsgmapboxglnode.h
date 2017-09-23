@@ -65,10 +65,12 @@ public:
     bool render(QQuickWindow *);
 
 public slots:
-    void querySourceExists(const QString &sourceID);
+    void querySourceExists(const QString &id);
+    void queryLayerExists(const QString &id);
 
 signals:
-    void replySourceExists(const QString &sourceID, bool exists);
+    void replySourceExists(const QString id, bool exists);
+    void replyLayerExists(const QString id, bool exists);
 
 private:
     QScopedPointer<QMapboxGL> m_map;

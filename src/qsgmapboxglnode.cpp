@@ -118,9 +118,15 @@ bool QSGMapboxGLTextureNode::render(QQuickWindow *window)
   return loaded;
 }
 
+///////////////////////////////////
 /// queries
+
 void QSGMapboxGLTextureNode::querySourceExists(const QString &sourceID)
 {
-  qDebug() << "REQ: " << sourceID;
   emit replySourceExists(sourceID, m_map->sourceExists(sourceID));
+}
+
+void QSGMapboxGLTextureNode::queryLayerExists(const QString &sourceID)
+{
+  emit replyLayerExists(sourceID, m_map->layerExists(sourceID));
 }
