@@ -382,6 +382,8 @@ void QQuickItemMapboxGL::setPaintPropertyList(const QString &layer, const QStrin
   m_paint_properties.add(layer, property, value);
 }
 
+
+
 /// Update map
 QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData *)
 {
@@ -394,6 +396,10 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       m_syncState = CenterNeedsSync | ZoomNeedsSync | BearingNeedsSync | PitchNeedsSync |
           StyleNeedsSync | MarginsNeedSync;
       m_block_data_until_loaded = true;
+
+      /// connect all queries
+      connect(n, &QSGMapboxGLTextureNode::replySourceExists, this, &QQuickItemMapboxGL::replySourceExists, Qt::QueuedConnection);
+      connect(this, &QQuickItemMapboxGL::querySourceExists, n, &QSGMapboxGLTextureNode::querySourceExists, Qt::QueuedConnection);
     }
 
   if (sz != m_last_size || m_syncState & PixelRatioNeedsSync)

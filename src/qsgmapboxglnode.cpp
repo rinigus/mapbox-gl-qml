@@ -52,7 +52,7 @@ static const QSize minTextureSize = QSize(64, 64);
 
 
 QSGMapboxGLTextureNode::QSGMapboxGLTextureNode(const QMapboxGLSettings &settings, const QSize &size, qreal pixelRatio, QQuickItem *item)
-  : QSGSimpleTextureNode()
+  : QObject(), QSGSimpleTextureNode()
 {
   setTextureCoordinatesTransform(QSGSimpleTextureNode::MirrorVertically);
   setFiltering(QSGTexture::Linear);
@@ -63,6 +63,10 @@ QSGMapboxGLTextureNode::QSGMapboxGLTextureNode(const QMapboxGLSettings &settings
   QObject::connect(m_map.data(), &QMapboxGL::copyrightsChanged, item, &QQuickItem::update);
 
   resize(size, pixelRatio); // to fill and attach fbo
+}
+
+QSGMapboxGLTextureNode::~QSGMapboxGLTextureNode()
+{
 }
 
 void QSGMapboxGLTextureNode::resize(const QSize &size, qreal pixelRatio)
@@ -112,4 +116,11 @@ bool QSGMapboxGLTextureNode::render(QQuickWindow *window)
   markDirty(QSGNode::DirtyMaterial);
 
   return loaded;
+}
+
+/// queries
+void QSGMapboxGLTextureNode::querySourceExists(const QString &sourceID)
+{
+  qDebug() << "REQ: " << sourceID;
+  emit replySourceExists(sourceID, m_map->sourceExists(sourceID));
 }

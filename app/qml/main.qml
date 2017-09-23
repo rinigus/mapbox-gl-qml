@@ -53,6 +53,11 @@ ApplicationWindow {
                 lastX = mouse.x
                 lastY = mouse.y
             }
+
+            onClicked: {
+                console.log("Clicked")
+                map.querySourceExists("route");
+            }
         }
 
         Component.onCompleted: {
@@ -121,6 +126,14 @@ ApplicationWindow {
             map.setPaintProperty("routeCase", "line-width", 20.0);
             var dash = [1,2];
             map.setPaintPropertyList("routeCase", "line-dasharray", dash);
+        }
+
+        Connections {
+            target: map
+            onReplySourceExists: {
+                console.log("Source: " + sourceID + " " + exists)
+            }
+
         }
     }
 

@@ -148,7 +148,6 @@ public:
   /// Map interaction methods
 
   Q_INVOKABLE void addSource(const QString &sourceID, const QVariantMap& params);
-  //Q_INVOKABLE bool sourceExists(const QString &sourceID);
   Q_INVOKABLE void updateSource(const QString &sourceID, const QVariantMap& params);
   Q_INVOKABLE void removeSource(const QString &sourceID);
 
@@ -191,6 +190,11 @@ signals:
   void assetPathChanged(QString);
   void cacheDatabasePathChanged(QString);
   void cacheDatabaseMaximalSizeChanged(int);
+
+  ////////////////////////////////////////////////////
+  /// queries
+  void querySourceExists(const QString &sourceID);
+  void replySourceExists(const QString &sourceID, bool exists);
 
 public slots:
   void setCenter(const QGeoCoordinate &center);

@@ -18,7 +18,7 @@ void SourceList::SourceAction::apply(QMapboxGL *map)
   if (m_asset.params.contains("data"))
     {
       QVariant data_orig = m_asset.params["data"];
-      if (data_orig.type() == QMetaType::QString)
+      if (data_orig.type() == QVariant::String)
         m_asset.params["data"] = data_orig.toString().toUtf8();
     }
 

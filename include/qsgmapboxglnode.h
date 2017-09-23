@@ -51,15 +51,24 @@
 
 #include <QMapboxGL>
 
-class QSGMapboxGLTextureNode : public QSGSimpleTextureNode
+class QSGMapboxGLTextureNode : public QObject, public QSGSimpleTextureNode
 {
+  Q_OBJECT
+
 public:
     QSGMapboxGLTextureNode(const QMapboxGLSettings &, const QSize &, qreal pixelRatio, QQuickItem *item);
+    ~QSGMapboxGLTextureNode();
 
     QMapboxGL* map() const { return m_map.data(); }
 
     void resize(const QSize &size, qreal pixelRatio);
     bool render(QQuickWindow *);
+
+public slots:
+    void querySourceExists(const QString &sourceID);
+
+signals:
+    void replySourceExists(const QString &sourceID, bool exists);
 
 private:
     QScopedPointer<QMapboxGL> m_map;
