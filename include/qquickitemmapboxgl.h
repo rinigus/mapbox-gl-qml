@@ -70,6 +70,9 @@ class QQuickItemMapboxGL : public QQuickItem
   Q_PROPERTY(QString styleJson READ styleJson WRITE setStyleJson)
   Q_PROPERTY(QString styleUrl READ styleUrl WRITE setStyleUrl)
 
+  /// tracks meters per pixel for the map center
+  Q_PROPERTY(qreal metersPerPixel READ metersPerPixel NOTIFY metersPerPixelChanged)
+
   // error
   Q_PROPERTY(QString errorString READ errorString NOTIFY errorChanged)
 
@@ -102,6 +105,8 @@ public:
   qreal zoomLevel() const;
 
   QGeoCoordinate center() const;
+
+  qreal metersPerPixel() const;
 
   QString errorString() const;
 
@@ -208,6 +213,10 @@ signals:
   void replyLayerExists(const QString id, bool exists);
 
 
+  /////////////////////////////////////////////////////////
+  /// Tracking the state of the map
+  void metersPerPixelChanged(qreal metersPerPixel);
+
 public slots:
   void setCenter(const QGeoCoordinate &center);
 
@@ -229,9 +238,11 @@ private:
   QPointF m_pan;
 
   QGeoCoordinate m_center;
+  double m_metersPerPixel = -1;
+
   qreal m_bearing = 0;
   qreal m_pitch = 0;
-  QMarginsF m_margins;
+  QMarginsF m_margins;  
 
   QString m_errorString;
 

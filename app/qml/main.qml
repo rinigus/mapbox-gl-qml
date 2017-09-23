@@ -55,10 +55,10 @@ ApplicationWindow {
             }
 
             onClicked: {
-                console.log("Clicked")
-                map.querySourceExists("route");
-                map.querySourceExists("route-shouldnt-be-there");
-                map.queryLayerExists("routeCase")
+//                console.log("Clicked")
+//                map.querySourceExists("route");
+//                map.querySourceExists("route-shouldnt-be-there");
+//                map.queryLayerExists("routeCase");
             }
         }
 
@@ -180,4 +180,10 @@ ApplicationWindow {
         }
     }
 
+    Label {
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.margins: 10
+        text: "Scale: %0 m/pixel".arg(map.metersPerPixel.toFixed(2))
+    }
 }

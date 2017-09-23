@@ -236,6 +236,11 @@ void QQuickItemMapboxGL::pan(int dx, int dy)
   update();
 }
 
+qreal QQuickItemMapboxGL::metersPerPixel() const
+{
+  return m_metersPerPixel;
+}
+
 qreal QQuickItemMapboxGL::bearing() const
 {
   return m_bearing;
@@ -496,6 +501,18 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       m_block_data_until_loaded = false;
       update();
     }
+
+  // check the variables that are tracked on the map
+
+  const double tol = 1e-6; // tolerance used when comparing floating point numbers
+  { // metersPerPixel
+    qreal meters = map->metersPerPixelAtLatitude( map->coordinate().first, map->zoom() );
+    if ( fabs(meters - metersPerPixel()) > tol )
+      {
+        m_metersPerPixel = meters;
+        emit metersPerPixelChanged(meters);
+      }
+  }
 
   if (!loaded && !m_timer.isActive())
     emit startRefreshTimer();
