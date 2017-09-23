@@ -132,19 +132,20 @@ ApplicationWindow {
             map.setPaintPropertyList("route", "line-dasharray", [1,2]);
 
             /// Location support
-            map.addSource("location", {"type": "geojson", "data":
-                              '{
+            map.addSource("location",
+                          {"type": "geojson",
+                              "data": {
                                   "type": "Feature",
-                                  "properties": {"name": "My location"},
+                                  "properties": { "name": "location" },
                                   "geometry": {
                                     "type": "Point",
                                     "coordinates": [
-                                      24.94,
-                                      60.16
+                                          (24.94),
+                                          (60.16)
                                     ]
                                   }
-                                }'
-                          } )
+                              }
+                          })
 
             map.addLayer("location-uncertainty", {"type": "circle", "source": "location"}, "waterway-label")
             map.setPaintProperty("location-uncertainty", "circle-radius", 20)
@@ -288,19 +289,22 @@ ApplicationWindow {
             if (angle > Math.PI*2)
                 angle -= Math.PI*2
 
-            map.updateSource("location", {"type": "geojson", "data":
-                                 '{
-                                  "type": "Feature",
-                                  "properties": {"name": "hello, my angle is ' + (angle/Math.PI*180).toFixed(1) + '"},
-                                  "geometry": {
-                                    "type": "Point",
-                                    "coordinates": [' +
-                                 (24.94 + 0.01*Math.cos(angle)) + ', ' +
-                                 (60.16 +  0.01*Math.sin(angle)) + '
-                                    ]
-                                  }
-                                }'
-                              } )
+            map.updateSource("location",
+                             {
+                                 "type": "geojson",
+                                 "data": {
+                                     "type": "Feature",
+                                     "properties": { "name": "hello, my angle is " + (angle/Math.PI*180).toFixed(1) },
+                                     "geometry": {
+                                       "type": "Point",
+                                       "coordinates": [
+                                             (24.94 + 0.01*Math.cos(angle)),
+                                             (60.16 +  0.01*Math.sin(angle))
+                                       ]
+                                     }
+                                 }
+                             }
+                             )
         }
     }
 
