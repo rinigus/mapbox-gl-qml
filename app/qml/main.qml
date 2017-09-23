@@ -38,7 +38,6 @@ ApplicationWindow {
             property var lastY: 0
 
             onWheel: {
-                //map.zoomLevel += 0.2 * wheel.angleDelta.y / 120
                 map.setZoomLevel( map.zoomLevel + 0.2 * wheel.angleDelta.y / 120, Qt.point(wheel.x, wheel.y) )
             }
 

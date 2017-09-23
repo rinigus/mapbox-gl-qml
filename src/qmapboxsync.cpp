@@ -27,10 +27,14 @@ void SourceList::SourceAction::apply(QMapboxGL *map)
     }
 
   // apply
-  if (type() == Add)
-    map->addSource(m_asset.id, m_asset.params);
-  else if (type() == Update)
-    map->updateSource(m_asset.id, m_asset.params);
+  if (type() == Add || type() == Update)
+   {
+      // we can always use update since it will be added if needed.
+      // however, using update avoids race conditions where add is called
+      // after update. such race condition can happen if QML objects are
+      // created in non-expected order, for example
+      map->updateSource(m_asset.id, m_asset.params);
+    }
   else if (type() == Remove)
     map->removeSource(m_asset.id);
   else
