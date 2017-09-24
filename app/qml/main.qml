@@ -171,6 +171,26 @@ ApplicationWindow {
             map.setPaintProperty("location-label", "text-halo-color", "white")
             map.setPaintProperty("location-label", "text-halo-width", 2)
 
+            /// multipoint source
+            var points = [
+                        QtPositioning.coordinate(60.16, 24.94),
+                        QtPositioning.coordinate(60.17, 24.95),
+                        QtPositioning.coordinate(60.18, 24.96)
+                    ]
+            var names = [ "P1", "P2", "P3" ]
+            map.addSourcePoints("points", points, names)
+
+            map.addLayer("points", {"type": "circle", "source": "points"}, "waterway-label")
+            map.setPaintProperty("points", "circle-radius", 20)
+            map.setPaintProperty("points", "circle-color", "red")
+
+            map.addLayer("points-label", {"type": "symbol", "source": "points"})
+            map.setLayoutProperty("points-label", "text-field", "{name}")
+            map.setLayoutProperty("points-label", "text-justify", "left")
+            map.setLayoutProperty("points-label", "text-anchor", "top-left")
+            map.setLayoutPropertyList("points-label", "text-offset", [0.2, 0.2])
+            map.setPaintProperty("points-label", "text-halo-color", "green")
+            map.setPaintProperty("points-label", "text-halo-width", 2)
         }
 
         Connections {
@@ -183,6 +203,7 @@ ApplicationWindow {
 
             onReplyCoordinateForPixel: console.log("Coordinate: " + pixel + " " + geocoordinate)
 
+            onErrorChanged: console.log("Error message: " + error)
         }
     }
 
@@ -305,7 +326,7 @@ ApplicationWindow {
         interval: 3000
         running: true
         onTriggered: {
-            map.styleUrl = "mapbox://styles/mapbox/satellite-streets-v10"
+            map.styleUrl = "mapbox://styles/mapbox/traffic-night-v2"
         }
     }
 }

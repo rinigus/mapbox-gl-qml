@@ -152,6 +152,12 @@ QString QQuickItemMapboxGL::errorString() const
   return m_errorString;
 }
 
+void QQuickItemMapboxGL::setError(QString error)
+{
+  m_errorString = error;
+  emit errorChanged(error);
+}
+
 /// Zoom properties
 void QQuickItemMapboxGL::setMinimumZoomLevel(qreal zoom)
 {
@@ -347,6 +353,11 @@ void QQuickItemMapboxGL::addSourcePoint(const QString &sourceID, qreal latitude,
   updateSourcePoint(sourceID, latitude, longitude, name);
 }
 
+void QQuickItemMapboxGL::addSourcePoints(const QString &sourceID, const QVariantList &coordinates, const QVariantList &names)
+{
+  updateSourcePoints(sourceID, coordinates, names);
+}
+
 void QQuickItemMapboxGL::updateSource(const QString &sourceID, const QVariantMap &params)
 {
   m_sources.update(sourceID, params); DATA_UPDATE;
@@ -357,18 +368,54 @@ void QQuickItemMapboxGL::updateSourcePoint(const QString &sourceID, const QGeoCo
   updateSourcePoint(sourceID, coordinate.latitude(), coordinate.longitude(), name);
 }
 
-void QQuickItemMapboxGL::updateSourcePoint(const QString &sourceID, qreal latitude, qreal longitude, const QString &name)
+static QVariantMap pointJson(qreal latitude, qreal longitude, const QString &name)
 {
   QVariantList coordinates({longitude, latitude});
   QVariantMap geometry({{"type", "Point"}, {"coordinates", coordinates}});
-  QVariantMap properties({{"name", name}});
   QVariantMap data({
                      {"type", "Feature"},
-                     {"properties", properties},
                      {"geometry", geometry}
                    });
-  QVariantMap params({{"type", "geojson"}, {"data", data}});
+  QVariantMap properties;
+  if (!name.isEmpty())
+    properties.insert("name", name);
+  data.insert("properties", properties);
+  return data;
+}
 
+void QQuickItemMapboxGL::updateSourcePoint(const QString &sourceID, qreal latitude, qreal longitude, const QString &name)
+{
+  QVariantMap params({{"type", "geojson"}, {"data", pointJson(latitude, longitude, name)}});
+  updateSource(sourceID, params);
+}
+
+void QQuickItemMapboxGL::updateSourcePoints(const QString &sourceID, const QVariantList &coordinates, const QVariantList &names)
+{
+  QVariantMap feature_collection({{"type", "FeatureCollection"}});
+  QVariantList points;
+
+  for (int i = 0; i < coordinates.size(); ++i)
+    {
+      QGeoCoordinate c = coordinates[i].value<QGeoCoordinate>();
+      if (c.isValid())
+        {
+          QString name;
+          if (i < names.size() && names[i].type() == QVariant::String)
+            name = names[i].toString();
+
+          points.append(pointJson(c.latitude(), c.longitude(), name));
+        }
+      else
+        {
+          QString err = QString("Illegal point coordinates when read as QGeoCoordinate, point %1").arg(i);
+          setError(err);
+          qWarning() << err;
+          return;
+        }
+    }
+
+  feature_collection.insert("features", points);
+  QVariantMap params({{"type", "geojson"}, {"data", feature_collection}});
   updateSource(sourceID, params);
 }
 
