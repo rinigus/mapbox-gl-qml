@@ -55,6 +55,15 @@
 
 #include "qmapboxsync_p.h"
 
+///////////////////////////////////////////////////////////////////////////////////
+/// \brief The QQuickItemMapboxGL class
+///
+/// Interface with QMapboxGL for QML.
+///
+/// Note that there is a difference in the order of coordinates when using GeoJSON and
+/// Qt native representation. Here, the methods accepting coordinates as explicit arguments,
+/// such as updateSourcePoint, use the same order as in Qt.
+
 class QQuickItemMapboxGL : public QQuickItem
 {
   Q_OBJECT
