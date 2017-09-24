@@ -59,6 +59,10 @@ ApplicationWindow {
                 //                map.querySourceExists("route-shouldnt-be-there");
                 //                map.queryLayerExists("routeCase");
             }
+
+            onDoubleClicked: {
+                map.queryCoordinateForPixel(Qt.point(mouse.x, mouse.y))
+            }
         }
 
         Component.onCompleted: {
@@ -177,6 +181,8 @@ ApplicationWindow {
 
             onReplyLayerExists: console.log("Layer: " + id + " " + exists)
 
+            onReplyCoordinateForPixel: console.log("Coordinate: " + pixel + " " + geocoordinate)
+
         }
     }
 
@@ -280,17 +286,18 @@ ApplicationWindow {
     Timer {
         property double angle: 0.0
 
-        interval: 25
+        interval: 10
         running: true
         repeat: true
         onTriggered: {
-            angle += 1.0 / 180. * Math.PI
+            angle += 0.25 / 180. * Math.PI
             if (angle > Math.PI*2)
                 angle -= Math.PI*2
 
             map.updateSourcePoint("location",
                                   QtPositioning.coordinate(60.16 +  0.01*Math.sin(angle), 24.94 + 0.01*Math.cos(angle)),
                                   "hello, my angle is " + (angle/Math.PI*180).toFixed(1));
+            //map.center = QtPositioning.coordinate(60.16 +  0.01*Math.sin(angle), 24.94 + 0.01*Math.cos(angle))
         }
     }
 

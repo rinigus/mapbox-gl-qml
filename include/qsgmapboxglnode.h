@@ -47,7 +47,7 @@
 #include <QtQuick/QSGSimpleTextureNode>
 #include <QtGui/QOpenGLFramebufferObject>
 #include <QQuickItem>
-#include <QTimer>
+#include <QGeoCoordinate>
 
 #include <QMapboxGL>
 
@@ -67,10 +67,12 @@ public:
 public slots:
     void querySourceExists(const QString &id);
     void queryLayerExists(const QString &id);
+    void queryCoordinateForPixel(const QPointF p);
 
 signals:
     void replySourceExists(const QString id, bool exists);
     void replyLayerExists(const QString id, bool exists);
+    void replyCoordinateForPixel(const QPointF p, QGeoCoordinate geo);
 
 private:
     QScopedPointer<QMapboxGL> m_map;

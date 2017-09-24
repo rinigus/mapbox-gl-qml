@@ -440,6 +440,9 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
       connect(n, &QSGMapboxGLTextureNode::replyLayerExists, this, &QQuickItemMapboxGL::replyLayerExists, Qt::QueuedConnection);
       connect(this, &QQuickItemMapboxGL::queryLayerExists, n, &QSGMapboxGLTextureNode::queryLayerExists, Qt::QueuedConnection);
+
+      connect(n, &QSGMapboxGLTextureNode::replyCoordinateForPixel, this, &QQuickItemMapboxGL::replyCoordinateForPixel, Qt::QueuedConnection);
+      connect(this, &QQuickItemMapboxGL::queryCoordinateForPixel, n, &QSGMapboxGLTextureNode::queryCoordinateForPixel, Qt::QueuedConnection);
     }
 
   if (sz != m_last_size || m_syncState & PixelRatioNeedsSync)

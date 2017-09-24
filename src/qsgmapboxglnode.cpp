@@ -130,3 +130,10 @@ void QSGMapboxGLTextureNode::queryLayerExists(const QString &sourceID)
 {
   emit replyLayerExists(sourceID, m_map->layerExists(sourceID));
 }
+
+void QSGMapboxGLTextureNode::queryCoordinateForPixel(const QPointF p)
+{
+  QMapbox::Coordinate mbc = m_map->coordinateForPixel(p);
+  QGeoCoordinate coor(mbc.first, mbc.second);
+  emit replyCoordinateForPixel(p, coor);
+}
