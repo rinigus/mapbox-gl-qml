@@ -301,6 +301,9 @@ void QQuickItemMapboxGL::setStyleJson(const QString &json)
   m_styleJson = json;
   m_styleUrl = QString();
   m_syncState |= StyleNeedsSync;
+  m_syncState |= DataNeedsSetupSync;
+  m_syncState |= DataNeedsSync;
+  m_block_data_until_loaded = true;
   update();
   emit styleJsonChanged(json);
   emit styleUrlChanged(QString());
@@ -316,6 +319,9 @@ void QQuickItemMapboxGL::setStyleUrl(const QString &url)
   m_styleJson = QString();
   m_styleUrl = url;
   m_syncState |= StyleNeedsSync;
+  m_syncState |= DataNeedsSetupSync;
+  m_syncState |= DataNeedsSync;
+  m_block_data_until_loaded = true;
   update();
   emit styleJsonChanged(QString());
   emit styleUrlChanged(url);

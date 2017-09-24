@@ -157,7 +157,7 @@ void LayerList::setup(QMapboxGL *map)
 {
   for (Asset &asset: m_assets)
     {
-      LayerAction action(Action::Add, asset.id, asset.params);
+      LayerAction action(Action::Add, asset.id, asset.params, asset.before);
       action.apply(map);
     }
 }

@@ -28,7 +28,7 @@ ApplicationWindow {
         cacheDatabaseMaximalSize: 20*1024*1024
         cacheDatabasePath: "/tmp/mbgl-cache.db"
 
-        styleUrl: "mapbox://styles/mapbox/streets-v10"
+        styleUrl: "mapbox://styles/mapbox/outdoors-v10" //"mapbox://styles/mapbox/streets-v10"
 
         MouseArea {
             id: mouseArea
@@ -67,13 +67,13 @@ ApplicationWindow {
 
         Component.onCompleted: {
 
-            //            // List default styles
-            //            var styles = map.defaultStyles()
-            //            for (var i=0; i<styles.length; i++)
-            //            {
-            //                var o = styles[i];
-            //                console.log(o["name"] + " -> " + o["url"])
-            //            }
+            // List default styles
+            var styles = map.defaultStyles()
+            for (var i=0; i<styles.length; i++)
+            {
+                var o = styles[i];
+                console.log(o["name"] + " -> " + o["url"])
+            }
 
             // map.setMargins(0, 0.5, 0, 0);
 
@@ -301,4 +301,11 @@ ApplicationWindow {
         }
     }
 
+    Timer {
+        interval: 3000
+        running: true
+        onTriggered: {
+            map.styleUrl = "mapbox://styles/mapbox/satellite-streets-v10"
+        }
+    }
 }
