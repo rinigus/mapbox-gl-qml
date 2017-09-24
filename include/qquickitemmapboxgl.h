@@ -166,14 +166,20 @@ public:
   /// \brief Add source consisting of a single point coordinate
   Q_INVOKABLE void addSourcePoint(const QString &sourceID, const QGeoCoordinate &coordinate, const QString &name = QString());
   Q_INVOKABLE void addSourcePoint(const QString &sourceID, qreal latitude, qreal longitude, const QString &name = QString());
+
+  /// in addSourcePoints and addSourceLine, coordinates are given as a list of QGeoCoordinate
   Q_INVOKABLE void addSourcePoints(const QString &sourceID, const QVariantList &coordinates, const QVariantList &names = QVariantList());
+  Q_INVOKABLE void addSourceLine(const QString &sourceID, const QVariantList &coordinates, const QString &name = QString());
 
   Q_INVOKABLE void updateSource(const QString &sourceID, const QVariantMap& params);
 
   /// \brief Update source consisting of a single point coordinate
   Q_INVOKABLE void updateSourcePoint(const QString &sourceID, const QGeoCoordinate &coordinate, const QString &name = QString());
   Q_INVOKABLE void updateSourcePoint(const QString &sourceID, qreal latitude, qreal longitude, const QString &name = QString());
+
+  /// in updateSourcePoints and updateSourceLine, coordinates are given as a list of QGeoCoordinate
   Q_INVOKABLE void updateSourcePoints(const QString &sourceID, const QVariantList &coordinates, const QVariantList &names = QVariantList());
+  Q_INVOKABLE void updateSourceLine(const QString &sourceID, const QVariantList &coordinates, const QString &name = QString());
 
   Q_INVOKABLE void removeSource(const QString &sourceID);
 

@@ -47,6 +47,7 @@
 #include <mbgl/util/constants.hpp>
 
 #include <QVariantMap>
+#include <QJsonDocument>
 
 #include <math.h>
 
@@ -358,6 +359,11 @@ void QQuickItemMapboxGL::addSourcePoints(const QString &sourceID, const QVariant
   updateSourcePoints(sourceID, coordinates, names);
 }
 
+void QQuickItemMapboxGL::addSourceLine(const QString &sourceID, const QVariantList &coordinates, const QString &name)
+{
+  updateSourceLine(sourceID, coordinates, name);
+}
+
 void QQuickItemMapboxGL::updateSource(const QString &sourceID, const QVariantMap &params)
 {
   m_sources.update(sourceID, params); DATA_UPDATE;
@@ -416,6 +422,38 @@ void QQuickItemMapboxGL::updateSourcePoints(const QString &sourceID, const QVari
 
   feature_collection.insert("features", points);
   QVariantMap params({{"type", "geojson"}, {"data", feature_collection}});
+  updateSource(sourceID, params);
+}
+
+void QQuickItemMapboxGL::updateSourceLine(const QString &sourceID, const QVariantList &coordinates, const QString &name)
+{
+  QVariantList coor;
+
+  for (int i = 0; i < coordinates.size(); ++i)
+    {
+      QGeoCoordinate c = coordinates[i].value<QGeoCoordinate>();
+      if (c.isValid())
+        coor.push_back( QVariantList({c.longitude(), c.latitude()}) );
+      else
+        {
+          QString err = QString("Illegal point coordinates when read as QGeoCoordinate, line point %1").arg(i);
+          setError(err);
+          qWarning() << err;
+          return;
+        }
+    }
+
+  QVariantMap geometry({{"type", "LineString"}, {"coordinates", coor}});
+  QVariantMap properties;
+  if (!name.isEmpty())
+    properties.insert("name", name);
+  QVariantMap data({
+                     {"type", "Feature"},
+                     {"properties", properties},
+                     {"geometry", geometry}
+                   });
+
+  QVariantMap params({{"type", "geojson"}, {"data", data}});
   updateSource(sourceID, params);
 }
 

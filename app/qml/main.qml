@@ -191,6 +191,20 @@ ApplicationWindow {
             map.setLayoutPropertyList("points-label", "text-offset", [0.2, 0.2])
             map.setPaintProperty("points-label", "text-halo-color", "green")
             map.setPaintProperty("points-label", "text-halo-width", 2)
+
+            /// road as line source
+            var line = [
+                        QtPositioning.coordinate(60.16, 24.94),
+                        QtPositioning.coordinate(60.17, 24.93),
+                        QtPositioning.coordinate(60.17, 24.92)
+                    ]
+            map.addSourceLine("linesrc", line, "Line")
+
+            map.addLayer("line", { "type": "line", "source": "linesrc" })
+            map.setLayoutProperty("line", "line-join", "round");
+            map.setLayoutProperty("line", "line-cap", "round");
+            map.setPaintProperty("line", "line-color", "green");
+            map.setPaintProperty("line", "line-width", 10.0);
         }
 
         Connections {
