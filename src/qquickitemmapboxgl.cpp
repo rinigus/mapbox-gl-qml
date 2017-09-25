@@ -509,6 +509,55 @@ void QQuickItemMapboxGL::setPaintPropertyList(const QString &layer, const QStrin
 }
 
 
+/// Location tracking
+QQuickItemMapboxGL::LocationTraker::LocationTraker(const QGeoCoordinate &location):
+  m_location(location), m_last_visible(false)
+{
+}
+
+bool QQuickItemMapboxGL::LocationTraker::set_position(const QPoint &p, const QSize &sz)
+{
+  bool visible = (p.x() >= 0 && p.y() >= 0 && p.x() <= sz.width() && p.y() <= sz.height());
+
+  //qDebug() << p << " " << sz << " " << visible;
+
+  if (!visible && !m_last_visible)
+    {
+      // non-visible location - no need to update pixel position
+      return false;
+    }
+
+  bool ret = false;
+  if (p != m_last_position)
+    {
+      m_last_position = p;
+      ret = true;
+    }
+
+  if (visible != m_last_visible)
+    {
+      m_last_visible = visible;
+      ret = true;
+    }
+
+  return ret;
+}
+
+void QQuickItemMapboxGL::trackLocation(const QString &id, const QGeoCoordinate &location)
+{
+  m_location_tracker[id] = LocationTraker(location);
+}
+
+void QQuickItemMapboxGL::removeLocationTracking(const QString &id)
+{
+  m_location_tracker.remove(id);
+}
+
+void QQuickItemMapboxGL::removeAllLocationTracking()
+{
+  m_location_tracker.clear();
+}
+
 
 /// Update map
 QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData *)
@@ -638,6 +687,17 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       }
   }
 
+  for ( QHash<QString, LocationTraker>::iterator i = m_location_tracker.begin();
+        i != m_location_tracker.end(); ++i)
+    {
+      LocationTraker& tracker = i.value();
+      QPointF pf = m_pixelRatio * map->pixelForCoordinate({tracker.coordinate().latitude(), tracker.coordinate().longitude()});
+      QPoint p(pf.x(), pf.y());
+      if (tracker.set_position(p, sz))
+        emit locationChanged(i.key(), tracker.visible(), tracker.position());
+    }
+
+  // check if timer is needed
   if (!loaded && !m_timer.isActive())
     emit startRefreshTimer();
   else if (loaded && m_timer.isActive())

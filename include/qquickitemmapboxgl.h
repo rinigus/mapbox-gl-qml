@@ -47,8 +47,10 @@
 #include <QQuickItem>
 #include <QTimer>
 #include <QPointF>
+#include <QPoint>
 #include <QMarginsF>
 #include <QVariantList>
+#include <QHash>
 
 #include <QMapboxGL>
 #include <QGeoCoordinate>
@@ -194,6 +196,12 @@ public:
   Q_INVOKABLE void setPaintProperty(const QString &layer, const QString &property, const QVariant &value);
   Q_INVOKABLE void setPaintPropertyList(const QString &layer, const QString &property, const QVariantList &value);
 
+  /// Track locations
+
+  Q_INVOKABLE void trackLocation(const QString &id, const QGeoCoordinate &location);
+  Q_INVOKABLE void removeLocationTracking(const QString &id);
+  Q_INVOKABLE void removeAllLocationTracking();
+
   /// \brief List of default Mapbox styles returned as JSON array
   ///
   Q_INVOKABLE QVariantList defaultStyles() const;
@@ -221,6 +229,8 @@ signals:
   void assetPathChanged(QString);
   void cacheDatabasePathChanged(QString);
   void cacheDatabaseMaximalSizeChanged(int);
+
+  void locationChanged(QString id, bool visible, const QPoint pixel);
 
   ////////////////////////////////////////////////////////
   /// Queries
@@ -256,6 +266,26 @@ private:
   void setError(QString error);
 
 private:
+
+  /// \brief Private class to track locations
+  class LocationTraker {
+  public:
+    LocationTraker() {}
+    LocationTraker(const QGeoCoordinate &location);
+
+    bool set_position(const QPoint &p, const QSize &sz);
+
+    const QGeoCoordinate& coordinate() const { return m_location; }
+    bool visible() const { return m_last_visible; }
+    const QPoint& position() const { return m_last_position; }
+
+  protected:
+    QGeoCoordinate m_location;
+    bool m_last_visible;
+    QPoint m_last_position;
+  };
+
+private:
   QMapboxGLSettings m_settings;
 
   QSize m_last_size; ///< Size of the item
@@ -280,6 +310,8 @@ private:
   qreal m_pixelRatio;
   QString m_styleUrl;
   QString m_styleJson;
+
+  QHash<QString, LocationTraker> m_location_tracker;
 
   bool m_block_data_until_loaded{true}; ///< Blocks loading of additional data until base map is loaded
   QMapboxSync::SourceList m_sources;

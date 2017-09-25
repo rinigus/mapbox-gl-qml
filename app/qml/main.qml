@@ -19,7 +19,7 @@ ApplicationWindow {
         zoomLevel: 12.25
         minimumZoomLevel: 0
         maximumZoomLevel: 20
-        pixelRatio: 1.5
+        pixelRatio: 2.0
 
         bearing: bearingSlider.value
         pitch: pitchSlider.value
@@ -205,6 +205,9 @@ ApplicationWindow {
             map.setLayoutProperty("line", "line-cap", "round");
             map.setPaintProperty("line", "line-color", "green");
             map.setPaintProperty("line", "line-width", 10.0);
+
+            /// track location
+            map.trackLocation("track-1", QtPositioning.coordinate(60.16, 24.94));
         }
 
         Connections {
@@ -215,9 +218,32 @@ ApplicationWindow {
 
             onReplyLayerExists: console.log("Layer: " + id + " " + exists)
 
-            onReplyCoordinateForPixel: console.log("Coordinate: " + pixel + " " + geocoordinate)
+            onReplyCoordinateForPixel: console.log("Coordinate: " + pixel + " " + geocoordinate.latitude + " " + geocoordinate.longitude)
 
             onErrorChanged: console.log("Error message: " + error)
+
+            //onLocationChanged: console.log("Location: " + id + " " + visible + " " + pixel)
+        }
+    }
+
+    Rectangle {
+        id: tracker
+        width: 50
+        height: 50
+        x: 0
+        y: 0
+        color: "black"
+
+        Connections {
+            target: map
+            onLocationChanged:
+            {
+                if (id !== "track-1") return;
+
+                tracker.x = pixel.x
+                tracker.y = pixel.y
+                tracker.visible = visible
+            }
         }
     }
 
@@ -336,11 +362,11 @@ ApplicationWindow {
         }
     }
 
-    Timer {
-        interval: 3000
-        running: true
-        onTriggered: {
-            map.styleUrl = "mapbox://styles/mapbox/traffic-night-v2"
-        }
-    }
+//    Timer {
+//        interval: 3000
+//        running: true
+//        onTriggered: {
+//            map.styleUrl = "mapbox://styles/mapbox/traffic-night-v2"
+//        }
+//    }
 }
