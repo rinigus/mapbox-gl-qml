@@ -52,7 +52,7 @@ static const QSize minTextureSize = QSize(64, 64);
 
 
 QSGMapboxGLTextureNode::QSGMapboxGLTextureNode(const QMapboxGLSettings &settings, const QSize &size, qreal pixelRatio, QQuickItem *item)
-  : QObject(), QSGSimpleTextureNode()
+  : QObject(), QSGSimpleTextureNode(), m_pixel_ratio(pixelRatio)
 {
   setTextureCoordinatesTransform(QSGSimpleTextureNode::MirrorVertically);
   setFiltering(QSGTexture::Linear);
@@ -71,9 +71,10 @@ QSGMapboxGLTextureNode::~QSGMapboxGLTextureNode()
 
 void QSGMapboxGLTextureNode::resize(const QSize &size, qreal pixelRatio)
 {
-
   const QSize& minSize = size.expandedTo(minTextureSize);
   const QSize fbSize = minSize;
+
+  m_pixel_ratio = pixelRatio;
   m_map->resize(minSize / pixelRatio, fbSize);
 
   m_fbo.reset(new QOpenGLFramebufferObject(fbSize, QOpenGLFramebufferObject::CombinedDepthStencil));
@@ -131,8 +132,9 @@ void QSGMapboxGLTextureNode::queryLayerExists(const QString &sourceID)
   emit replyLayerExists(sourceID, m_map->layerExists(sourceID));
 }
 
-void QSGMapboxGLTextureNode::queryCoordinateForPixel(const QPointF p)
+void QSGMapboxGLTextureNode::queryCoordinateForPixel(QPointF p)
 {
+  p /=  m_pixel_ratio;
   QMapbox::Coordinate mbc = m_map->coordinateForPixel(p);
   QGeoCoordinate coor(mbc.first, mbc.second);
   emit replyCoordinateForPixel(p, coor);

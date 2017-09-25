@@ -67,7 +67,7 @@ public:
 public slots:
     void querySourceExists(const QString &id);
     void queryLayerExists(const QString &id);
-    void queryCoordinateForPixel(const QPointF p);
+    void queryCoordinateForPixel(QPointF p);
 
 signals:
     void replySourceExists(const QString id, bool exists);
@@ -77,6 +77,7 @@ signals:
 private:
     QScopedPointer<QMapboxGL> m_map;
     QScopedPointer<QOpenGLFramebufferObject> m_fbo;
+    qreal m_pixel_ratio;
 };
 
 #endif // QSGMAPBOXGLNODE_H
