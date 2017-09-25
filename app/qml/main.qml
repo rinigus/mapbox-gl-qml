@@ -5,7 +5,11 @@ import QtPositioning 5.3
 
 import QQuickItemMapboxGL 1.0
 
+import "."
+
 ApplicationWindow {
+    id: appWindow
+
     title: "Mapbox GL QML example"
     width: 1024
     height: 768
@@ -218,32 +222,19 @@ ApplicationWindow {
 
             onReplyLayerExists: console.log("Layer: " + id + " " + exists)
 
-            onReplyCoordinateForPixel: console.log("Coordinate: " + pixel + " " + geocoordinate.latitude + " " + geocoordinate.longitude)
+            onReplyCoordinateForPixel: {
+                console.log("Coordinate: " + pixel + " " + geocoordinate.latitude + " " + geocoordinate.longitude)
+
+                var tname = "track-" + geocoordinate
+                map.trackLocation(tname, geocoordinate);
+                var component = Qt.createComponent("location.qml")
+                //console.log(component.status + " " + component.errorString())
+                component.createObject(appWindow, {"trackname": tname})
+            }
 
             onErrorChanged: console.log("Error message: " + error)
 
-            //onLocationChanged: console.log("Location: " + id + " " + visible + " " + pixel)
-        }
-    }
-
-    Rectangle {
-        id: tracker
-        width: 50
-        height: 50
-        x: 0
-        y: 0
-        color: "black"
-
-        Connections {
-            target: map
-            onLocationChanged:
-            {
-                if (id !== "track-1") return;
-
-                tracker.x = pixel.x
-                tracker.y = pixel.y
-                tracker.visible = visible
-            }
+            onLocationChanged: console.log("Location: " + id + " " + visible + " " + pixel)
         }
     }
 

@@ -231,6 +231,7 @@ signals:
   void cacheDatabaseMaximalSizeChanged(int);
 
   void locationChanged(QString id, bool visible, const QPoint pixel);
+  void locationTrackingRemoved(QString id);
 
   ////////////////////////////////////////////////////////
   /// Queries
@@ -268,10 +269,10 @@ private:
 private:
 
   /// \brief Private class to track locations
-  class LocationTraker {
+  class LocationTracker {
   public:
-    LocationTraker() {}
-    LocationTraker(const QGeoCoordinate &location);
+    LocationTracker() {}
+    LocationTracker(const QGeoCoordinate &location);
 
     bool set_position(const QPoint &p, const QSize &sz);
 
@@ -311,7 +312,7 @@ private:
   QString m_styleUrl;
   QString m_styleJson;
 
-  QHash<QString, LocationTraker> m_location_tracker;
+  QHash<QString, LocationTracker> m_location_tracker;
 
   bool m_block_data_until_loaded{true}; ///< Blocks loading of additional data until base map is loaded
   QMapboxSync::SourceList m_sources;

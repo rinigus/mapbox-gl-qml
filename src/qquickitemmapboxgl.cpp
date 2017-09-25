@@ -510,16 +510,14 @@ void QQuickItemMapboxGL::setPaintPropertyList(const QString &layer, const QStrin
 
 
 /// Location tracking
-QQuickItemMapboxGL::LocationTraker::LocationTraker(const QGeoCoordinate &location):
+QQuickItemMapboxGL::LocationTracker::LocationTracker(const QGeoCoordinate &location):
   m_location(location), m_last_visible(false)
 {
 }
 
-bool QQuickItemMapboxGL::LocationTraker::set_position(const QPoint &p, const QSize &sz)
+bool QQuickItemMapboxGL::LocationTracker::set_position(const QPoint &p, const QSize &sz)
 {
   bool visible = (p.x() >= 0 && p.y() >= 0 && p.x() <= sz.width() && p.y() <= sz.height());
-
-  //qDebug() << p << " " << sz << " " << visible;
 
   if (!visible && !m_last_visible)
     {
@@ -545,12 +543,13 @@ bool QQuickItemMapboxGL::LocationTraker::set_position(const QPoint &p, const QSi
 
 void QQuickItemMapboxGL::trackLocation(const QString &id, const QGeoCoordinate &location)
 {
-  m_location_tracker[id] = LocationTraker(location);
+  m_location_tracker[id] = LocationTracker(location);
 }
 
 void QQuickItemMapboxGL::removeLocationTracking(const QString &id)
 {
-  m_location_tracker.remove(id);
+  if (m_location_tracker.remove(id) > 0)
+    emit locationTrackingRemoved(id);
 }
 
 void QQuickItemMapboxGL::removeAllLocationTracking()
@@ -687,10 +686,10 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       }
   }
 
-  for ( QHash<QString, LocationTraker>::iterator i = m_location_tracker.begin();
+  for ( QHash<QString, LocationTracker>::iterator i = m_location_tracker.begin();
         i != m_location_tracker.end(); ++i)
     {
-      LocationTraker& tracker = i.value();
+      LocationTracker& tracker = i.value();
       QPointF pf = m_pixelRatio * map->pixelForCoordinate({tracker.coordinate().latitude(), tracker.coordinate().longitude()});
       QPoint p(pf.x(), pf.y());
       if (tracker.set_position(p, sz))
