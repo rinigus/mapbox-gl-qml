@@ -67,12 +67,12 @@ public:
 public slots:
     void querySourceExists(const QString &id);
     void queryLayerExists(const QString &id);
-    void queryCoordinateForPixel(QPointF p);
+    void queryCoordinateForPixel(QPointF p, const QVariant &tag);
 
 signals:
     void replySourceExists(const QString id, bool exists);
     void replyLayerExists(const QString id, bool exists);
-    void replyCoordinateForPixel(const QPointF p, QGeoCoordinate geo);
+    void replyCoordinateForPixel(const QPointF p, QGeoCoordinate geo, const QVariant &tag);
 
 private:
     QScopedPointer<QMapboxGL> m_map;

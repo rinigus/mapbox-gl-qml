@@ -250,8 +250,8 @@ signals:
   void queryLayerExists(const QString id);
   void replyLayerExists(const QString id, bool exists);
 
-  void queryCoordinateForPixel(const QPointF p);
-  void replyCoordinateForPixel(const QPointF pixel, QGeoCoordinate geocoordinate);
+  void queryCoordinateForPixel(const QPointF p, const QVariant &tag = QVariant());
+  void replyCoordinateForPixel(const QPointF pixel, QGeoCoordinate geocoordinate, const QVariant &tag);
 
   /////////////////////////////////////////////////////////
   /// Tracking the state of the map

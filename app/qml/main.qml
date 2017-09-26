@@ -92,7 +92,7 @@ ApplicationWindow {
             }
 
             onDoubleClicked: {
-                map.queryCoordinateForPixel(Qt.point(mouse.x, mouse.y))
+                map.queryCoordinateForPixel(Qt.point(mouse.x, mouse.y), {"test": "query"})
             }
         }
 
@@ -250,7 +250,7 @@ ApplicationWindow {
             onReplyLayerExists: console.log("Layer: " + id + " " + exists)
 
             onReplyCoordinateForPixel: {
-                console.log("Coordinate: " + pixel + " " + geocoordinate.latitude + " " + geocoordinate.longitude)
+                console.log("Coordinate: " + pixel + " " + geocoordinate.latitude + " " + geocoordinate.longitude + " " + tag["test"])
 
                 var tname = "track-" + geocoordinate
                 map.trackLocation(tname, geocoordinate);
