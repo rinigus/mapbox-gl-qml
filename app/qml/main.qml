@@ -20,10 +20,10 @@ ApplicationWindow {
         anchors.fill: parent
 
         center: QtPositioning.coordinate(60.170448, 24.942046) // Helsinki
-        zoomLevel: 12.25
+        zoomLevel: 12.0
         minimumZoomLevel: 0
         maximumZoomLevel: 20
-        pixelRatio: 2.0
+        pixelRatio: 1.7
 
         bearing: bearingSlider.value
         pitch: pitchSlider.value
@@ -31,6 +31,33 @@ ApplicationWindow {
         //accessToken: "INSERT_THE_TOKEN_OR_DEFINE_IN_ENVIRONMENT"
         cacheDatabaseMaximalSize: 20*1024*1024
         cacheDatabasePath: "/tmp/mbgl-cache.db"
+
+//        styleJson: '
+//{
+//    "version": 8,
+//    "name": "Raster",
+//    "sources": {
+//        "Raster": {
+//            "tiles": ["http://localhost:8553/v1/tile?scale=4&z={z}&x={x}&y={y}"],
+//            "type": "raster",
+//            "tileSize": 512
+//        }
+//    },
+//    "layers": [
+//        {
+//            "id": "raster",
+//            "type": "raster",
+//            "source": "Raster",
+//            "layout": {
+//                "visibility": "visible"
+//            },
+//            "paint": {
+//                "raster-opacity": 1
+//            }
+//        }
+//    ],
+//    "id": "test-raster"
+//}'
 
         styleUrl: "mapbox://styles/mapbox/outdoors-v10" //"mapbox://styles/mapbox/streets-v10"
 
@@ -281,7 +308,7 @@ ApplicationWindow {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.margins: 10
-        text: "Scale: %0 m/pixel".arg(map.metersPerPixel.toFixed(2))
+        text: "Scale: %0 m/pixel ; zoom: %1".arg(map.metersPerPixel.toFixed(2)).arg(map.zoomLevel)
     }
 
     //    PositionSource {
