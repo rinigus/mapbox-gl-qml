@@ -49,6 +49,7 @@
 #include <QPointF>
 #include <QPoint>
 #include <QMarginsF>
+#include <QRectF>
 #include <QVariantList>
 #include <QHash>
 
@@ -76,6 +77,7 @@ class QQuickItemMapboxGL : public QQuickItem
   Q_PROPERTY(qreal minimumZoomLevel READ minimumZoomLevel WRITE setMinimumZoomLevel NOTIFY minimumZoomLevelChanged)
   Q_PROPERTY(qreal maximumZoomLevel READ maximumZoomLevel WRITE setMaximumZoomLevel NOTIFY maximumZoomLevelChanged)
   Q_PROPERTY(qreal zoomLevel READ zoomLevel WRITE setZoomLevel NOTIFY zoomLevelChanged)
+  Q_PROPERTY(QRectF margins READ margins WRITE setMargins NOTIFY marginsChanged) /// see comments below on interpretation of RectF
 
   Q_PROPERTY(qreal pixelRatio READ pixelRatio WRITE setPixelRatio NOTIFY pixelRatioChanged)
   Q_PROPERTY(QString styleJson READ styleJson WRITE setStyleJson)
@@ -160,6 +162,13 @@ public:
   /// browsing mode, for example.
   Q_INVOKABLE void setMargins(qreal left, qreal top, qreal right, qreal bottom);
 
+  /// Margins represented by RectF follow the similar pattern as in the setMargins above.
+  /// You specify x and y that correspond to the bottom left offset and the width of the
+  /// map inside the margins. See static functions in the implementation for the
+  /// details.
+  Q_INVOKABLE QRectF margins() const;
+  Q_INVOKABLE void setMargins(const QRectF &margins_box);
+
   /////////////////////////////////////////////////////////////////////////////
   /// Map interaction methods
 
@@ -217,6 +226,7 @@ signals:
   void maximumZoomLevelChanged();
   void zoomLevelChanged(qreal zoomLevel);
   void centerChanged(const QGeoCoordinate &coordinate);
+  void marginsChanged(const QMarginsF &margins);
 
   void pixelRatioChanged(qreal pixelRatio);
   void styleJsonChanged(QString json);

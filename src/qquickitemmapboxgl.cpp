@@ -282,6 +282,41 @@ void QQuickItemMapboxGL::setMargins(qreal left, qreal top, qreal right, qreal bo
   m_margins.setBottom(bottom);
   m_syncState |= MarginsNeedSync;
   update();
+  emit marginsChanged(m_margins);
+}
+
+static QMarginsF qrect2qmargins(const QRectF &box)
+{
+  QMarginsF margins;
+  margins.setLeft(box.x());
+  margins.setBottom(box.y());
+  margins.setRight(1.0 - box.width() - box.x());
+  margins.setTop(1.0 - box.height() - box.y());
+  return margins;
+}
+
+static QRectF qmargins2qrect(const QMarginsF &margins)
+{
+  QRectF rect;
+  rect.setX(margins.left());
+  rect.setY(margins.right());
+  rect.setWidth(1.0 - margins.right() - margins.left());
+  rect.setHeight(1.0 - margins.bottom() - margins.top());
+  return rect;
+}
+
+QRectF QQuickItemMapboxGL::margins() const
+{
+  return qmargins2qrect(m_margins);
+}
+
+void QQuickItemMapboxGL::setMargins(const QRectF &margins_box)
+{
+  QMarginsF margins = qrect2qmargins(margins_box);
+  m_margins = margins;
+  m_syncState |= MarginsNeedSync;
+  update();
+  emit marginsChanged(m_margins);
 }
 
 /// Rendering details

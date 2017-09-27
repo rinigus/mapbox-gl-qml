@@ -23,7 +23,7 @@ ApplicationWindow {
         zoomLevel: 12.0
         minimumZoomLevel: 0
         maximumZoomLevel: 20
-        pixelRatio: 1.7
+        pixelRatio: 2.0
 
         bearing: bearingSlider.value
         pitch: pitchSlider.value
@@ -32,32 +32,32 @@ ApplicationWindow {
         cacheDatabaseMaximalSize: 20*1024*1024
         cacheDatabasePath: "/tmp/mbgl-cache.db"
 
-//        styleJson: '
-//{
-//    "version": 8,
-//    "name": "Raster",
-//    "sources": {
-//        "Raster": {
-//            "tiles": ["http://localhost:8553/v1/tile?scale=4&z={z}&x={x}&y={y}"],
-//            "type": "raster",
-//            "tileSize": 512
-//        }
-//    },
-//    "layers": [
-//        {
-//            "id": "raster",
-//            "type": "raster",
-//            "source": "Raster",
-//            "layout": {
-//                "visibility": "visible"
-//            },
-//            "paint": {
-//                "raster-opacity": 1
-//            }
-//        }
-//    ],
-//    "id": "test-raster"
-//}'
+        //        styleJson: '
+        //{
+        //    "version": 8,
+        //    "name": "Raster",
+        //    "sources": {
+        //        "Raster": {
+        //            "tiles": ["http://localhost:8553/v1/tile?scale=2&z={z}&x={x}&y={y}"],
+        //            "type": "raster",
+        //            "tileSize": 512
+        //        }
+        //    },
+        //    "layers": [
+        //        {
+        //            "id": "raster",
+        //            "type": "raster",
+        //            "source": "Raster",
+        //            "layout": {
+        //                "visibility": "visible"
+        //            },
+        //            "paint": {
+        //                "raster-opacity": 1
+        //            }
+        //        }
+        //    ],
+        //    "id": "test-raster"
+        //}'
 
         styleUrl: "mapbox://styles/mapbox/outdoors-v10" //"mapbox://styles/mapbox/streets-v10"
 
@@ -239,6 +239,8 @@ ApplicationWindow {
 
             /// track location
             map.trackLocation("track-1", QtPositioning.coordinate(60.16, 24.94));
+
+            console.log("Margins: " + map.margins)
         }
 
         Connections {
@@ -380,11 +382,21 @@ ApplicationWindow {
         }
     }
 
-//    Timer {
-//        interval: 3000
-//        running: true
-//        onTriggered: {
-//            map.styleUrl = "mapbox://styles/mapbox/traffic-night-v2"
-//        }
-//    }
+    Timer {
+        interval: 3000
+        running: true
+        onTriggered: {
+            console.log(map.margins)
+            map.margins = Qt.rect(0.1, 0.01, 0.8, 0.4)
+            console.log("Margins changed: " + map.margins)
+        }
+    }
+
+    //    Timer {
+    //        interval: 3000
+    //        running: true
+    //        onTriggered: {
+    //            map.styleUrl = "mapbox://styles/mapbox/traffic-night-v2"
+    //        }
+    //    }
 }
