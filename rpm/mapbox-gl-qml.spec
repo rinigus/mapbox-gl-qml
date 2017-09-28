@@ -22,7 +22,7 @@ BuildRequires: qmapboxgl
 QML plugin for Mapbox GL Native.
 
 %prep
-%setup -q -n %{name}-%{version}/mapboxgl-qml
+%setup -q -n %{name}-%{version}
 
 %build
 
