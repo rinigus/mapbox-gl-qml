@@ -1,0 +1,2 @@
+module MapboxMap
+plugin qmlmapboxglplugin
