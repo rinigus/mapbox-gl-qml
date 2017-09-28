@@ -382,15 +382,15 @@ ApplicationWindow {
         }
     }
 
-    Timer {
-        interval: 3000
-        running: true
-        onTriggered: {
-            console.log(map.margins)
-            map.margins = Qt.rect(0.1, 0.01, 0.8, 0.4)
-            console.log("Margins changed: " + map.margins)
-        }
-    }
+//    Timer {
+//        interval: 3000
+//        running: true
+//        onTriggered: {
+//            console.log(map.margins)
+//            map.margins = Qt.rect(0.1, 0.01, 0.8, 0.4)
+//            console.log("Margins changed: " + map.margins)
+//        }
+//    }
 
     //    Timer {
     //        interval: 3000
