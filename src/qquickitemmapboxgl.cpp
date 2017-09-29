@@ -713,7 +713,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   const double tol = 1e-6; // tolerance used when comparing floating point numbers
   { // metersPerPixel
-    qreal meters = map->metersPerPixelAtLatitude( map->coordinate().first, map->zoom() );
+    qreal meters = map->metersPerPixelAtLatitude( map->coordinate().first, map->zoom() ) / m_pixelRatio;
     if ( fabs(meters - metersPerPixel()) > tol )
       {
         m_metersPerPixel = meters;
