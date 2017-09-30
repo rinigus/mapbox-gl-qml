@@ -116,7 +116,11 @@ LayerList::LayerAction::LayerAction(Type t, const QString id, const QVariantMap 
 void LayerList::LayerAction::apply(QMapboxGL *map)
 {
   if (type() == Add)
-    map->addLayer(m_asset.params, m_asset.before);
+    {
+      if (map->layerExists(m_asset.id))
+        map->removeLayer(m_asset.id);
+      map->addLayer(m_asset.params, m_asset.before);
+    }
   else if (type() == Remove)
     map->removeLayer(m_asset.id);
   else
