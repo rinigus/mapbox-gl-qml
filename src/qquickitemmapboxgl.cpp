@@ -518,8 +518,13 @@ void QQuickItemMapboxGL::addImage(const QString &name, const QImage &sprite)
 
 bool QQuickItemMapboxGL::addImagePath(const QString &name, const QString &path)
 {
+  QString p;
+  QString furl = "file://";
+  if (path.startsWith(furl)) p = path.right(path.size() - furl.size());
+  else p = path;
+
   QImage image;
-  if (!image.load(path)) return false;
+  if (!image.load(p)) return false;
   addImage(name, image);
   return true;
 }
