@@ -253,6 +253,7 @@ ApplicationWindow {
 
             onReplyCoordinateForPixel: {
                 console.log("Coordinate: " + pixel + " " + geocoordinate.latitude + " " + geocoordinate.longitude + " " + tag["test"])
+                console.log("Sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
 
                 var tname = "track-" + geocoordinate
                 map.trackLocation(tname, geocoordinate);
@@ -367,11 +368,11 @@ ApplicationWindow {
     Timer {
         property double angle: 0.0
 
-        interval: 10
+        interval: 50
         running: true
         repeat: true
         onTriggered: {
-            angle += 0.25 / 180. * Math.PI
+            angle += 1.0 / 180. * Math.PI
             if (angle > Math.PI*2)
                 angle -= Math.PI*2
 

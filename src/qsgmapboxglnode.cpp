@@ -46,6 +46,8 @@
 #include <QtGui/QOpenGLContext>
 #include <QtGui/QOpenGLFunctions>
 
+#include <math.h>
+
 #include <QDebug>
 
 static const QSize minTextureSize = QSize(64, 64);
@@ -137,5 +139,16 @@ void QSGMapboxGLTextureNode::queryCoordinateForPixel(QPointF p, const QVariant &
   p /=  m_pixel_ratio;
   QMapbox::Coordinate mbc = m_map->coordinateForPixel(p);
   QGeoCoordinate coor(mbc.first, mbc.second);
-  emit replyCoordinateForPixel(p, coor, tag);
+
+  // get sensitivity of coordinates to the changes in pixel coordinates
+  double bearing = m_map->bearing() / 180. * M_PI;
+  double sinB = sin(bearing);
+  double cosB = cos(bearing);
+  p += QPointF(cosB + sinB, -sinB + cosB);
+  QMapbox::Coordinate mbc_shift = m_map->coordinateForPixel(p);
+
+  qreal degLatPerPixel = fabs(mbc_shift.first - mbc.first) / m_pixel_ratio;
+  qreal degLonPerPixel = fabs(mbc_shift.second - mbc.second) / m_pixel_ratio;
+
+  emit replyCoordinateForPixel(p, coor, degLatPerPixel, degLonPerPixel, tag);
 }

@@ -262,7 +262,7 @@ signals:
   void replyLayerExists(const QString id, bool exists);
 
   void queryCoordinateForPixel(const QPointF p, const QVariant &tag = QVariant());
-  void replyCoordinateForPixel(const QPointF pixel, QGeoCoordinate geocoordinate, const QVariant &tag);
+  void replyCoordinateForPixel(const QPointF pixel, QGeoCoordinate geocoordinate, qreal degLatPerPixel, qreal degLonPerPixel, const QVariant &tag);
 
   /////////////////////////////////////////////////////////
   /// Tracking the state of the map

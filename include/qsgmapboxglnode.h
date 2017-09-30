@@ -72,7 +72,7 @@ public slots:
 signals:
     void replySourceExists(const QString id, bool exists);
     void replyLayerExists(const QString id, bool exists);
-    void replyCoordinateForPixel(const QPointF p, QGeoCoordinate geo, const QVariant &tag);
+    void replyCoordinateForPixel(const QPointF p, QGeoCoordinate geo, qreal degLatPerPixel, qreal degLonPerPixel, const QVariant &tag);
 
 private:
     QScopedPointer<QMapboxGL> m_map;
