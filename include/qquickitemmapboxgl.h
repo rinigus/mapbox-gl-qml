@@ -198,6 +198,7 @@ public:
   Q_INVOKABLE void removeLayer(const QString &id);
 
   Q_INVOKABLE void addImage(const QString &name, const QImage &sprite);
+  Q_INVOKABLE bool addImagePath(const QString &name, const QString &path); ///< Add image using image file path
   Q_INVOKABLE void removeImage(const QString &name);
 
   Q_INVOKABLE void setLayoutProperty(const QString &layer, const QString &property, const QVariant &value);

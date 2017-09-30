@@ -516,6 +516,14 @@ void QQuickItemMapboxGL::addImage(const QString &name, const QImage &sprite)
   m_images.add(name, sprite); DATA_UPDATE;
 }
 
+bool QQuickItemMapboxGL::addImagePath(const QString &name, const QString &path)
+{
+  QImage image;
+  if (!image.load(path)) return false;
+  addImage(name, image);
+  return true;
+}
+
 void QQuickItemMapboxGL::removeImage(const QString &name)
 {
   m_images.remove(name); DATA_UPDATE;
