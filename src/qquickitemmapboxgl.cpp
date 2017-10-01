@@ -70,6 +70,11 @@ QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
   connect(&m_timer, &QTimer::timeout, this, &QQuickItemMapboxGL::update);
   connect(this, SIGNAL(startRefreshTimer()), &m_timer, SLOT(start()));
   connect(this, &QQuickItemMapboxGL::stopRefreshTimer, &m_timer, &QTimer::stop);
+
+  // connect query signals to update to enforce rendering thread wakeup
+  connect(this, SIGNAL(querySourceExists(QString)), this, SLOT(update()));
+  connect(this, SIGNAL(queryLayerExists(QString)), this, SLOT(update()));
+  connect(this, SIGNAL(queryCoordinateForPixel(QPointF,QVariant)), this, SLOT(update()));
 }
 
 QQuickItemMapboxGL::~QQuickItemMapboxGL()
