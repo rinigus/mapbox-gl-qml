@@ -548,12 +548,12 @@ void QQuickItemMapboxGL::setLayoutPropertyList(const QString &layer, const QStri
 
 void QQuickItemMapboxGL::setPaintProperty(const QString &layer, const QString &property, const QVariant &value)
 {
-  m_paint_properties.add(layer, property, value);
+  m_paint_properties.add(layer, property, value); DATA_UPDATE;
 }
 
 void QQuickItemMapboxGL::setPaintPropertyList(const QString &layer, const QString &property, const QVariantList &value)
 {
-  m_paint_properties.add(layer, property, value);
+  m_paint_properties.add(layer, property, value); DATA_UPDATE;
 }
 
 
@@ -592,6 +592,7 @@ bool QQuickItemMapboxGL::LocationTracker::set_position(const QPoint &p, const QS
 void QQuickItemMapboxGL::trackLocation(const QString &id, const QGeoCoordinate &location)
 {
   m_location_tracker[id] = LocationTracker(location);
+  update();
 }
 
 void QQuickItemMapboxGL::removeLocationTracking(const QString &id)
