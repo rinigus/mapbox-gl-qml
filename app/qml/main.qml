@@ -237,6 +237,8 @@ ApplicationWindow {
             map.setPaintProperty("line", "line-color", "green");
             map.setPaintProperty("line", "line-width", 10.0);
 
+            //map.fitView(line);
+
             /// track location
             map.trackLocation("track-1", QtPositioning.coordinate(60.16, 24.94));
 

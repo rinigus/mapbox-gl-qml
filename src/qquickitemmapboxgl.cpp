@@ -248,6 +248,36 @@ void QQuickItemMapboxGL::pan(int dx, int dy)
   update();
 }
 
+void QQuickItemMapboxGL::fitView(const QVariantList &coordinates)
+{
+  size_t counter = 0;
+
+  for (int i = 0; i < coordinates.size(); ++i)
+    {
+      QGeoCoordinate c = coordinates[i].value<QGeoCoordinate>();
+      if (c.isValid())
+        {
+          counter++;
+
+          if (counter==1 || c.latitude() < m_fit_sw.first)
+            m_fit_sw.first = c.latitude();
+          if (counter==1 || c.longitude() < m_fit_sw.second)
+            m_fit_sw.second = c.longitude();
+
+          if (counter==1 || c.latitude() > m_fit_ne.first)
+            m_fit_ne.first = c.latitude();
+          if (counter==1 || c.longitude() > m_fit_ne.second)
+            m_fit_ne.second = c.longitude();
+        }
+    }
+
+  if (counter == 0) return;
+
+  if (counter > 1) m_syncState |= FitViewNeedsSync;
+  else /* counter==1 */ setCenter(QGeoCoordinate(m_fit_ne.first, m_fit_ne.second));
+  update();
+}
+
 qreal QQuickItemMapboxGL::metersPerPixel() const
 {
   return m_metersPerPixel;
@@ -620,9 +650,14 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   if (!n)
     {
+      bool wasFitView = (m_syncState & FitViewNeedsSync);
+
       n = new QSGMapboxGLTextureNode(m_settings, sz, m_pixelRatio, this);
+
       m_syncState = CenterNeedsSync | ZoomNeedsSync | BearingNeedsSync | PitchNeedsSync |
           StyleNeedsSync | MarginsNeedSync;
+      if (wasFitView) m_syncState |= FitViewNeedsSync;
+
       m_block_data_until_loaded = true;
 
       /////////////////////////////////////////////////////
@@ -652,6 +687,13 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       QMargins margins(m_margins.left()*width(), m_margins.top()*height(), m_margins.right()*width(), m_margins.bottom()*height());
       map->setMargins(margins);
       m_syncState |= CenterNeedsSync; // center has to be updated after update of the margins
+    }
+
+  if (m_syncState & FitViewNeedsSync)
+    {
+      QMapbox::CoordinateZoom cz = map->coordinateZoomForBounds(m_fit_sw, m_fit_ne);
+      setCenter(QGeoCoordinate(cz.first.first, cz.first.second));
+      setZoomLevel(cz.second * 0.99);
     }
 
   if (m_syncState & CenterNeedsSync)

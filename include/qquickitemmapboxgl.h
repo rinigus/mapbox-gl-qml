@@ -169,6 +169,12 @@ public:
   Q_INVOKABLE QRectF margins() const;
   Q_INVOKABLE void setMargins(const QRectF &margins_box);
 
+  /// \brief Fits view to fit all given coordinates
+  ///
+  /// finds zoom and the center that would allow to fit the given list
+  /// of coordinates in the map view
+  Q_INVOKABLE void fitView(const QVariantList &coordinates);
+
   /////////////////////////////////////////////////////////////////////////////
   /// Map interaction methods
 
@@ -317,6 +323,9 @@ private:
   qreal m_pitch = 0;
   QMarginsF m_margins;  
 
+  QMapbox::Coordinate m_fit_sw;
+  QMapbox::Coordinate m_fit_ne;
+
   QString m_errorString;
 
   qreal m_pixelRatio;
@@ -343,7 +352,8 @@ private:
     PixelRatioNeedsSync = 1 << 6,
     MarginsNeedSync = 1 << 7,
     DataNeedsSync = 1 << 8,
-    DataNeedsSetupSync = 1 << 9
+    DataNeedsSetupSync = 1 << 9,
+    FitViewNeedsSync = 1 << 10
   };
   int m_syncState = NothingNeedsSync;
 };
