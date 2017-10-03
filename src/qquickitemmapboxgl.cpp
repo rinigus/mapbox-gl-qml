@@ -334,7 +334,7 @@ static QRectF qmargins2qrect(const QMarginsF &margins)
 {
   QRectF rect;
   rect.setX(margins.left());
-  rect.setY(margins.right());
+  rect.setY(margins.bottom());
   rect.setWidth(1.0 - margins.right() - margins.left());
   rect.setHeight(1.0 - margins.bottom() - margins.top());
   return rect;
