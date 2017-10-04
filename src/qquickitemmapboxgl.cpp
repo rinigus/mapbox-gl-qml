@@ -676,6 +676,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
   if (sz != m_last_size || m_syncState & PixelRatioNeedsSync)
     {
       n->resize(sz, m_pixelRatio);
+      m_syncState |= MarginsNeedSync;
       m_last_size = sz;
     }
 
