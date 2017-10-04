@@ -684,7 +684,8 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   if (m_syncState & MarginsNeedSync)
     {
-      QMargins margins(m_margins.left()*width(), m_margins.top()*height(), m_margins.right()*width(), m_margins.bottom()*height());
+      QMargins margins(m_margins.left()*width()/m_pixelRatio, m_margins.top()*height()/m_pixelRatio,
+                       m_margins.right()*width()/m_pixelRatio, m_margins.bottom()*height()/m_pixelRatio);
       map->setMargins(margins);
       m_syncState |= CenterNeedsSync; // center has to be updated after update of the margins
     }
@@ -693,7 +694,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
     {
       QMapbox::CoordinateZoom cz = map->coordinateZoomForBounds(m_fit_sw, m_fit_ne);
       setCenter(QGeoCoordinate(cz.first.first, cz.first.second));
-      setZoomLevel(cz.second * 0.99);
+      setZoomLevel(cz.second);
     }
 
   if (m_syncState & CenterNeedsSync)
