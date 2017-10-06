@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-QT += qml quick location positioning
+QT += qml quick location positioning sql
 CONFIG += c++14
 
 SOURCES += src/main.cpp
@@ -9,8 +9,8 @@ RESOURCES += qml.qrc
 
 include(../mapbox-gl-qml.pri)
 
-INCLUDEPATH += ../../mapbox-gl-native/platform/qt/include ../../mapbox-gl-native/include
-LIBS += -L../../mapbox-gl-native/build -lqmapboxgl -lz
+INCLUDEPATH += ../../pkg-mapbox-gl-native/mapbox-gl-native/platform/qt/include ../../pkg-mapbox-gl-native/mapbox-gl-native/include
+LIBS += -L../../pkg-mapbox-gl-native/build -lqmapboxgl -lz
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
