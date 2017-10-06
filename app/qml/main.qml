@@ -61,39 +61,9 @@ ApplicationWindow {
 
         styleUrl: "mapbox://styles/mapbox/outdoors-v10" //"mapbox://styles/mapbox/streets-v10"
 
-        MouseArea {
+        MapboxMapMouseArea {
             id: mouseArea
-            anchors.fill: parent
-
-            property var lastX: 0
-            property var lastY: 0
-
-            onWheel: {
-                map.setZoomLevel( map.zoomLevel + 0.2 * wheel.angleDelta.y / 120, Qt.point(wheel.x, wheel.y) )
-            }
-
-            onPressed: {
-                lastX = mouse.x
-                lastY = mouse.y
-            }
-
-            onPositionChanged: {
-                map.pan(mouse.x - lastX, mouse.y - lastY)
-
-                lastX = mouse.x
-                lastY = mouse.y
-            }
-
-            onClicked: {
-                //                console.log("Clicked")
-                //                map.querySourceExists("route");
-                //                map.querySourceExists("route-shouldnt-be-there");
-                //                map.queryLayerExists("routeCase");
-            }
-
-            onDoubleClicked: {
-                map.queryCoordinateForPixel(Qt.point(mouse.x, mouse.y), {"test": "query"})
-            }
+            map: map
         }
 
         Component.onCompleted: {

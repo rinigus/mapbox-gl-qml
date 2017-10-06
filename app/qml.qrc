@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>qml/main.qml</file>
         <file>qml/location.qml</file>
+        <file>qml/MapboxMapMouseArea.qml</file>
     </qresource>
 </RCC>
