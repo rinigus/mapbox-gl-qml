@@ -48,8 +48,10 @@
 
 #include <QVariantMap>
 #include <QJsonDocument>
+#include <QMutexLocker>
 
 #include <math.h>
+#include <iostream>
 
 #include <QDebug>
 
@@ -63,6 +65,9 @@ QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
   m_styleJson = QString(); // empty
 
   m_settings.setViewportMode(QMapboxGLSettings::DefaultViewport);
+
+  m_settings.setResourceTransform(std::bind(&QQuickItemMapboxGL::resourceTransform,
+                                            this, std::placeholders::_1));
 
   m_pixelRatio = 1;
 
@@ -802,3 +807,47 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
   return n;
 }
 
+///////////////////////////////////////////////////////////
+/// methods related to ResourceTransform of requested URLs
+///
+/// Since these methods can be called either from main thread
+/// or Mapbox GL threads, all access to variables has to be
+/// protected by mutex. Exception is getters, since they are accessed
+/// from the main thread only as the setters are.
+
+bool QQuickItemMapboxGL::urlDebug() const
+{
+  return m_urlDebug;
+}
+
+void QQuickItemMapboxGL::setUrlDebug(bool debug)
+{
+  {
+    QMutexLocker lk(&m_resourceTransformMutex);
+    m_urlDebug = debug;
+  }
+  emit urlDebugChanged(debug);
+}
+
+QString QQuickItemMapboxGL::urlSuffix() const
+{
+  return QString::fromStdString(m_urlSuffix);
+}
+
+void QQuickItemMapboxGL::setUrlSuffix(const QString &urlsfx)
+{
+  {
+    QMutexLocker lk(&m_resourceTransformMutex);
+    m_urlSuffix = urlsfx.toStdString();
+  }
+  emit urlSuffixChanged(urlsfx);
+}
+
+std::string QQuickItemMapboxGL::resourceTransform(const std::string &&url)
+{
+  QMutexLocker lk(&m_resourceTransformMutex);
+  std::string newurl = url + m_urlSuffix;
+  if (m_urlDebug)
+    std::cout << "MapboxGL requested URL: " << newurl << std::endl;
+  return newurl;
+}

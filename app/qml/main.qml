@@ -28,7 +28,6 @@ ApplicationWindow {
         bearing: bearingSlider.value
         pitch: pitchSlider.value
 
-        //accessToken: "INSERT_THE_TOKEN_OR_DEFINE_IN_ENVIRONMENT"
         cacheDatabaseMaximalSize: 20*1024*1024
         cacheDatabasePath: "/tmp/mbgl-cache.db"
 
@@ -59,7 +58,9 @@ ApplicationWindow {
         //    "id": "test-raster"
         //}'
 
+        //accessToken: "INSERT_THE_TOKEN_OR_DEFINE_IN_ENVIRONMENT"
         styleUrl: "mapbox://styles/mapbox/outdoors-v10" //"mapbox://styles/mapbox/streets-v10"
+        urlDebug: false
 
         MapboxMapMouseArea {
             id: mouseArea
@@ -365,11 +366,12 @@ ApplicationWindow {
 //        }
 //    }
 
-    //    Timer {
-    //        interval: 3000
-    //        running: true
-    //        onTriggered: {
-    //            map.styleUrl = "mapbox://styles/mapbox/traffic-night-v2"
-    //        }
-    //    }
+        Timer {
+            interval: 3000
+            running: true
+            onTriggered: {
+                map.urlDebug = true
+                map.styleUrl = "mapbox://styles/mapbox/traffic-night-v2"
+            }
+        }
 }

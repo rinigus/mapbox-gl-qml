@@ -52,9 +52,12 @@
 #include <QRectF>
 #include <QVariantList>
 #include <QHash>
+#include <QMutex>
 
 #include <QMapboxGL>
 #include <QGeoCoordinate>
+
+#include <string>
 
 #include "qmapboxsync_p.h"
 
@@ -82,6 +85,8 @@ class QQuickItemMapboxGL : public QQuickItem
   Q_PROPERTY(qreal pixelRatio READ pixelRatio WRITE setPixelRatio NOTIFY pixelRatioChanged)
   Q_PROPERTY(QString styleJson READ styleJson WRITE setStyleJson)
   Q_PROPERTY(QString styleUrl READ styleUrl WRITE setStyleUrl)
+  Q_PROPERTY(QString urlSuffix READ urlSuffix WRITE setUrlSuffix NOTIFY urlSuffixChanged)
+  Q_PROPERTY(bool urlDebug READ urlDebug WRITE setUrlDebug NOTIFY urlDebugChanged)
 
   /// tracks meters per pixel for the map center
   Q_PROPERTY(qreal metersPerPixel READ metersPerPixel NOTIFY metersPerPixelChanged)
@@ -147,6 +152,12 @@ public:
 
   int cacheDatabaseMaximalSize() const;
   void setCacheDatabaseMaximalSize(int sz);
+
+  QString urlSuffix() const;
+  void setUrlSuffix(const QString &urlsfx);
+
+  bool urlDebug() const;
+  void setUrlDebug(bool debug);
 
   /// Callable methods from QML
   ///
@@ -238,6 +249,8 @@ signals:
   void pixelRatioChanged(qreal pixelRatio);
   void styleJsonChanged(QString json);
   void styleUrlChanged(QString url);
+  void urlSuffixChanged(QString urlSuffix);
+  void urlDebugChanged(bool urlDebug);
 
   void errorChanged(QString error);
 
@@ -282,6 +295,9 @@ protected:
 
 private:
   void setError(QString error);
+
+private:
+  std::string resourceTransform(const std::string &&url);
 
 private:
 
@@ -331,6 +347,10 @@ private:
   qreal m_pixelRatio;
   QString m_styleUrl;
   QString m_styleJson;
+
+  QMutex m_resourceTransformMutex;
+  std::string m_urlSuffix;
+  bool m_urlDebug{false};
 
   QHash<QString, LocationTracker> m_location_tracker;
 
