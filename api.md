@@ -40,7 +40,7 @@ the map's frame buffer object is recreated. Some of them (such as
 cache-related properties) would be used as they were specified for the 
 first created map.
 
-* **`string accessToken`** Mapbox-hosted vector tiles and styles require an API
+* `string **accessToken**` Mapbox-hosted vector tiles and styles require an API
     [access token](https://www.mapbox.com/help/define-access-token/),
     which you can obtain from the
     [Mapbox account page](https://www.mapbox.com/studio/account/tokens/). Access
@@ -48,12 +48,12 @@ first created map.
     with your Mapbox account. They also deter other developers from
     using your styles without your permission.
 
-* **`string apiBaseUrl`** The API base URL is the URL that the `mapbox://`
+* `string **apiBaseUrl**` The API base URL is the URL that the `mapbox://`
     protocol will be resolved to. It defaults to
     "https://api.mapbox.com" but can be changed, for instance, to a
     tile cache server address.
 
-* **`string assetPath`** Returns the asset path, which is the root directory from where
+* `string **assetPath**` Returns the asset path, which is the root directory from where
     the `asset://` scheme gets resolved in a style. `asset://` can be used
     for loading a resource from the disk in a style rather than fetching
     it from the network.
@@ -61,7 +61,7 @@ first created map.
     By default, it is set to the value returned by
     `QCoreApplication::applicationDirPath()`.
     
-* **`string cacheDatabasePath`** Returns the cache database path. The cache is used for storing
+* `string **cacheDatabasePath**` Returns the cache database path. The cache is used for storing
     recently used resources like tiles and also an offline tile database
     pre-populated by the [Offline Tool](https://github.com/mapbox/mapbox-gl-native/blob/master/bin/offline.sh).
 
