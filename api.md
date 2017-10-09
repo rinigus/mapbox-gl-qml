@@ -28,7 +28,7 @@ In C++
 
 ### Properties
 
-Map properties are listed classified and listed in the following
+Map properties are classified and listed in the following
 sub-sections. Each property is given with the corresponding type in
 front of it.
 
@@ -188,6 +188,10 @@ for debugging purposes or changed by adding them given suffix.
 
 ### Methods
 
+Map methods are classified and listed in the following sub-sections.
+
+#### General methods
+
 * `void `**`fitView`**`(const QVariantList &coordinates)`
 
   Finds zoom and the center that would allow to fit the given list of
@@ -198,7 +202,7 @@ for debugging purposes or changed by adding them given suffix.
 
 * `void `**`pan`**`(int dx, int dy)`
 
-  Pan the map by _dx_, _dx_ pixels.
+  Pan the map by _dx_, _dy_ pixels.
   
 * `void `**`setMargins`**`(qreal left, qreal top, qreal right, qreal bottom)`
 
@@ -220,5 +224,84 @@ for debugging purposes or changed by adding them given suffix.
   position unchanged while zooming the map. This function could be
   used for implementing a pinch gesture or zooming by using the mouse
   scroll wheel.
-  
 
+
+#### Map sources
+
+* `void `**`addSource`**`(const QString &sourceID, const QVariantMap& params)`
+
+  Adds a source _id_ to the map as specified by the
+    [Mapbox style specification](https://www.mapbox.com/mapbox-gl-js/style-spec/#sources)
+    with _params_. For example, GeoJSON type can be used to specify
+    road, position on the map, or many other features that can added
+    and later modified by application.
+    
+    The following snippet adds a point on the map
+    ```javascript
+                map.addSource("location",
+                          {"type": "geojson",
+                              "data": {
+                                  "type": "Feature",
+                                  "properties": { "name": "location" },
+                                  "geometry": {
+                                      "type": "Point",
+                                      "coordinates": [
+                                          (24.94),
+                                          (60.16)
+                                      ]
+                                  }
+                              }
+                          })
+    ```
+    
+    and the following adds a small line source
+    
+    ```javascript
+            var routeSource = {
+                "type": "geojson",
+                "data": '{
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": [
+                            [24.942046, 60.170448],
+                            [
+                                24.934420000000003,
+                                60.163500000000006
+                            ],
+                            [
+                                24.923490008921945,
+                                60.16159500239787
+                            ],
+                            [
+                                24.916150000000002,
+                                60.171530000000004
+                            ],
+                            [
+                                24.931620000000002,
+                                60.18218
+                            ],
+                            [
+                                24.961660000000002,
+                                60.17557000000001
+                            ],
+                            [
+                                24.954860000000004,
+                                60.158930000000005
+                            ],
+                            [
+                                24.943690000000004,
+                                60.155280000000005
+                            ]
+                        ]
+                    }
+                }'
+            }
+
+            map.addSource("route", routeSource)
+    
+    ```
+
+    Notice that the `data` component for GeoJSON can be given either
+    as a string or a JSON object.
