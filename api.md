@@ -48,12 +48,12 @@ first created map.
     with your Mapbox account. They also deter other developers from
     using your styles without your permission.
 
-* `string **apiBaseUrl**` The API base URL is the URL that the `mapbox://`
+* `string `**`apiBaseUrl`** The API base URL is the URL that the `mapbox://`
     protocol will be resolved to. It defaults to
     "https://api.mapbox.com" but can be changed, for instance, to a
     tile cache server address.
 
-* `string **assetPath**` Returns the asset path, which is the root directory from where
+* `string `**`assetPath`** Returns the asset path, which is the root directory from where
     the `asset://` scheme gets resolved in a style. `asset://` can be used
     for loading a resource from the disk in a style rather than fetching
     it from the network.
@@ -61,7 +61,7 @@ first created map.
     By default, it is set to the value returned by
     `QCoreApplication::applicationDirPath()`.
     
-* `string **cacheDatabasePath**` Returns the cache database path. The cache is used for storing
+* `string `**`cacheDatabasePath`** Returns the cache database path. The cache is used for storing
     recently used resources like tiles and also an offline tile database
     pre-populated by the [Offline Tool](https://github.com/mapbox/mapbox-gl-native/blob/master/bin/offline.sh).
 
@@ -73,7 +73,7 @@ first created map.
     such as size and path will force the configuration to all newly instantiated QMapboxGL
     objects.
 
-* `int cacheDatabaseMaximalSize` Returns the cache database maximum
+* `int `**`cacheDatabaseMaximalSize`** Returns the cache database maximum
     hard size in bytes. The database will grow until the limit is
     reached. Setting a maximum size smaller than the current size of
     an existing database results in undefined behavior
@@ -86,21 +86,21 @@ first created map.
 
 #### Map rendering
 
-* `real bearing` The map bearing angle in degrees. Negative values and
+* `real `**`bearing`** The map bearing angle in degrees. Negative values and
     values over 360 are valid and will wrap. The direction of the
     rotation is counterclockwise.
 
     When `center` is defined, the map will rotate around the center
     pixel coordinate respecting the margins if defined.
     
-* `QGeoCoordinate center` Coordinates of the map center. Centers the
+* `QGeoCoordinate `**`center`** Coordinates of the map center. Centers the
     map at a geographic coordinate respecting the margins, if set.
     
     In QML, use `QtPositioning.coordinate(latitude, longitude)`
     construct (see http://doc.qt.io/qt-5/qml-coordinate.html and
     http://doc.qt.io/qt-5/qgeocoordinate.html for details).
     
-* `rect margins` Relative margins that determine position of the
+* `rect `**`margins`** Relative margins that determine position of the
     center on the map. Margins specify the relative active area of the
     widget and the position of the active area. When given by a
     rectangle (_x_, _y_, _width_, _height_), the margins are specified
@@ -115,15 +115,15 @@ first created map.
     the widget and ensure that it is not covered by other GUI elements
     drawn on the top of the map, for example.
     
-* `real maximumZoomLevel` Maximum zoom level allowed for the map.
+* `real `**`maximumZoomLevel`** Maximum zoom level allowed for the map.
     
-* `real minimumZoomLevel` Minimum zoom level allowed for the map.
+* `real `**`minimumZoomLevel`** Minimum zoom level allowed for the map.
     
-* `real pitch` Pitch toward the horizon measured in degrees, with 0
+* `real `**`pitch`** Pitch toward the horizon measured in degrees, with 0
     resulting in a two-dimensional map. It is constrained at 60
     degrees.
     
-* `real pixelRatio` Relative pixel density of the screen when compared
+* `real `**`pixelRatio`** Relative pixel density of the screen when compared
     to 96dpi. All the map elements will be scaled by this ratio when
     drawn. This allows to use the same style on the screens with the
     different pixel densities. 
@@ -138,11 +138,11 @@ first created map.
     would have to divide the radius of the circle by `pixelRatio` when
     modifying the circle radius by `setPaintProperty` method.
     
-* `string styleJson` The map style in JSON given as a string. Sets a
+* `string `**`styleJson`** The map style in JSON given as a string. Sets a
     new style from a JSON that must conform to the
     [Mapbox style specification](https://www.mapbox.com/mapbox-gl-style-spec/).
     
-* `string styleUrl` The map style URL. Sets a URL for fetching a JSON
+* `string `**`styleUrl`** The map style URL. Sets a URL for fetching a JSON
     that will be later fed to `setStyleJson`. URLs using the Mapbox
     scheme (`mapbox://`) are also accepted and translated
     automatically to an actual HTTPS request.
@@ -153,9 +153,8 @@ first created map.
     Note that all given URLs can be altered before fetching from
     internet, as described below under `Mangling of URLs`.
 
-* `real zoomLevel` The map zoom factor.  This property is used to zoom
-    the map. When `center` is defined, the map will zoom in the
-    direction of the center.
+* `real `**`zoomLevel`** The map zoom factor.  This property is used to zoom
+    the map. 
 
 
 #### Mangling of URLs
@@ -163,10 +162,10 @@ first created map.
 Before fetching resources from internet, URLs can be either printed
 for debugging purposes or changed by adding them given suffix. 
 
-* `bool urlDebug` When set to `true`, all URLs are printed out in
+* `bool `**`urlDebug`** When set to `true`, all URLs are printed out in
    `stdout` before fetching them.
    
-* `string urlSuffix` When set, this string will be appended to all
+* `string `**`urlSuffix`** When set, this string will be appended to all
   URLs before fetching them online. For example, you can append your
   server's specific api key by setting `urlSuffix` to `?apikey=ABCD`
   if it has to be specified in such format at the end of each
@@ -175,16 +174,51 @@ for debugging purposes or changed by adding them given suffix.
 
 #### Other properties
 
-* `string errorString` Current error string. Please note that this
+* `string `**`errorString`** Current error string. Please note that this
   property is not covering all possible errors in the API. When set,
   it is never cleared. Thus, please connect to the signal
   `errorChanged` to trigger error processing and don't rely on
   clearance of errorString property.
 
-* `real metersPerPixel` Meters per pixel at the center of the map
+* `real `**`metersPerPixel`** Meters per pixel at the center of the map
   given for the pixel density as specified by `pixelRatio`.
 
 
 ### Queries and Signals
 
 ### Methods
+
+* `void `**`fitView`**`(const QVariantList &coordinates)`
+
+  Finds zoom and the center that would allow to fit the given list of
+  coordinates in the map view taking into account current `margins`,
+  `pitch`, and `bearing`. Note that the expected list elements are
+  coordinates as given by `QGeoCoordinate` (`QtPositioning.coordinate`
+  in QML).
+
+* `void `**`pan`**`(int dx, int dy)`
+
+  Pan the map by _dx_, _dx_ pixels.
+  
+* `void `**`setMargins`**`(qreal left, qreal top, qreal right, qreal bottom)`
+
+  Margins are given relative to the widget width (left and right
+  margin) and height (top and bottom). By default, the margins are 0
+  for all. In this case, the given center will be on the center of the
+  widget. To shift the center to the bottom by 25%, set the top margin
+  to 0.5. Then the center will be found between the middle line and
+  the bottom. Margins allow to switch between navigation and browsing
+  mode, for example.
+  
+  See also property `margins` for description on how to set margins
+  using active area described by rectangle.
+
+* `void `**`setZoomLevel`**`(qreal zoomLevel, const QPointF &center = QPointF())`
+  
+  Method to set `zoomLevel` that can be used with the defined _center_
+  (pixel coordinates on the widget) to keep the given `center`
+  position unchanged while zooming the map. This function could be
+  used for implementing a pinch gesture or zooming by using the mouse
+  scroll wheel.
+  
+
