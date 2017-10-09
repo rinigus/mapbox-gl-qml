@@ -256,7 +256,7 @@ Map methods are classified and listed in the following sub-sections.
     
     and the following adds a small line source
     
-    ```javascript
+    ```
             var routeSource = {
                 "type": "geojson",
                 "data": '{
