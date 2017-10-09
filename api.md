@@ -236,7 +236,7 @@ Map methods are classified and listed in the following sub-sections.
     road, position on the map, or many other features that can added
     and later modified by application.
     
-    The following snippet adds a point on the map
+    The following QML snippet adds a point on the map
     ```javascript
                 map.addSource("location",
                           {"type": "geojson",
@@ -254,7 +254,7 @@ Map methods are classified and listed in the following sub-sections.
                           })
     ```
     
-    and the following adds a small line source
+    and the following QML snippet adds a small line source
     
     ```
             var routeSource = {
@@ -305,3 +305,11 @@ Map methods are classified and listed in the following sub-sections.
 
     Notice that the `data` component for GeoJSON can be given either
     as a string or a JSON object.
+
+* `void `**`addSourcePoint`**`(const QString &sourceID, const QGeoCoordinate &coordinate, const QString &name = QString())`
+  `void `**`addSourcePoint`**`(const QString &sourceID, qreal latitude, qreal longitude, const QString &name = QString())`
+  
+  Constructs and adds source to the map. Source description is
+  constructed in GeoJSON format with the given _sourceID_,
+  coordinates, and, if specified, property _name_.
+  
