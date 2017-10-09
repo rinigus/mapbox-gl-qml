@@ -307,6 +307,7 @@ Map methods are classified and listed in the following sub-sections.
     as a string or a JSON object.
 
 * `void `**`addSourcePoint`**`(const QString &sourceID, const QGeoCoordinate &coordinate, const QString &name = QString())`
+
   `void `**`addSourcePoint`**`(const QString &sourceID, qreal latitude, qreal longitude, const QString &name = QString())`
   
   Constructs and adds source to the map. Source description is
