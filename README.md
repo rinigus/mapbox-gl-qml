@@ -16,4 +16,4 @@ developed as a part of Mapbox GL Native has a license at
 https://github.com/mapbox/mapbox-gl-native/blob/master/LICENSE.md
 
 
-The API description: [api.md](https://github.com/rinigus/mapbox-gl-qml/blob/master/api.md)
+The description of API: [api.md](https://github.com/rinigus/mapbox-gl-qml/blob/master/api.md)
