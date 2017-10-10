@@ -34,6 +34,11 @@ all sources, layers, paint and layer properties that were introduced
 via `add*` or `update*` methods will be re-added to the map when
 changing styles until they are removed using `remove*` methods.
 
+When using GeoJSON sources, note that there is a difference in the
+order of coordinates when using GeoJSON and Qt native
+representation. Here, the methods accepting coordinates as explicit
+arguments, such as `updateSourcePoint`, use the same order as in Qt.
+
 As an example of the use of this API, see QML file
 [app/qml/main.qml](https://github.com/rinigus/mapbox-gl-qml/blob/master/app/qml/main.qml)
 in this repository.
@@ -118,7 +123,9 @@ first created map.
     rectangle (_x_, _y_, _width_, _height_), the margins are specified
     by the active area with the left bottom given by _x_ and _y_ as
     well as the size of the active area as specified by _width_ and
-    _height_. For example, `margins` given with the rectangle (0.1,
+    _height_.
+
+    For example, `margins` given with the rectangle (0.1,
     0.2, 0.8, 0.3) would correspond to the active area that is shifted
     `0.1*width` from the left, `0.2*height` up from the bottom, is
     `0.8*width` wide leaving `0.1*width` pixels to the right margin,
@@ -212,17 +219,17 @@ filter only the responses that are of interest.
   `signal `**`replySourceExists`**`(const QString id, bool exists)`
 
   Query whether the source with given _id_ exists.
-    
+
 * `void `**`queryLayerExists`**`(const QString id)`
 
   `signal `**`replyLayerExists`**`(const QString id, bool exists)`
-  
+
   Query whether the layer with given _id_ exists.
-  
+
 * `void `**`queryCoordinateForPixel`**`(const QPointF p, const QVariant &tag = QVariant())`
 
   `signal `**`replyCoordinateForPixel`**`(const QPointF pixel, QGeoCoordinate geocoordinate, qreal degLatPerPixel, qreal degLonPerPixel, const QVariant &tag)`
-  
+
   Query geographical location _geocoordinate_ for a position in the
   widget given as a pixel coordinates _p_. For bookkeeping purposes,
   _tag_ of any type supported by `QVariant` can be added. In addition
@@ -230,12 +237,12 @@ filter only the responses that are of interest.
   changes to pixel coordinates are given by _degLatPerPixel_ and
   _degLonPerPixel_. _degLatPerPixel_ and _degLonPerPixel_ can be used
   to process mouse clicks by the user to decide whether the user
-  pressed a certain location within few pixels from it or not. 
-  
+  pressed a certain location within few pixels from it or not.
+
   For example, the following code will compare the geographical
   location returned by the signal to the current position and run a
   specific method if it was deemed to be nearby:
-  
+
   ```javascript
         // 15 pixels at 96dpi would correspond to 4 mm
         var nearby_lat = map.pixelRatio * 15 * degLatPerPixel;
@@ -248,7 +255,7 @@ filter only the responses that are of interest.
             return;
         }
    ```
-  
+
 
 ### Methods
 
@@ -420,7 +427,7 @@ methods of QMapboxGL and can be considered synonyms withing this API.
 * `void `**`updateSourcePoint`**`(const QString &sourceID, const QGeoCoordinate &coordinate, const QString &name = QString())
 
   `void `**`updateSourcePoint`**(const QString &sourceID, qreal latitude, qreal longitude, const QString &name = QString())`
-  
+
   Update source given by _sourceID_. If absent, the corresponding
   source will be added. See `addSourcePoint` for the description of
   the arguments.
@@ -430,7 +437,7 @@ methods of QMapboxGL and can be considered synonyms withing this API.
   Update source given by _sourceID_. If absent, the corresponding
   source will be added. See `addSourcePoints` for the description of
   the arguments.
-  
+
 * `void `**`removeSource`**`(const QString &sourceID)`
 
   Remove the source with _sourceID_ from the map. This method has no
@@ -439,7 +446,7 @@ methods of QMapboxGL and can be considered synonyms withing this API.
 
 #### Map layers
 
-Map layers can be added or removed. 
+Map layers can be added or removed.
 
 * `void `**`addLayer`**`(const QString &id, const QVariantMap &params, const QString& before = QString())`
 
@@ -448,10 +455,10 @@ Map layers can be added or removed.
   with _params_. The layer will be added under the layer specified
   by _before_, if specified.  Otherwise it will be added as the
   topmost layer.
-    
+
   If the layer with such _id_ already exists, the old layer will be
   removed and it will be replaced with the layer specified here.
-  
+
 * `void `**`removeLayer`**`(const QString &id)`
 
   Removes the layer with given _id_.
@@ -468,21 +475,21 @@ Map layers can be added or removed.
   ```javascript
   map.addImagePath("position-icon", Qt.resolvedUrl("icons/position"))
   ```
-  
+
   The method would return `true` if image was found and loaded by Qt.
-  
+
 * `void `**`removeImage`**`(const QString &name)`
 
   Remove image specified by _name_.
-  
-  
+
+
 #### Map layout and paint properties
 
 * `void `**`setLayoutProperty`**`(const QString &layer, const QString &property, const QVariant &value)`
 
   `void `**`setLayoutPropertyList`**`(const QString &layer, const QString &property, const QVariantList &value)`
-  
-  Sets a layout _property_ _value_ to an existing _layer_. The 
+
+  Sets a layout _property_ _value_ to an existing _layer_. The
     _property_ string can be any as defined by the
     [Mapbox style specification](https://www.mapbox.com/mapbox-gl-style-spec/)
     for layout properties. Use `setLayoutPropertyList` when the
@@ -492,7 +499,7 @@ Map layers can be added or removed.
 * `void `**`setPaintProperty`**`(const QString &layer, const QString &property, const QVariant &value)`
 
   `void `**`setPaintPropertyList`**`(const QString &layer, const QString &property, const QVariantList &value)`
-  
+
   Sets a paint _property_ _value_ to an existing _layer_. The
     _property_ string can be any as defined by the
     [Mapbox style specification](https://www.mapbox.com/mapbox-gl-style-spec/)
@@ -507,34 +514,35 @@ To allow tracking position of certain locations on the widget, a set
 of methods and signals are available. This allows to draw interactive
 QML items on the top of the certain geographical location shown on the
 map and change the location of QML items on the screen and their
-visibility in response to the map movement, rotation, pitch.
+visibility in response to the map movement, rotation, and pitch
+changes.
 
 * `void `**`trackLocation`**`(const QString &id, const QGeoCoordinate &coordinates)`
 
   Register new location given by its _coordinates_ using _id_. If
   there was a location registered for tracking with the same _id_, its
   coordinates will be replaced by the _coordinates_ given here.
-  
+
   On the first update and the change of the position on screen, signal
   `locationChanged` is emitted.
-  
+
 * `void `**`removeLocationTracking`**`(const QString &id)`
 
   Remove location _id_ from tracking. On removal, signal
   `locationTrackingRemoved` is emitted.
-  
-* `void `**`removeAllLocationTracking`**()`
+
+* `void `**`removeAllLocationTracking`**`()`
 
   Remove tracking for all locations. No signals are emitted in this
   case.
-  
+
 * `signal `**`locationChanged`**`(QString id, bool visible, const QPoint pixel)`
 
   On the change of location position in the widget or its visibility,
   `locationChanged` signal is emitted specifying _id_ of the tracked
   location, its visibility given by _visible_, and location in the
   widget given by _pixel_.
-  
+
 * `signal `**`locationTrackingRemoved`**`(QString id)`
 
   When location tracking is removed through `removeLocationTracking`,

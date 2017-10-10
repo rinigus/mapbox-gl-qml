@@ -64,7 +64,8 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// \brief The QQuickItemMapboxGL class
 ///
-/// Interface with QMapboxGL for QML.
+/// Interface with QMapboxGL for QML. API is documented in api.md available at
+/// https://github.com/rinigus/mapbox-gl-qml/blob/master/api.md
 ///
 /// Note that there is a difference in the order of coordinates when using GeoJSON and
 /// Qt native representation. Here, the methods accepting coordinates as explicit arguments,
