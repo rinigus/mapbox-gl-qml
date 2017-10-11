@@ -6,7 +6,7 @@ Mapbox GL plugin documentation while this API documentation.
 
 API consists of two items:
 [MapboxMap](#qquickitemmapboxgl-c--mapboxmap-qml) for displaying the
-map and MapboxMapGestureArea[(#mapboxmapgesturearea)] that can be used
+map and [MapboxMapGestureArea](#mapboxmapgesturearea) that can be used
 within MapboxMap for interacting with it.
 
 ## Table of Contents
