@@ -4,26 +4,26 @@ This is a description of an API that was written for platforms lacking
 QtLocation 5.9 support. I would like to acknowledge the use of QtLocation 5.9
 Mapbox GL plugin documentation while this API documentation.
 
+## Table of Contents
 
-   * Table of Contents
-      * [QQuickItemMapboxGL (C  ) / MapboxMap (QML)](#qquickitemmapboxgl-c--mapboxmap-qml)
-         * [Include statements](#include-statements)
-         * [General comments](#general-comments)
-         * [Properties](#properties)
-            * [Map settings on initialization](#map-settings-on-initialization)
-            * [Map rendering](#map-rendering)
-            * [Mangling of URLs](#mangling-of-urls)
-            * [Other properties](#other-properties)
-         * [Queries and Signals](#queries-and-signals)
-         * [Methods](#methods)
-            * [General methods](#general-methods)
-            * [Map sources](#map-sources)
-            * [Map layers](#map-layers)
-            * [Map layout and paint properties](#map-layout-and-paint-properties)
-            * [Tracking locations on the map](#tracking-locations-on-the-map)
+   * [QQuickItemMapboxGL (C  ) / MapboxMap (QML)](#qquickitemmapboxgl-c--mapboxmap-qml)
+      * [Include statements](#include-statements)
+      * [General comments](#general-comments)
+      * [Properties](#properties)
+         * [Map settings on initialization](#map-settings-on-initialization)
+         * [Map rendering](#map-rendering)
+         * [Mangling of URLs](#mangling-of-urls)
+         * [Other properties](#other-properties)
+      * [Queries and Signals](#queries-and-signals)
+      * [Methods](#methods)
+         * [General methods](#general-methods)
+         * [Map sources](#map-sources)
+         * [Map layers](#map-layers)
+         * [Map layout and paint properties](#map-layout-and-paint-properties)
+         * [Tracking locations on the map](#tracking-locations-on-the-map)
 
 
-## QQuickItemMapboxGL (C++) / MapboxMap (QML)
+# QQuickItemMapboxGL (C++) / MapboxMap (QML)
 
 QML Quick Item for displaying maps using Mapbox GL. See
 `qquickitemmapboxgl.h` for specific syntax, if needed.
@@ -31,7 +31,7 @@ QML Quick Item for displaying maps using Mapbox GL. See
 In QML, `MapboxMap` type is defined by this plugin. In C++, use
 `QQuickItemMapboxGL` class.
 
-### Include statements
+## Include statements
 
 In QML
 
@@ -45,7 +45,7 @@ In C++
 #include <qquickitemmapboxgl.h>
 ```
 
-### General comments
+## General comments
 
 This Mapbox GL interface is written to keep map properties, sources,
 layers, and properties persistent to the style changes. In particular,
@@ -62,13 +62,13 @@ As an example of the use of this API, see QML file
 [app/qml/main.qml](https://github.com/rinigus/mapbox-gl-qml/blob/master/app/qml/main.qml)
 in this repository.
 
-### Properties
+## Properties
 
 Map properties are classified and listed in the following
 sub-sections. Each property is given with the corresponding type in
 front of it.
 
-#### Map settings on initialization
+### Map settings on initialization
 
 The properties in this subsection should be set on initialization of
 the map. If modified later, the properties may not be applied until
@@ -120,7 +120,7 @@ first created map.
     description of `cacheDatabasePath`.
 
 
-#### Map rendering
+### Map rendering
 
 * `real `**`bearing`** The map bearing angle in degrees. Negative values and
     values over 360 are valid and will wrap. The direction of the
@@ -195,7 +195,7 @@ first created map.
     the map.
 
 
-#### Mangling of URLs
+### Mangling of URLs
 
 Before fetching resources from internet, URLs can be either printed
 for debugging purposes or changed by adding them given suffix.
@@ -210,7 +210,7 @@ for debugging purposes or changed by adding them given suffix.
   requested URL.
 
 
-#### Other properties
+### Other properties
 
 * `string `**`errorString`** Current error string. Please note that this
   property is not covering all possible errors in the API. When set,
@@ -222,7 +222,7 @@ for debugging purposes or changed by adding them given suffix.
   given for the pixel density as specified by `pixelRatio`.
 
 
-### Queries and Signals
+## Queries and Signals
 
 Several properties of the map can be queried via signals. This
 relatively complicated way of querying the properties is induced to
@@ -276,11 +276,11 @@ filter only the responses that are of interest.
    ```
 
 
-### Methods
+## Methods
 
 Map methods are classified and listed in the following sub-sections.
 
-#### General methods
+### General methods
 
 * `QVariantList `**`defaultStyles`**`() const`
 
@@ -320,7 +320,7 @@ Map methods are classified and listed in the following sub-sections.
   scroll wheel.
 
 
-#### Map sources
+### Map sources
 
 Map sources can be added, updated, and removed. Note that, since in
 Mapbox GL update would automatically add source when such source is
@@ -463,7 +463,7 @@ methods of QMapboxGL and can be considered synonyms withing this API.
   effect if the source does not exist.
 
 
-#### Map layers
+### Map layers
 
 Map layers can be added or removed.
 
@@ -502,7 +502,7 @@ Map layers can be added or removed.
   Remove image specified by _name_.
 
 
-#### Map layout and paint properties
+### Map layout and paint properties
 
 * `void `**`setLayoutProperty`**`(const QString &layer, const QString &property, const QVariant &value)`
 
@@ -527,7 +527,7 @@ Map layers can be added or removed.
     example.
 
 
-#### Tracking locations on the map
+### Tracking locations on the map
 
 To allow tracking position of certain locations on the widget, a set
 of methods and signals are available. This allows to draw interactive
