@@ -4,6 +4,27 @@ This is a description of an API that was written for platforms lacking
 QtLocation 5.9 support. I would like to acknowledge the use of QtLocation 5.9
 Mapbox GL plugin documentation while this API documentation.
 
+Table of Contents
+=================
+
+   * [Unofficial Mapbox GL Native bindings for Qt QML: API](#unofficial-mapbox-gl-native-bindings-for-qt-qml-api)
+      * [QQuickItemMapboxGL (C  ) / MapboxMap (QML)](#qquickitemmapboxgl-c--mapboxmap-qml)
+         * [Include statements](#include-statements)
+         * [General comments](#general-comments)
+         * [Properties](#properties)
+            * [Map settings on initialization](#map-settings-on-initialization)
+            * [Map rendering](#map-rendering)
+            * [Mangling of URLs](#mangling-of-urls)
+            * [Other properties](#other-properties)
+         * [Queries and Signals](#queries-and-signals)
+         * [Methods](#methods)
+            * [General methods](#general-methods)
+            * [Map sources](#map-sources)
+            * [Map layers](#map-layers)
+            * [Map layout and paint properties](#map-layout-and-paint-properties)
+            * [Tracking locations on the map](#tracking-locations-on-the-map)
+
+
 ## QQuickItemMapboxGL (C++) / MapboxMap (QML)
 
 QML Quick Item for displaying maps using Mapbox GL. See
