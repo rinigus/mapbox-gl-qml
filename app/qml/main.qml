@@ -62,9 +62,27 @@ ApplicationWindow {
         styleUrl: "mapbox://styles/mapbox/outdoors-v10" //"mapbox://styles/mapbox/streets-v10"
         urlDebug: false
 
-        MapboxMapMouseArea {
+        MapboxMapGestureArea {
             id: mouseArea
             map: map
+            activeClickedGeo: true
+            activeDoubleClickedGeo: true
+            activePressAndHoldGeo: true
+
+            onClicked: console.log("Click: " + mouse)
+            onDoubleClicked: console.log("Double click: " + mouse)
+            onPressAndHold: console.log("Press and hold: " + mouse)
+
+            onClickedGeo: console.log("Click geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
+            onDoubleClickedGeo: console.log("Double click geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
+            onPressAndHoldGeo: {
+                console.log("Press and hold geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel);
+
+                var tname = "track-" + geocoordinate
+                map.trackLocation(tname, geocoordinate);
+                var component = Qt.createComponent("location.qml")
+                component.createObject(appWindow, {"trackname": tname})
+            }
         }
 
         Component.onCompleted: {
@@ -224,17 +242,6 @@ ApplicationWindow {
 
             onReplyLayerExists: console.log("Layer: " + id + " " + exists)
 
-            onReplyCoordinateForPixel: {
-                console.log("Coordinate: " + pixel + " " + geocoordinate.latitude + " " + geocoordinate.longitude + " " + tag["test"])
-                console.log("Sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
-
-                var tname = "track-" + geocoordinate
-                map.trackLocation(tname, geocoordinate);
-                var component = Qt.createComponent("location.qml")
-                //console.log(component.status + " " + component.errorString())
-                component.createObject(appWindow, {"trackname": tname})
-            }
-
             onErrorChanged: console.log("Error message: " + error)
 
             onLocationChanged: console.log("Location: " + id + " " + visible + " " + pixel)
@@ -366,12 +373,12 @@ ApplicationWindow {
 //        }
 //    }
 
-        Timer {
-            interval: 3000
-            running: true
-            onTriggered: {
-                map.urlDebug = true
-                map.styleUrl = "mapbox://styles/mapbox/traffic-night-v2"
-            }
-        }
+//        Timer {
+//            interval: 3000
+//            running: true
+//            onTriggered: {
+//                map.urlDebug = true
+//                map.styleUrl = "mapbox://styles/mapbox/traffic-night-v2"
+//            }
+//        }
 }
