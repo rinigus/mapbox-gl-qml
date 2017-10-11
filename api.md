@@ -4,8 +4,8 @@ This is a description of an API that was written for platforms lacking
 QtLocation 5.9 support. I would like to acknowledge the use of QtLocation 5.9
 Mapbox GL plugin documentation while this API documentation.
 
-## Table of Contents
 
+   * Table of Contents
       * [QQuickItemMapboxGL (C  ) / MapboxMap (QML)](#qquickitemmapboxgl-c--mapboxmap-qml)
          * [Include statements](#include-statements)
          * [General comments](#general-comments)
