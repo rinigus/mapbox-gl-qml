@@ -24,5 +24,5 @@ target.path=$$[QT_INSTALL_QML]/MapboxMap
 INSTALLS += target
 
 qmldirtarget.path=$$[QT_INSTALL_QML]/MapboxMap
-qmldirtarget.files=src/plugin/qmldir
+qmldirtarget.files=src/plugin/qmldir src/plugin/MapboxMapGestureArea.qml
 INSTALLS += qmldirtarget

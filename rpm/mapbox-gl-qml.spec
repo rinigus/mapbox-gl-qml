@@ -45,6 +45,7 @@ QML plugin for Mapbox GL Native.
 %defattr(-, root, root, 0755)
 %{_libdir}/qt5/qml/MapboxMap/libqmlmapboxglplugin.so
 %{_libdir}/qt5/qml/MapboxMap/qmldir
+%{_libdir}/qt5/qml/MapboxMap/MapboxMapGestureArea.qml
 
 %changelog
 * Thu Sep 28 2017 rinigus <rinigus.git@gmail.com> - 1.0.0-1
