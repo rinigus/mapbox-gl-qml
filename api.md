@@ -4,9 +4,14 @@ This is a description of an API that was written for platforms lacking
 QtLocation 5.9 support. I would like to acknowledge the use of QtLocation 5.9
 Mapbox GL plugin documentation while this API documentation.
 
+API consists of two items:
+[MapboxMap](#qquickitemmapboxgl-c--mapboxmap-qml) for displaying the
+map and MapboxMapGestureArea[(#mapboxmapgesturearea)] that can be used
+within MapboxMap for interacting with it.
+
 ## Table of Contents
 
-   * [QQuickItemMapboxGL (C  ) / MapboxMap (QML)](#qquickitemmapboxgl-c--mapboxmap-qml)
+   * [QQuickItemMapboxGL (C++) / MapboxMap (QML)](#qquickitemmapboxgl-c--mapboxmap-qml)
       * [Include statements](#include-statements)
       * [General comments](#general-comments)
       * [Properties](#properties)
@@ -21,6 +26,9 @@ Mapbox GL plugin documentation while this API documentation.
          * [Map layers](#map-layers)
          * [Map layout and paint properties](#map-layout-and-paint-properties)
          * [Tracking locations on the map](#tracking-locations-on-the-map)
+   * [MapboxMapGestureArea](#mapboxmapgesturearea)
+      * [Signals](#signals)
+      * [Properties](#properties-1)
 
 
 # QQuickItemMapboxGL (C++) / MapboxMap (QML)
@@ -566,3 +574,85 @@ changes.
 
   When location tracking is removed through `removeLocationTracking`,
   this signal is emitted specifying the removed location _id_.
+
+
+# MapboxMapGestureArea
+
+MapboxMapGestureArea is intended to be used within MapboxMap for mouse
+and touch interaction. On construction, MapboxMapGestureArea property
+_map_ should be given MapboxMap _id_ for interaction with the map. 
+
+Example of MapboxMapGestureArea use is shown below 
+
+```javascript
+    MapboxMap {
+        id: map
+        anchors.fill: parent
+        
+        MapboxMapGestureArea {
+            id: mouseArea
+            map: map
+            activeClickedGeo: true
+            activeDoubleClickedGeo: true
+            activePressAndHoldGeo: true
+
+            onClicked: console.log("Click: " + mouse)
+            onDoubleClicked: console.log("Double click: " + mouse)
+            onPressAndHold: console.log("Press and hold: " + mouse)
+
+            onClickedGeo: console.log("Click geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
+            onDoubleClickedGeo: console.log("Double click geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
+            onPressAndHoldGeo: console.log("Press and hold geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
+        }
+    }
+```
+
+## Signals
+
+Emitted signals follow the signals emitted by MouseArea. In addition
+to regular MouseArea signals forwarded by MapboxMapGestureArea, there
+are similar signals that forward geographical coordinates at which
+user performed a click, double click, or pressed and hold the
+mouse. To enable signals with geographical coordinates, a
+corresponding property has to be set to true (see description of
+properties below). Note that finding geographical coordinates
+corresponding to the event requires some additional processing by the
+map object and, if not used, is recommended to be left disabled.
+
+For regular MouseArea signals, see Qt documentation.
+
+* **`clicked`**`(MouseEvent mouse)`
+
+  **`doubleClicked`**`(MouseEvent mouse)`
+
+  **`pressAndHold`**`(MouseEvent mouse)`
+
+In addition to regular MouseArea signals, geographical coordinate at
+which user has interacted with the map and its sensitivity is
+forwarded via the following signals:
+
+* **`clickedGeo`**`(var geocoordinate, real degLatPerPixel, real degLonPerPixel)`
+
+  **`doubleClickedGeo`**`(var geocoordinate, real degLatPerPixel, real degLonPerPixel)`
+
+  **`pressAndHoldGeo`**`(var geocoordinate, real degLatPerPixel, real degLonPerPixel)`
+
+In these signals, _geocoordinate_ is QtPositioning.coordinate
+object. See description of `replyCoordinateForPixel` signal of
+MapboxMap for the description of _degLatPerPixel_ and _degLonPerPixel_
+values.
+
+## Properties
+
+* `var `**`map`** Map object to be interacted with through the gesture
+  area. This property must be set on construction.
+
+* `bool `**`activeClickedGeo`** If true, clickedGeo signal will be
+  emitted after a click event. False by default.
+
+* `bool `**`activeDoubleClickedGeo`** If true, doubleClickedGeo signal will be
+  emitted after a double click event. False by default.
+
+* `bool `**`activePressAndHoldGeo`** If true, pressAndHoldGeo signal will be
+  emitted after a double click event. False by default.
+
