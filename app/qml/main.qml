@@ -31,32 +31,49 @@ ApplicationWindow {
         cacheDatabaseMaximalSize: 20*1024*1024
         cacheDatabasePath: "/tmp/mbgl-cache.db"
 
-        //        styleJson: '
-        //{
-        //    "version": 8,
-        //    "name": "Raster",
-        //    "sources": {
-        //        "Raster": {
-        //            "tiles": ["http://localhost:8553/v1/tile?scale=2&z={z}&x={x}&y={y}"],
-        //            "type": "raster",
-        //            "tileSize": 512
-        //        }
-        //    },
-        //    "layers": [
-        //        {
-        //            "id": "raster",
-        //            "type": "raster",
-        //            "source": "Raster",
-        //            "layout": {
-        //                "visibility": "visible"
-        //            },
-        //            "paint": {
-        //                "raster-opacity": 1
-        //            }
-        //        }
-        //    ],
-        //    "id": "test-raster"
-        //}'
+        Behavior on center {
+            CoordinateAnimation {
+                duration: 500
+                easing.type: Easing.InOutQuad
+            }
+        }
+
+        Behavior on margins {
+            PropertyAnimation {
+                duration:500
+                easing.type: Easing.InOutQuad
+            }
+        }
+
+//        Behavior on margins.height { NumberAnimation { duration: 500 } }
+//        Behavior on margins.y { NumberAnimation { duration: 500 } }
+//        Behavior on margins.x { NumberAnimation { duration: 500 } }
+//        Behavior on margins.width { NumberAnimation { duration: 500 } }
+
+//        styleJson: '
+//        {
+//            "sources": {
+//                "raster": {
+//                    "tiles": ["http://localhost:8553/v1/tile?scale=2&z={z}&x={x}&y={y}"],
+//                    "type": "raster",
+//                    "tileSize": 512
+//                }
+//            },
+//            "layers": [
+//                {
+//                    "id": "raster",
+//                    "type": "raster",
+//                    "source": "raster",
+//                    "layout": {
+//                        "visibility": "visible"
+//                    },
+//                    "paint": {
+//                        "raster-opacity": 1
+//                    }
+//                }
+//            ],
+//            "id": "raster"
+//        }'
 
         //accessToken: "INSERT_THE_TOKEN_OR_DEFINE_IN_ENVIRONMENT"
         styleUrl: "mapbox://styles/mapbox/outdoors-v10" //"mapbox://styles/mapbox/streets-v10"
@@ -70,7 +87,17 @@ ApplicationWindow {
             activePressAndHoldGeo: true
 
             onClicked: console.log("Click: " + mouse)
-            onDoubleClicked: console.log("Double click: " + mouse)
+            onDoubleClicked: {
+                //map.center = QtPositioning.coordinate(60.170448, 24.942046)
+                map.margins = Qt.rect(
+                    0.5,               // x
+                    0.05,   // y
+                    0.5,                // width
+                    0.2 // height
+                );
+
+                console.log("Double click: " + mouse)
+            }
             onPressAndHold: console.log("Press and hold: " + mouse)
 
             onClickedGeo: console.log("Click geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
