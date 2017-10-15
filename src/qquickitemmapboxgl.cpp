@@ -676,6 +676,10 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
       connect(n, &QSGMapboxGLTextureNode::replyCoordinateForPixel, this, &QQuickItemMapboxGL::replyCoordinateForPixel, Qt::QueuedConnection);
       connect(this, &QQuickItemMapboxGL::queryCoordinateForPixel, n, &QSGMapboxGLTextureNode::queryCoordinateForPixel, Qt::QueuedConnection);
+
+      /////////////////////////////////////////////////////
+      /// connect map changed signal
+      connect(n->map(), &QMapboxGL::mapChanged, this, &QQuickItemMapboxGL::onMapChanged, Qt::QueuedConnection);
     }
 
   if (sz != m_last_size || m_syncState & PixelRatioNeedsSync)
@@ -769,6 +773,8 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
   bool loaded = n->render(window());
 
   // check if we can add user-added sources, layers ...
+  // its probably not needed here since the condition should be reached
+  // earlier in onMapChanged slot. keeping the check here for safety
   if (loaded && m_block_data_until_loaded)
     {
       m_syncState |= DataNeedsSetupSync;
@@ -805,6 +811,18 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
   else if (loaded && m_timer.isActive())
     emit stopRefreshTimer();
   return n;
+}
+
+void QQuickItemMapboxGL::onMapChanged(QMapboxGL::MapChange change)
+{
+  // check if we can add user-added sources, layers ...
+  if (QMapboxGL::MapChangeDidFinishLoadingStyle == change && m_block_data_until_loaded)
+    {
+      m_syncState |= DataNeedsSetupSync;
+      m_syncState |= DataNeedsSync;
+      m_block_data_until_loaded = false;
+      update();
+    }
 }
 
 ///////////////////////////////////////////////////////////

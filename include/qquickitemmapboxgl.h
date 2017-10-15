@@ -295,10 +295,13 @@ protected:
   QSGNode *updatePaintNode(QSGNode *node, UpdatePaintNodeData *) override;
 
 private:
-  void setError(QString error);
 
-private:
-  std::string resourceTransform(const std::string &&url);
+  void setError(QString error); ///< Set error string, used internally
+
+  std::string resourceTransform(const std::string &&url); ///< Use resource transform API to change requested URL
+
+  void onMapChanged(QMapboxGL::MapChange change); ///< Follow the state of the map
+
 
 private:
 
