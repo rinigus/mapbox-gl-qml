@@ -102,7 +102,6 @@ class QQuickItemMapboxGL : public QQuickItem
 
   Q_PROPERTY(QString cacheDatabasePath READ cacheDatabasePath WRITE setCacheDatabasePath NOTIFY cacheDatabasePathChanged)
   Q_PROPERTY(int cacheDatabaseMaximalSize READ cacheDatabaseMaximalSize WRITE setCacheDatabaseMaximalSize NOTIFY cacheDatabaseMaximalSizeChanged)
-  Q_PROPERTY(QString cacheDatabaseAppName READ cacheDatabaseAppName WRITE setCacheDatabaseAppName NOTIFY cacheDatabaseAppNameChanged)
   Q_PROPERTY(bool cacheDatabaseDefaultPath READ cacheDatabaseDefaultPath WRITE setCacheDatabaseDefaultPath NOTIFY cacheDatabaseDefaultPathChanged)
   Q_PROPERTY(bool cacheDatabaseStoreSettings READ cacheDatabaseStoreSettings WRITE setCacheDatabaseStoreSettings NOTIFY cacheDatabaseStoreSettingsChanged)
 
@@ -157,9 +156,6 @@ public:
 
   int cacheDatabaseMaximalSize() const;
   void setCacheDatabaseMaximalSize(int sz);
-
-  QString cacheDatabaseAppName() const;
-  void setCacheDatabaseAppName(const QString &name);
 
   bool cacheDatabaseDefaultPath() const;
   void setCacheDatabaseDefaultPath(bool s);
@@ -313,8 +309,6 @@ protected:
 
 private:
 
-  bool canUseAutoCacheSettings() const; ///< Returns true if cache settings and path can be stored/determined
-
   void onMapChanged(QMapboxGL::MapChange change); ///< Follow the state of the map
 
   std::string resourceTransform(const std::string &&url); ///< Use resource transform API to change requested URL
@@ -346,7 +340,6 @@ private:
 private:
   QMapboxGLSettings m_settings;
 
-  QString m_cache_app_name;
   bool m_cache_default_path{false};
   bool m_cache_store_settings{false};
 

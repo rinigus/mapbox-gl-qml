@@ -174,7 +174,7 @@ void QQuickItemMapboxGL::setCacheDatabaseMaximalSize(int sz)
 {
   m_settings.setCacheDatabaseMaximumSize(sz);
 
-  if (m_cache_store_settings && canUseAutoCacheSettings())
+  if (m_cache_store_settings)
     {
       QSettings settings;
       settings.setValue(const_cache_settings_name + "/" + const_cache_settings_maxsize,
@@ -182,41 +182,6 @@ void QQuickItemMapboxGL::setCacheDatabaseMaximalSize(int sz)
     }
 
   emit cacheDatabaseMaximalSizeChanged(cacheDatabaseMaximalSize());
-}
-
-/////////////////////////////////////////////////////////////////////
-///
-/// Special handling of the case, where application organization name
-/// is not set. In pure QML applications, its hard to ensure that the
-/// name is set before this QML item is constructed. Hence, a special
-/// handling of the case
-
-bool QQuickItemMapboxGL::canUseAutoCacheSettings() const
-{
-  return !QCoreApplication::organizationName().isEmpty();
-}
-
-QString QQuickItemMapboxGL::cacheDatabaseAppName() const
-{
-  return m_cache_app_name;
-}
-
-void QQuickItemMapboxGL::setCacheDatabaseAppName(const QString &name)
-{
-  QString old = m_cache_app_name;
-  m_cache_app_name = name;
-
-  if (!canUseAutoCacheSettings())
-    {
-      // Set organization and application name
-      QCoreApplication::setApplicationName(name);
-      QCoreApplication::setOrganizationName(name);
-
-      if (cacheDatabaseDefaultPath()) setCacheDatabaseDefaultPath(cacheDatabaseDefaultPath());
-      if (cacheDatabaseStoreSettings())
-        setCacheDatabaseStoreSettings(cacheDatabaseStoreSettings());
-    }
-  if (old != name) emit cacheDatabaseAppNameChanged(name);
 }
 
 bool QQuickItemMapboxGL::cacheDatabaseDefaultPath() const
@@ -228,7 +193,7 @@ void QQuickItemMapboxGL::setCacheDatabaseDefaultPath(bool s)
 {
   bool old = m_cache_default_path;
   m_cache_default_path = s;
-  if (m_cache_default_path && canUseAutoCacheSettings())
+  if (m_cache_default_path)
     {
       QDir dir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
       setCacheDatabasePath(dir.absoluteFilePath(const_cache_default_database_name));
@@ -245,7 +210,7 @@ void QQuickItemMapboxGL::setCacheDatabaseStoreSettings(bool s)
 {
   bool old = m_cache_store_settings;
   m_cache_store_settings = s;
-  if (m_cache_store_settings && canUseAutoCacheSettings())
+  if (m_cache_store_settings)
     {
       QSettings settings;
       int sz = settings.value(const_cache_settings_name + "/" + const_cache_settings_maxsize,

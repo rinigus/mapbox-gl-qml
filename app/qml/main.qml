@@ -28,7 +28,6 @@ ApplicationWindow {
         bearing: bearingSlider.value
         pitch: pitchSlider.value
 
-        cacheDatabaseAppName: "mapboxgl-qml-demo"
         cacheDatabaseStoreSettings: true
         cacheDatabaseDefaultPath: true
 
