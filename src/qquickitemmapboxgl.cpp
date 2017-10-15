@@ -46,9 +46,11 @@
 
 #include <mbgl/util/constants.hpp>
 
-#include <QVariantMap>
+#include <QDir>
+#include <QFileInfo>
 #include <QJsonDocument>
 #include <QMutexLocker>
+#include <QVariantMap>
 
 #include <math.h>
 #include <iostream>
@@ -142,6 +144,20 @@ QString QQuickItemMapboxGL::cacheDatabasePath() const
 
 void QQuickItemMapboxGL::setCacheDatabasePath(const QString &path)
 {
+  // check if path exists and create required directories if needed
+  QFileInfo fi(path);
+  if (!fi.exists())
+    {
+      QDir dir = fi.dir();
+      if (!dir.mkpath("."))
+        {
+          setError("[ERROR] Failed to create directory for the cache database " + path +
+                   " [directory that was attempted to create: " +
+                   dir.path() + "]");
+          return; // skipping non-working settings
+        }
+    }
+
   m_settings.setCacheDatabasePath(path);
   emit cacheDatabasePathChanged(cacheDatabasePath());
 }
@@ -166,6 +182,7 @@ QString QQuickItemMapboxGL::errorString() const
 void QQuickItemMapboxGL::setError(QString error)
 {
   m_errorString = error;
+  std::cerr << error.toStdString() << std::endl;
   emit errorChanged(error);
 }
 
