@@ -664,6 +664,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       if (wasFitView) m_syncState |= FitViewNeedsSync;
 
       m_block_data_until_loaded = true;
+      m_finalize_data_loading = false; // set to true only if data is loaded on full style load
 
       /////////////////////////////////////////////////////
       /// connect all queries
@@ -775,11 +776,12 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
   // check if we can add user-added sources, layers ...
   // its probably not needed here since the condition should be reached
   // earlier in onMapChanged slot. keeping the check here for safety
-  if (loaded && m_block_data_until_loaded)
+  if (loaded && (m_block_data_until_loaded || m_finalize_data_loading))
     {
       m_syncState |= DataNeedsSetupSync;
       m_syncState |= DataNeedsSync;
       m_block_data_until_loaded = false;
+      m_finalize_data_loading = false;
       update();
     }
 
@@ -821,6 +823,12 @@ void QQuickItemMapboxGL::onMapChanged(QMapboxGL::MapChange change)
       m_syncState |= DataNeedsSetupSync;
       m_syncState |= DataNeedsSync;
       m_block_data_until_loaded = false;
+
+      /// Finalize data loading was introduced to ensure the
+      /// data reload after full map is loaded. Without it, it was
+      /// once observed that the data layer failed to load on the
+      /// start of application. Hard to reproduce though
+      m_finalize_data_loading = true;
       update();
     }
 }

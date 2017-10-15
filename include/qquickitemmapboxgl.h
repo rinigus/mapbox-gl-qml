@@ -359,6 +359,7 @@ private:
   QHash<QString, LocationTracker> m_location_tracker;
 
   bool m_block_data_until_loaded{true}; ///< Blocks loading of additional data until base map is loaded
+  bool m_finalize_data_loading{true}; ///< Used to load additional data when the base map is fully loaded
   QMapboxSync::SourceList m_sources;
   QMapboxSync::LayerList m_layers;
   QMapboxSync::LayoutPropertyList m_layout_properties;
