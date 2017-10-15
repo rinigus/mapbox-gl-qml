@@ -28,8 +28,12 @@ ApplicationWindow {
         bearing: bearingSlider.value
         pitch: pitchSlider.value
 
-        cacheDatabaseMaximalSize: 20*1024*1024
-        cacheDatabasePath: "/tmp/mbgl-cache.db"
+        cacheDatabaseAppName: "mapboxgl-qml-demo"
+        cacheDatabaseStoreSettings: true
+        cacheDatabaseDefaultPath: true
+
+        //cacheDatabaseMaximalSize: 20*1024*1024
+        //cacheDatabasePath: "/tmp/mapbox/mbgl-cache.db"
 
         Behavior on center {
             CoordinateAnimation {

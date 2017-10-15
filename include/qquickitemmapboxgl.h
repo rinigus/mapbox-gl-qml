@@ -99,8 +99,12 @@ class QQuickItemMapboxGL : public QQuickItem
   Q_PROPERTY(QString accessToken READ accessToken WRITE setAccessToken NOTIFY accessTokenChanged)
   Q_PROPERTY(QString apiBaseUrl READ apiBaseUrl WRITE setApiBaseUrl NOTIFY apiBaseUrlChanged)
   Q_PROPERTY(QString assetPath READ assetPath WRITE setAssetPath NOTIFY assetPathChanged)
+
   Q_PROPERTY(QString cacheDatabasePath READ cacheDatabasePath WRITE setCacheDatabasePath NOTIFY cacheDatabasePathChanged)
   Q_PROPERTY(int cacheDatabaseMaximalSize READ cacheDatabaseMaximalSize WRITE setCacheDatabaseMaximalSize NOTIFY cacheDatabaseMaximalSizeChanged)
+  Q_PROPERTY(QString cacheDatabaseAppName READ cacheDatabaseAppName WRITE setCacheDatabaseAppName NOTIFY cacheDatabaseAppNameChanged)
+  Q_PROPERTY(bool cacheDatabaseDefaultPath READ cacheDatabaseDefaultPath WRITE setCacheDatabaseDefaultPath NOTIFY cacheDatabaseDefaultPathChanged)
+  Q_PROPERTY(bool cacheDatabaseStoreSettings READ cacheDatabaseStoreSettings WRITE setCacheDatabaseStoreSettings NOTIFY cacheDatabaseStoreSettingsChanged)
 
 public:
   QQuickItemMapboxGL(QQuickItem *parent = nullptr);
@@ -153,6 +157,15 @@ public:
 
   int cacheDatabaseMaximalSize() const;
   void setCacheDatabaseMaximalSize(int sz);
+
+  QString cacheDatabaseAppName() const;
+  void setCacheDatabaseAppName(const QString &name);
+
+  bool cacheDatabaseDefaultPath() const;
+  void setCacheDatabaseDefaultPath(bool s);
+
+  bool cacheDatabaseStoreSettings() const;
+  void setCacheDatabaseStoreSettings(bool s);
 
   QString urlSuffix() const;
   void setUrlSuffix(const QString &urlsfx);
@@ -255,11 +268,15 @@ signals:
 
   void errorChanged(QString error);
 
-  void accessTokenChanged(QString);
-  void apiBaseUrlChanged(QString);
-  void assetPathChanged(QString);
-  void cacheDatabasePathChanged(QString);
-  void cacheDatabaseMaximalSizeChanged(int);
+  void accessTokenChanged(QString token);
+  void apiBaseUrlChanged(QString url);
+  void assetPathChanged(QString path);
+
+  void cacheDatabasePathChanged(QString path);
+  void cacheDatabaseMaximalSizeChanged(int size);
+  void cacheDatabaseAppNameChanged(QString name);
+  void cacheDatabaseDefaultPathChanged(bool defaultpath);
+  void cacheDatabaseStoreSettingsChanged(bool storesettings);
 
   void locationChanged(QString id, bool visible, const QPoint pixel);
   void locationTrackingRemoved(QString id);
@@ -296,11 +313,14 @@ protected:
 
 private:
 
-  void setError(QString error); ///< Set error string, used internally
+  bool canUseAutoCacheSettings() const; ///< Returns true if cache settings and path can be stored/determined
+
+  void onMapChanged(QMapboxGL::MapChange change); ///< Follow the state of the map
 
   std::string resourceTransform(const std::string &&url); ///< Use resource transform API to change requested URL
 
-  void onMapChanged(QMapboxGL::MapChange change); ///< Follow the state of the map
+  void setError(QString error); ///< Set error string, used internally
+
 
 
 private:
@@ -325,6 +345,10 @@ private:
 
 private:
   QMapboxGLSettings m_settings;
+
+  QString m_cache_app_name;
+  bool m_cache_default_path{false};
+  bool m_cache_store_settings{false};
 
   QSize m_last_size; ///< Size of the item
   QTimer m_timer;    ///< Timer used to refresh the map
@@ -381,6 +405,10 @@ private:
     FitViewNeedsSync = 1 << 10
   };
   int m_syncState = NothingNeedsSync;
+
+  const QString const_cache_settings_name{"MapboxGL-QML"};
+  const QString const_cache_settings_maxsize{"maximal_size"};
+  const QString const_cache_default_database_name{"mapboxgl-qml-cache.db"};
 };
 
 #endif // QQUICKITEMMAPBOXGL_H
