@@ -105,6 +105,25 @@ first created map.
     By default, it is set to the value returned by
     `QCoreApplication::applicationDirPath()`.
 
+* `bool `**`cacheDatabaseDefaultPath`** When set to `true`, the path
+    of the cache database is named `mapboxgl-qml-cache.db` and is
+    stored at
+    [QStandardPaths::CacheLocation](http://doc.qt.io/qt-5/qstandardpaths.html#StandardLocation-enum). Set
+    to `false` by default.
+
+    See also general comment regarding cache settings given in the
+    description of `cacheDatabasePath`.
+
+* `int `**`cacheDatabaseMaximalSize`** Returns the cache database maximum
+    hard size in bytes. The database will grow until the limit is
+    reached. Setting a maximum size smaller than the current size of
+    an existing database results in undefined behavior
+
+    By default, it is set to 50 MB.
+
+    See also general comment regarding cache settings given in the
+    description of `cacheDatabasePath`.
+
 * `string `**`cacheDatabasePath`** Returns the cache database path. The cache is used for storing
     recently used resources like tiles and also an offline tile database
     pre-populated by the [Offline Tool](https://github.com/mapbox/mapbox-gl-native/blob/master/bin/offline.sh).
@@ -117,15 +136,11 @@ first created map.
     such as size and path will force the configuration to all newly instantiated QMapboxGL
     objects.
 
-* `int `**`cacheDatabaseMaximalSize`** Returns the cache database maximum
-    hard size in bytes. The database will grow until the limit is
-    reached. Setting a maximum size smaller than the current size of
-    an existing database results in undefined behavior
-
-    By default, it is set to 50 MB.
-
-    See also general comment regarding cache settings given in the
-    description of `cacheDatabasePath`.
+* `bool `**`cacheDatabaseStoreSettings`** When set to `true`, cache
+    database settings will be preserved between runs and, on
+    initialization, loaded from configuration file using
+    [QSettings](http://doc.qt.io/qt-5/qsettings.html). At present,
+    this concerns only cache maximal size. 
 
 
 ### Map rendering
