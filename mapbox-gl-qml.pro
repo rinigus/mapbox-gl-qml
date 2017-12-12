@@ -7,6 +7,9 @@ QMAKE_CXX=/opt/gcc6/bin/g++
 QMAKE_CC=/opt/gcc6/bin/gcc
 QMAKE_LINK=/opt/gcc6/bin/g++
 
+CONFIG += link_pkgconfig
+PKGCONFIG += libcurl
+
 TARGET = qmlmapboxglplugin
 
 include(mapbox-gl-qml.pri)

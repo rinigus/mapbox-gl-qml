@@ -10,12 +10,12 @@ RESOURCES += qml.qrc
 include(../mapbox-gl-qml.pri)
 
 INCLUDEPATH += ../../pkg-mapbox-gl-native/mapbox-gl-native/platform/qt/include ../../pkg-mapbox-gl-native/mapbox-gl-native/include
-LIBS += -L../../pkg-mapbox-gl-native/build -lqmapboxgl -lz
+LIBS += -L../../pkg-mapbox-gl-native/build -lqmapboxgl -lz -lcurl
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 
-# Additional import path used to resolve QML modules just for Qt Quick Designer
+# Additional import path used to resolve QML modules just` for Qt Quick Designer
 QML_DESIGNER_IMPORT_PATH =
 
 # The following define makes your compiler emit warnings if you use

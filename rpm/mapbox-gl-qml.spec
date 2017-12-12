@@ -16,6 +16,7 @@ BuildRequires: pkgconfig(Qt5Quick)
 BuildRequires: pkgconfig(Qt5Qml)
 BuildRequires: pkgconfig(Qt5Location)
 BuildRequires: pkgconfig(Qt5Positioning)
+BuildRequires: pkgconfig(libcurl)
 BuildRequires: qmapboxgl
 
 %description
