@@ -223,7 +223,7 @@ ApplicationWindow {
             map.setLayoutProperty("location-label", "text-justify", "left")
             map.setLayoutProperty("location-label", "text-anchor", "top-left")
             map.setLayoutPropertyList("location-label", "text-offset", [0.2, 0.2])
-            map.setLayoutPropertyList("location-label", "text-font", ["Klokantech Noto Sans Regular"])
+            //map.setLayoutPropertyList("location-label", "text-font", ["Klokantech Noto Sans Regular"])
             map.setPaintProperty("location-label", "text-halo-color", "white")
             map.setPaintProperty("location-label", "text-halo-width", 2)
 
@@ -384,7 +384,7 @@ ApplicationWindow {
     Timer {
         property double angle: 0.0
 
-        interval: 500
+        interval: 50
         running: true
         repeat: true
         onTriggered: {
