@@ -1,5 +1,7 @@
 # Unofficial Mapbox GL Native bindings for Qt QML
 
+[![Donate](https://img.shields.io/badge/donate-liberapay-yellow.svg)](https://liberapay.com/rinigus)
+
 These bindings are mainly developed for supporting Mapbox GL Native
 for platforms that lack Qt/QML 5.9 support, such as Sailfish OS. If
 you have access to QtLocation 5.9, please consider using the official
