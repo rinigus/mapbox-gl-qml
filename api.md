@@ -315,7 +315,11 @@ Map methods are classified and listed in the following sub-sections.
   coordinates in the map view taking into account current `margins`,
   `pitch`, and `bearing`. Note that the expected list elements are
   coordinates as given by `QGeoCoordinate` (`QtPositioning.coordinate`
-  in QML).
+  in QML). For example, to fit Helsinki and Tallinn on a map, use
+  ```javascript
+     map.fitView([QtPositioning.coordinate(60.170448, 24.942046), 
+                  QtPositioning.coordinate(59.436962, 24.753574)])
+  ```
 
 * `void `**`pan`**`(int dx, int dy)`
 
