@@ -32,7 +32,11 @@ void SourceList::SourceAction::apply(QMapboxGL *map)
       // we can always use update since it will be added if needed.
       // however, using update avoids race conditions where add is called
       // after update. such race condition can happen if QML objects are
-      // created in non-expected order, for example
+      // created in non-expected order, for example.
+      //
+      // The functionality of add_or_replace is dependent on this assumption.
+      // If Add and Update are considered different, change that method as well
+      //
       map->updateSource(m_asset.id, m_asset.params);
     }
   else if (type() == Remove)
@@ -43,17 +47,33 @@ void SourceList::SourceAction::apply(QMapboxGL *map)
 
 void SourceList::add(const QString &id, const QVariantMap &params)
 {
-  m_action_stack.append( SourceAction(Action::Add, id, params) );
+  add_to_stack(Action::Add, id, params);
 }
 
 void SourceList::remove(const QString &id)
 {
-  m_action_stack.append( SourceAction(Action::Remove, id) );
+  add_to_stack(Action::Remove, id, QVariantMap());
 }
 
 void SourceList::update(const QString &id, const QVariantMap &params)
 {
-  m_action_stack.append( SourceAction(Action::Update, id, params) );
+  add_to_stack(Action::Update, id, params);
+}
+
+/// To avoid populating stack of added sources (for example during
+/// initialization or longer CPU sleep or background activity without
+/// OpenGL calls), replace the last added source in the stack with the
+/// new one. If the source has been removed earlier in the stack,
+/// drop that remove as well
+void SourceList::add_to_stack(Action::Type t, const QString &id, const QVariantMap &params)
+{
+  // remove previous source action if existing
+  QMutableListIterator<SourceAction> i(m_action_stack);
+  while (i.hasNext())
+    if (i.next().asset().id == id)
+      i.remove();
+
+  m_action_stack.append( SourceAction(t, id, params) );
 }
 
 void SourceList::apply(QMapboxGL *map)
@@ -62,9 +82,7 @@ void SourceList::apply(QMapboxGL *map)
     {
       action.apply(map);
 
-      if (action.type() == Action::Add) m_assets.append(action.asset());
-
-      else if (action.type() == Action::Remove)
+      if (action.type() == Action::Remove)
         {
           QMutableListIterator<Asset> i(m_assets);
           while (i.hasNext())
@@ -72,7 +90,7 @@ void SourceList::apply(QMapboxGL *map)
               i.remove();
         }
 
-      else if (action.type() == Action::Update)
+      else if (action.type() == Action::Add || action.type() == Action::Update)
         {
           Asset update = action.asset();
           bool updated = false;

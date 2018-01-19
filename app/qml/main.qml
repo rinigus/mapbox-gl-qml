@@ -19,8 +19,9 @@ ApplicationWindow {
         id: map
         anchors.fill: parent
 
-        center: QtPositioning.coordinate(59.436962, 24.753574) // Tallinn
-        zoomLevel: 8.0
+        //center: QtPositioning.coordinate(59.436962, 24.753574) // Tallinn
+        center: QtPositioning.coordinate(60.16, 24.94) // Helsinki
+        zoomLevel: 12.0
         minimumZoomLevel: 0
         maximumZoomLevel: 20
         pixelRatio: 1.0
@@ -81,7 +82,7 @@ ApplicationWindow {
 
         //accessToken: "INSERT_THE_TOKEN_OR_DEFINE_IN_ENVIRONMENT"
 
-        property string styleUrlOrig: "http://localhost:8553/v1/mbgl/style"
+        property string styleUrlOrig: "http://localhost:8553/v1/mbgl/style?style=mc-en"
         property int styleIndex: 0
 
         //styleUrl: "mapbox://styles/mapbox/outdoors-v10" //"mapbox://styles/mapbox/streets-v10"
@@ -239,6 +240,18 @@ ApplicationWindow {
 //            var names = [ "P1", "P2", "P3" ]
 //            map.addSourcePoints("points", points, names)
 
+            // Testing addition of many points as an update (don't do it in production! its faster to add once)
+//            var points = []
+//            var angle = 0.0
+//            for (i=0; i < 3000; ++i) {
+//                angle += 1.0 / 180. * Math.PI
+//                if (angle > Math.PI*2)
+//                    angle -= Math.PI*2
+
+//                points.push(QtPositioning.coordinate(60.16 +  0.01*Math.sin(angle), 24.94 + 0.01*Math.cos(angle)))
+//                map.updateSourceLine("route", points);
+//            }
+
 //            map.addLayer("points", {"type": "circle", "source": "points"}, "waterway-label")
 //            map.setPaintProperty("points", "circle-radius", 20)
 //            map.setPaintProperty("points", "circle-color", "red")
@@ -291,7 +304,7 @@ ApplicationWindow {
             if (event.key == Qt.Key_R) {
                 var src = map.styleUrlOrig;
                 map.styleIndex += 1;
-                map.styleUrl = src + "?index=" + String(map.styleIndex);
+                map.styleUrl = src + "&index=" + String(map.styleIndex);
                 console.log("Reloaded");
             }
         }
@@ -394,23 +407,23 @@ ApplicationWindow {
     //        onMetersPerPixelChanged: gps.update()
     //    }
 
-//    Timer {
-//        property double angle: 0.0
+    Timer {
+        property double angle: 0.0
 
-//        interval: 50
-//        running: true
-//        repeat: true
-//        onTriggered: {
-//            angle += 1.0 / 180. * Math.PI
-//            if (angle > Math.PI*2)
-//                angle -= Math.PI*2
+        interval: 50
+        running: true
+        repeat: true
+        onTriggered: {
+            angle += 1.0 / 180. * Math.PI
+            if (angle > Math.PI*2)
+                angle -= Math.PI*2
 
-//            map.updateSourcePoint("location",
-//                                  QtPositioning.coordinate(60.16 +  0.01*Math.sin(angle), 24.94 + 0.01*Math.cos(angle)),
-//                                  "hello, my angle is " + (angle/Math.PI*180).toFixed(1));
-//            //map.center = QtPositioning.coordinate(60.16 +  0.01*Math.sin(angle), 24.94 + 0.01*Math.cos(angle))
-//        }
-//    }
+            map.updateSourcePoint("location",
+                                  QtPositioning.coordinate(60.16 +  0.01*Math.sin(angle), 24.94 + 0.01*Math.cos(angle)),
+                                  "hello, my angle is " + (angle/Math.PI*180).toFixed(1));
+            //map.center = QtPositioning.coordinate(60.16 +  0.01*Math.sin(angle), 24.94 + 0.01*Math.cos(angle))
+        }
+    }
 
 //    Timer {
 //        interval: 3000

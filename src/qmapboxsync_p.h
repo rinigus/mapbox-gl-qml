@@ -83,6 +83,8 @@ namespace QMapboxSync
       Asset m_asset;
     };
 
+    void add_to_stack(Action::Type t, const QString &id, const QVariantMap& params);
+
   protected:
     QList<Asset> m_assets;
     QList<SourceAction> m_action_stack;
