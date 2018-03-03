@@ -675,3 +675,6 @@ values.
 * `bool `**`activePressAndHoldGeo`** If true, pressAndHoldGeo signal will be
   emitted after a double click event. False by default.
 
+* `bool`**`integerZoomLevels`** If true, the result of pinch-zoom will snap to
+  integer zoom levels, which should look better with raster sources in terms of
+  sharpness and level of detail. False by default.
