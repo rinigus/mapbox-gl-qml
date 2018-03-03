@@ -196,6 +196,11 @@ public:
   /// of coordinates in the map view
   Q_INVOKABLE void fitView(const QVariantList &coordinates);
 
+  /// \brief Clear cache
+  ///
+  /// Clear cache database
+  Q_INVOKABLE void clearCache();
+
   /////////////////////////////////////////////////////////////////////////////
   /// Map interaction methods
 

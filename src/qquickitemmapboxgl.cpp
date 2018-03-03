@@ -53,6 +53,9 @@
 #include <QMutexLocker>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QSqlQuery>
 #include <QVariantMap>
 
 #include <math.h>
@@ -710,6 +713,29 @@ void QQuickItemMapboxGL::removeAllLocationTracking()
   m_location_tracker.clear();
 }
 
+/// Cache clearing
+void QQuickItemMapboxGL::clearCache()
+{
+  const QString const_connection_name = "QQuickItemMapboxGL::clearCache::connection";
+
+  { // to remove db as soon as we are done with it
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", const_connection_name);
+    db.setDatabaseName( cacheDatabasePath() );
+    if (db.open())
+      {
+        db.exec("PRAGMA foreign_keys = ON");
+        db.exec("DELETE FROM region_resources");
+        db.exec("DELETE FROM region_tiles");
+        db.exec("DELETE FROM regions");
+        db.exec("DELETE FROM tiles");
+        db.exec("DELETE FROM resources");
+        db.exec("VACUUM");
+        db.close();
+      }
+  }
+
+  QSqlDatabase::removeDatabase(const_connection_name);
+}
 
 /// Update map
 QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData *)

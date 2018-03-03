@@ -305,6 +305,12 @@ Map methods are classified and listed in the following sub-sections.
 
 ### General methods
 
+* `void `**`clearCache`**`()`
+
+  Deletes all data from the current cache database. In addition to
+  performing `DELETE` statements, `VACUUM` is performed to recover the
+  storage.
+
 * `QVariantList `**`defaultStyles`**`() const`
 
   List of default Mapbox styles returned as a JSON array
