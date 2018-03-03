@@ -18,6 +18,9 @@ Item {
     /// Whether pressAndHoldGeo signal is active
     property bool activePressAndHoldGeo: false
 
+    /// Whether to snap zoom gestures to integer zoom levels
+    property bool integerZoomLevels: false
+
     /// emitted on clicked event
     signal clicked(var mouse);
 
@@ -68,7 +71,17 @@ Item {
 
         //! Update map's zoom level when pinch is finished
         onPinchFinished: {
-            map.setZoomLevel(calcZoomDelta(__oldZoom, pinch.scale), pinch.center)
+            var newZoom = calcZoomDelta(__oldZoom, pinch.scale)
+            if (integerZoomLevels) {
+                if (newZoom < __oldZoom) {
+                    newZoom = newZoom % 1 < 0.75 ?
+                        Math.floor(newZoom) : Math.ceil(newZoom)
+                } else if (newZoom > __oldZoom) {
+                    newZoom = newZoom % 1 > 0.25 ?
+                        Math.ceil(newZoom) : Math.floor(newZoom)
+                }
+            }
+            map.setZoomLevel(newZoom, pinch.center)
         }
 
         //! Map's mouse area for implementation of panning in the map
