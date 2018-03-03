@@ -729,6 +729,7 @@ void QQuickItemMapboxGL::clearCache()
         db.exec("DELETE FROM regions");
         db.exec("DELETE FROM tiles");
         db.exec("DELETE FROM resources");
+        db.exec("VACUUM");
         db.close();
       }
   }
