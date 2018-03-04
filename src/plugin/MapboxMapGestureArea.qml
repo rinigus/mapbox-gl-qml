@@ -95,47 +95,50 @@ Item {
             //! Property used to indicate if panning the map
             property bool __isPanning: false
 
+            //! Property used to indicate if touching the map
+            property bool __isTouching: false
+
             //! Last pressed X and Y position
             property int __lastX: -1
             property int __lastY: -1
 
-            //! Panned distance to distinguish panning from clicks
-            property int __pannedDistance: 0
+            //! Required distance to be detected as panning
+            property int __panningThreshold: map.pixelRatio * 20
 
             anchors.fill : parent
 
-            function isPanning() {
-                return __isPanning && __pannedDistance > 0;
-            }
-
-            //! When pressed, indicate that panning has been started and update saved X and Y values
+            //! When pressed, indicate that touching has been started and update saved X and Y values
             onPressed: {
-                __isPanning = true
+                __isPanning = false
+                __isTouching = true
                 __lastX = mouse.x
                 __lastY = mouse.y
-                __pannedDistance = 0
             }
 
-            //! When released, indicate that panning has finished
+            //! When released, indicate that touching has finished
             onReleased: {
-                __isPanning = false
+                __isTouching = false
             }
 
             //! Move the map when panning
             onPositionChanged: {
-                if (__isPanning) {
+                if (__isTouching) {
                     var dx = mouse.x - __lastX
                     var dy = mouse.y - __lastY
-                    map.pan(dx, dy)
-                    __lastX = mouse.x
-                    __lastY = mouse.y
-                    __pannedDistance += Math.abs(dx) + Math.abs(dy);
+                    var dist = Math.sqrt(dx * dx + dy * dy)
+                    if (!__isPanning && dist > __panningThreshold)
+                        __isPanning = true
+                    if (__isPanning) {
+                        map.pan(dx, dy)
+                        __lastX = mouse.x
+                        __lastY = mouse.y
+                    }
                 }
             }
 
             //! When canceled, indicate that panning has finished
             onCanceled: {
-                __isPanning = false;
+                __isTouching = false;
             }
 
             onWheel: {
@@ -146,19 +149,19 @@ Item {
             /// exported signals
 
             onClicked: {
-                if (isPanning()) return;
+                if (__isPanning) return;
                 activeClickedGeo && map.queryCoordinateForPixel(Qt.point(mouse.x, mouse.y), constants.eventPrefix + "onClicked");
                 mpbxGestureArea.clicked(mouse);
             }
 
             onDoubleClicked: {
-                if (isPanning()) return;
+                if (__isPanning) return;
                 activeClickedGeo && map.queryCoordinateForPixel(Qt.point(mouse.x, mouse.y), constants.eventPrefix + "onDoubleClicked");
                 mpbxGestureArea.doubleClicked(mouse);
             }
 
             onPressAndHold: {
-                if (isPanning()) return;
+                if (__isPanning) return;
                 activePressAndHoldGeo && map.queryCoordinateForPixel(Qt.point(mouse.x, mouse.y), constants.eventPrefix + "onPressAndHold");
                 mpbxGestureArea.pressAndHold(mouse);
             }
