@@ -29,8 +29,8 @@ ApplicationWindow {
         bearing: bearingSlider.value
         pitch: pitchSlider.value
 
-        //cacheDatabaseStoreSettings: true
-        //cacheDatabaseDefaultPath: true
+        cacheDatabaseStoreSettings: true
+        cacheDatabaseDefaultPath: true
 
         //cacheDatabaseMaximalSize: 20*1024*1024
         //cacheDatabasePath: "/tmp/mapbox/mbgl-cache.db"
@@ -82,11 +82,11 @@ ApplicationWindow {
 
         //accessToken: "INSERT_THE_TOKEN_OR_DEFINE_IN_ENVIRONMENT"
 
-        property string styleUrlOrig: "http://localhost:8553/v1/mbgl/style?style=mc-en"
+        //property string styleUrlOrig: "http://localhost:8553/v1/mbgl/style?style=osmbright"
         property int styleIndex: 0
 
-        //styleUrl: "mapbox://styles/mapbox/outdoors-v10" //"mapbox://styles/mapbox/streets-v10"
-        styleUrl: styleUrlOrig
+        styleUrl: "mapbox://styles/mapbox/outdoors-v10" //"mapbox://styles/mapbox/streets-v10"
+        //styleUrl: styleUrlOrig
 
         urlDebug: true
 
@@ -97,7 +97,10 @@ ApplicationWindow {
             activeDoubleClickedGeo: true
             activePressAndHoldGeo: true
 
-            onClicked: console.log("Click: " + mouse)
+            onClicked: {
+                console.log("Click: " + mouse)
+                map.queryCoordinateForPixel(Qt.point(mouse.x, mouse.y), "pin_press")
+            }
             onDoubleClicked: {
                 map.setZoomLevel(map.zoomLevel + 1, Qt.point(mouse.x, mouse.y) );
 //                //map.center = QtPositioning.coordinate(60.170448, 24.942046)
@@ -112,7 +115,7 @@ ApplicationWindow {
             }
 //            onPressAndHold: console.log("Press and hold: " + mouse)
 
-//            onClickedGeo: console.log("Click geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
+            onClickedGeo: console.log("Click geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
 //            onDoubleClickedGeo: console.log("Double click geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
 //            onPressAndHoldGeo: {
 //                console.log("Press and hold geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel);
@@ -221,48 +224,46 @@ ApplicationWindow {
             map.setPaintProperty("location", "circle-color", "blue")
 
             map.addLayer("location-label", {"type": "symbol", "source": "location"})
-            //map.setLayoutProperty("location-label", "text-allow-overlap", true)
+            map.setLayoutProperty("location-label", "text-allow-overlap", true)
+            map.setLayoutProperty("location-label", "icon-allow-overlap", true)
+            map.setLayoutProperty("location-label", "icon-image", "position-icon")
+
             //map.setLayoutProperty("location-label", "text-ignore-placement", true)
             map.setLayoutProperty("location-label", "text-field", "{name}")
             map.setLayoutProperty("location-label", "text-justify", "left")
             map.setLayoutProperty("location-label", "text-anchor", "top-left")
-            map.setLayoutPropertyList("location-label", "text-offset", [0.2, 0.2])
+            //map.setLayoutPropertyList("location-label", "text-offset", [0.2, 0.2])
             //map.setLayoutPropertyList("location-label", "text-font", ["Klokantech Noto Sans Regular"])
             map.setPaintProperty("location-label", "text-halo-color", "white")
             map.setPaintProperty("location-label", "text-halo-width", 2)
 
-//            /// multipoint source
-//            var points = [
-//                        QtPositioning.coordinate(60.16, 24.94),
-//                        QtPositioning.coordinate(60.17, 24.95),
-//                        QtPositioning.coordinate(60.18, 24.96)
-//                    ]
-//            var names = [ "P1", "P2", "P3" ]
-//            map.addSourcePoints("points", points, names)
 
-            // Testing addition of many points as an update (don't do it in production! its faster to add once)
-//            var points = []
-//            var angle = 0.0
-//            for (i=0; i < 3000; ++i) {
-//                angle += 1.0 / 180. * Math.PI
-//                if (angle > Math.PI*2)
-//                    angle -= Math.PI*2
+            /// multipoint source
+            var points = [
+                        QtPositioning.coordinate(60.15, 24.93),
+                        QtPositioning.coordinate(60.17, 24.95),
+                        QtPositioning.coordinate(60.18, 24.96)
+                    ]
+            var names = [ "P1", "P2", "P3" ]
+            map.addSourcePoints("points", points, names)
 
-//                points.push(QtPositioning.coordinate(60.16 +  0.01*Math.sin(angle), 24.94 + 0.01*Math.cos(angle)))
-//                map.updateSourceLine("route", points);
-//            }
+            var params = {
+                "type": "circle",
+                "source": "points",
+                "filter": ["==", "name", "P3"],
+            };
 
-//            map.addLayer("points", {"type": "circle", "source": "points"}, "waterway-label")
-//            map.setPaintProperty("points", "circle-radius", 20)
-//            map.setPaintProperty("points", "circle-color", "red")
+            map.addLayer("points-centers", params)
+            map.setPaintProperty("points-centers", "circle-radius", 5)
+            map.setPaintProperty("points-centers", "circle-color", "blue")
 
-//            map.addLayer("points-label", {"type": "symbol", "source": "points"})
-//            map.setLayoutProperty("points-label", "text-field", "{name}")
-//            map.setLayoutProperty("points-label", "text-justify", "left")
-//            map.setLayoutProperty("points-label", "text-anchor", "top-left")
-//            map.setLayoutPropertyList("points-label", "text-offset", [0.2, 0.2])
-//            map.setPaintProperty("points-label", "text-halo-color", "green")
-//            map.setPaintProperty("points-label", "text-halo-width", 2)
+            map.addLayer("points-label", {"type": "symbol", "source": "points"})
+            map.setLayoutProperty("points-label", "text-field", "{name}")
+            map.setLayoutProperty("points-label", "text-justify", "left")
+            map.setLayoutProperty("points-label", "text-anchor", "top-left")
+            map.setLayoutPropertyList("points-label", "text-offset", [0.2, 0.2])
+            map.setPaintProperty("points-label", "text-halo-color", "green")
+            map.setPaintProperty("points-label", "text-halo-width", 2)
 
 //            /// road as line source
 //            var line = [
@@ -297,6 +298,13 @@ ApplicationWindow {
             onErrorChanged: console.log("Error message: " + error)
 
             onLocationChanged: console.log("Location: " + id + " " + visible + " " + pixel)
+
+            onReplyCoordinateForPixel: {
+                console.log("Listen to all replies for coordinates: " + tag + " " + geocoordinate)
+                console.log("lat: "+ geocoordinate.latitude)
+                console.log("lng: "+ geocoordinate.longitude)
+            }
+
         }
 
         focus: true
@@ -306,6 +314,9 @@ ApplicationWindow {
                 map.styleIndex += 1;
                 map.styleUrl = src + "&index=" + String(map.styleIndex);
                 console.log("Reloaded");
+            }
+            if (event.key == Qt.Key_C) {
+                map.clearCache();
             }
         }
     }
@@ -410,7 +421,7 @@ ApplicationWindow {
     Timer {
         property double angle: 0.0
 
-        interval: 50
+        interval: 10
         running: true
         repeat: true
         onTriggered: {
