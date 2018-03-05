@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import QtQuick.Window 2.2
 import QtPositioning 5.3
 
 Item {
@@ -103,7 +104,7 @@ Item {
             property int __lastY: -1
 
             //! Required distance to be detected as panning
-            property int __panningThreshold: map.pixelRatio * 20
+            property int __panningThreshold: Screen.pixelDensity * 3
 
             anchors.fill : parent
 
