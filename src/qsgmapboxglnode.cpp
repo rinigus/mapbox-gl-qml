@@ -77,10 +77,10 @@ void QSGMapboxGLTextureNode::resize(const QSize &size, qreal pixelRatio)
   const QSize fbSize = minSize;
 
   m_pixel_ratio = pixelRatio;
-  m_map->resize(minSize / pixelRatio, fbSize);
+  m_map->resize(minSize / pixelRatio);
 
   m_fbo.reset(new QOpenGLFramebufferObject(fbSize, QOpenGLFramebufferObject::CombinedDepthStencil));
-  m_map->setFramebufferObject(m_fbo->handle());
+  m_map->setFramebufferObject(m_fbo->handle(), minSize);
 
   QSGTexturePlain *fboTexture = static_cast<QSGTexturePlain *>(texture());
   if (!fboTexture)
