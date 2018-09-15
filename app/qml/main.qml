@@ -19,9 +19,10 @@ ApplicationWindow {
         id: map
         anchors.fill: parent
 
-        //center: QtPositioning.coordinate(59.436962, 24.753574) // Tallinn
-        center: QtPositioning.coordinate(60.16, 24.94) // Helsinki
+        center: QtPositioning.coordinate(59.436962, 24.753574) // Tallinn
+        //center: QtPositioning.coordinate(60.16, 24.94) // Helsinki
         zoomLevel: 12.0
+        metersPerPixelTolerance: 0.1
         minimumZoomLevel: 0
         maximumZoomLevel: 20
         pixelRatio: 1.0
@@ -30,11 +31,11 @@ ApplicationWindow {
         pitch: pitchSlider.value
 
         cacheDatabaseStoreSettings: true
-        cacheDatabaseDefaultPath: true
+        //cacheDatabaseDefaultPath: true
 
         //cacheDatabaseMaximalSize: 20*1024*1024
         //cacheDatabasePath: "/tmp/mapbox/mbgl-cache.db"
-        //cacheDatabasePath: ":memory:"
+        cacheDatabasePath: ":memory:"
 
         Behavior on center {
             CoordinateAnimation {
@@ -82,11 +83,11 @@ ApplicationWindow {
 
         //accessToken: "INSERT_THE_TOKEN_OR_DEFINE_IN_ENVIRONMENT"
 
-        //property string styleUrlOrig: "http://localhost:8553/v1/mbgl/style?style=osmbright"
+        property string styleUrlOrig: "http://localhost:8553/v1/mbgl/style?style=osmbright"
         property int styleIndex: 0
 
-        styleUrl: "mapbox://styles/mapbox/outdoors-v10" //"mapbox://styles/mapbox/streets-v10"
-        //styleUrl: styleUrlOrig
+        //styleUrl: "mapbox://styles/mapbox/outdoors-v10" //"mapbox://styles/mapbox/streets-v10"
+        styleUrl: styleUrlOrig
 
         urlDebug: true
 
@@ -309,13 +310,13 @@ ApplicationWindow {
 
         focus: true
         Keys.onPressed: {
-            if (event.key == Qt.Key_R) {
+            if (event.key === Qt.Key_R) {
                 var src = map.styleUrlOrig;
                 map.styleIndex += 1;
                 map.styleUrl = src + "&index=" + String(map.styleIndex);
                 console.log("Reloaded");
             }
-            if (event.key == Qt.Key_C) {
+            if (event.key === Qt.Key_C) {
                 map.clearCache();
             }
         }
@@ -418,23 +419,23 @@ ApplicationWindow {
     //        onMetersPerPixelChanged: gps.update()
     //    }
 
-    Timer {
-        property double angle: 0.0
+//    Timer {
+//        property double angle: 0.0
 
-        interval: 10
-        running: true
-        repeat: true
-        onTriggered: {
-            angle += 1.0 / 180. * Math.PI
-            if (angle > Math.PI*2)
-                angle -= Math.PI*2
+//        interval: 10
+//        running: true
+//        repeat: true
+//        onTriggered: {
+//            angle += 1.0 / 180. * Math.PI
+//            if (angle > Math.PI*2)
+//                angle -= Math.PI*2
 
-            map.updateSourcePoint("location",
-                                  QtPositioning.coordinate(60.16 +  0.01*Math.sin(angle), 24.94 + 0.01*Math.cos(angle)),
-                                  "hello, my angle is " + (angle/Math.PI*180).toFixed(1));
-            //map.center = QtPositioning.coordinate(60.16 +  0.01*Math.sin(angle), 24.94 + 0.01*Math.cos(angle))
-        }
-    }
+//            map.updateSourcePoint("location",
+//                                  QtPositioning.coordinate(60.16 +  0.01*Math.sin(angle), 24.94 + 0.01*Math.cos(angle)),
+//                                  "hello, my angle is " + (angle/Math.PI*180).toFixed(1));
+//            //map.center = QtPositioning.coordinate(60.16 +  0.01*Math.sin(angle), 24.94 + 0.01*Math.cos(angle))
+//        }
+//    }
 
 //    Timer {
 //        interval: 3000
