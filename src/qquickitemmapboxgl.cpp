@@ -63,59 +63,6 @@
 
 #include <QDebug>
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// Special handling of cURL and OpenSSL locks, see https://curl.haxx.se/libcurl/c/threaded-ssl.html
-/// not needed if used without curl mapbox gl http backend
-#include <curl/curl.h>
-#include <openssl/crypto.h>
-static pthread_mutex_t *lockarray;
-static void lock_callback(int mode, int type, const char *file, int line)
-{
-  (void)file;
-  (void)line;
-  if(mode & CRYPTO_LOCK) {
-    pthread_mutex_lock(&(lockarray[type]));
-  }
-  else {
-    pthread_mutex_unlock(&(lockarray[type]));
-  }
-}
-
-static unsigned long thread_id(void)
-{
-  unsigned long ret;
-
-  ret = (unsigned long)pthread_self();
-  return ret;
-}
-
-static void init_locks(void)
-{
-  int i;
-
-  lockarray = (pthread_mutex_t *)OPENSSL_malloc(CRYPTO_num_locks() *
-                                                sizeof(pthread_mutex_t));
-  for(i = 0; i<CRYPTO_num_locks(); i++) {
-    pthread_mutex_init(&(lockarray[i]), NULL);
-  }
-
-  CRYPTO_set_id_callback((unsigned long (*)())thread_id);
-  CRYPTO_set_locking_callback(lock_callback);
-}
-
-static void kill_locks(void)
-{
-  int i;
-
-  CRYPTO_set_locking_callback(NULL);
-  for(i = 0; i<CRYPTO_num_locks(); i++)
-    pthread_mutex_destroy(&(lockarray[i]));
-
-  OPENSSL_free(lockarray);
-}
-/// cURL + OpenSSL handling functions defined
-/////////////////////////////////////////////////////////
-
 QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
   QQuickItem(parent),
   m_margins(0, 0, 0, 0)
@@ -141,18 +88,10 @@ QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
   connect(this, SIGNAL(querySourceExists(QString)), this, SLOT(update()));
   connect(this, SIGNAL(queryLayerExists(QString)), this, SLOT(update()));
   connect(this, SIGNAL(queryCoordinateForPixel(QPointF,QVariant)), this, SLOT(update()));
-
-  // init curl and add ssl locks
-
-  /* Must initialize libcurl before any threads are started */
-  curl_global_init(CURL_GLOBAL_ALL);
-  init_locks();
 }
 
 QQuickItemMapboxGL::~QQuickItemMapboxGL()
 {
-  // curl openssl locks
-  kill_locks();
 }
 
 QVariantList QQuickItemMapboxGL::defaultStyles() const

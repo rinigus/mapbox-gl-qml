@@ -8,7 +8,7 @@ QMAKE_CC=/opt/gcc6/bin/gcc
 QMAKE_LINK=/opt/gcc6/bin/g++
 
 CONFIG += link_pkgconfig
-PKGCONFIG += libcurl openssl
+PKGCONFIG += libcurl
 
 TARGET = qmlmapboxglplugin
 
