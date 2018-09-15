@@ -1,6 +1,6 @@
 Summary: Mapbox GL Native QML plugin
 Name: mapboxgl-qml
-Version: 1.3.0
+Version: 1.3.1
 Release: 1%{?dist}
 License: LGPLv3
 Group: Libraries/Geosciences
@@ -49,6 +49,9 @@ QML plugin for Mapbox GL Native.
 %{_libdir}/qt5/qml/MapboxMap/MapboxMapGestureArea.qml
 
 %changelog
+* Sat Sep 15 2018 rinigus <rinigus.git@gmail.com> - 1.3.1-1
+- Add threshold for metersPerPixel property
+
 * Sun Mar 10 2018 rinigus <rinigus.git@gmail.com> - 1.3.0-1
 - Add pan threshold
 - Update to QMapboxGL qt-1.3.0 API
