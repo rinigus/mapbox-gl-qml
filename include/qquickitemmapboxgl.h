@@ -91,6 +91,7 @@ class QQuickItemMapboxGL : public QQuickItem
 
   /// tracks meters per pixel for the map center
   Q_PROPERTY(qreal metersPerPixel READ metersPerPixel NOTIFY metersPerPixelChanged)
+  Q_PROPERTY(qreal metersPerPixelTolerance READ metersPerPixelTolerance WRITE setMetersPerPixelTolerance NOTIFY metersPerPixelToleranceChanged)
 
   // error
   Q_PROPERTY(QString errorString READ errorString NOTIFY errorChanged)
@@ -129,6 +130,8 @@ public:
   QGeoCoordinate center() const;
 
   qreal metersPerPixel() const;
+  void  setMetersPerPixelTolerance(qreal tol);
+  qreal metersPerPixelTolerance() const;
 
   QString errorString() const;
 
@@ -305,6 +308,7 @@ signals:
   /////////////////////////////////////////////////////////
   /// Tracking the state of the map
   void metersPerPixelChanged(qreal metersPerPixel);
+  void metersPerPixelToleranceChanged(qreal metersPerPixelTolerance);
 
 public slots:
   void setCenter(const QGeoCoordinate &center);
@@ -360,6 +364,7 @@ private:
 
   QGeoCoordinate m_center;
   double m_metersPerPixel = -1;
+  double m_metersPerPixelTolerance = 1e-6;
 
   qreal m_bearing = 0;
   qreal m_pitch = 0;

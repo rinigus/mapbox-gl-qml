@@ -243,6 +243,9 @@ for debugging purposes or changed by adding them given suffix.
 
 * `real `**`metersPerPixel`** Meters per pixel at the center of the map
   given for the pixel density as specified by `pixelRatio`.
+  
+* `real `**`metersPerPixelTolerance`** Tolerance with which
+  `metersPerPixel` is updated. 
 
 
 ## Queries and Signals
