@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.0
 import QtPositioning 5.3
 
 import QQuickItemMapboxGL 1.0
+//import MapboxMap 1.0
 
 import "."
 
