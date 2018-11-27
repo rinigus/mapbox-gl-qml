@@ -40,6 +40,9 @@ Item {
     /// emitted on pressAndHold event with geographical coordinates
     signal pressAndHoldGeo(var geocoordinate, real degLatPerPixel, real degLonPerPixel);
 
+    /// emitted on released event
+    signal released(var mouse);
+
     ////////////////////////////////////////////////
     /// Implementation details
 
@@ -118,7 +121,8 @@ Item {
 
             //! When released, indicate that touching has finished
             onReleased: {
-                __isTouching = false
+                __isTouching = false;
+				mpbxGestureArea.released(mouse);
             }
 
             //! Move the map when panning
