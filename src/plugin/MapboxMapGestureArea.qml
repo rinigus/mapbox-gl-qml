@@ -122,7 +122,7 @@ Item {
             //! When released, indicate that touching has finished
             onReleased: {
                 __isTouching = false;
-				mpbxGestureArea.released(mouse);
+                mpbxGestureArea.released(mouse);
             }
 
             //! Move the map when panning
