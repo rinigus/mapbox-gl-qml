@@ -9,8 +9,12 @@ RESOURCES += qml.qrc
 
 include(../mapbox-gl-qml.pri)
 
-INCLUDEPATH += ../../pkg-mapbox-gl-native/mapbox-gl-native/platform/qt/include ../../pkg-mapbox-gl-native/mapbox-gl-native/include
-LIBS += -L../../pkg-mapbox-gl-native/build -lqmapboxgl -lz -lcurl -lcrypto
+CONFIG += link_pkgconfig
+PKGCONFIG += icu-uc icu-io
+
+#INCLUDEPATH += ../../pkg-mapbox-gl-native/mapbox-gl-native/platform/qt/include ../../pkg-mapbox-gl-native/mapbox-gl-native/include
+#LIBS += -L../../pkg-mapbox-gl-native/build -lqmapboxgl -lz -lcurl -lcrypto
+LIBS += -lqmapboxgl -lz -lcurl -lcrypto -ldl
 #INCLUDEPATH += ../../mapbox-gl-native/platform/qt/include ../../mapbox-gl-native/include
 #LIBS += -L../../mapbox-gl-native/build/qt-linux-x86_64/Debug -lqmapboxgl -lz -lcurl
 

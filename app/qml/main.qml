@@ -115,18 +115,18 @@ ApplicationWindow {
 
                 console.log("Double click: " + mouse)
             }
-//            onPressAndHold: console.log("Press and hold: " + mouse)
+            onPressAndHold: console.log("Press and hold: " + mouse)
 
             onClickedGeo: console.log("Click geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
-//            onDoubleClickedGeo: console.log("Double click geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
-//            onPressAndHoldGeo: {
-//                console.log("Press and hold geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel);
+            onDoubleClickedGeo: console.log("Double click geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
+            onPressAndHoldGeo: {
+                console.log("Press and hold geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel);
 
-//                var tname = "track-" + geocoordinate
-//                map.trackLocation(tname, geocoordinate);
-//                var component = Qt.createComponent("location.qml")
-//                component.createObject(appWindow, {"trackname": tname})
-//            }
+                var tname = "track-" + geocoordinate
+                map.trackLocation(tname, geocoordinate);
+                var component = Qt.createComponent("location.qml")
+                component.createObject(appWindow, {"trackname": tname})
+            }
         }
 
         Component.onCompleted: {
