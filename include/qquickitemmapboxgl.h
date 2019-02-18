@@ -319,6 +319,7 @@ protected:
 private:
 
   void onMapChanged(QMapboxGL::MapChange change); ///< Follow the state of the map
+  void onMapLoadingFailed(QMapboxGL::MapLoadingFailure type, const QString &description);
 
   std::string resourceTransform(const std::string &&url); ///< Use resource transform API to change requested URL
 

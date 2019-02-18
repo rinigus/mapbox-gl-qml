@@ -841,8 +841,9 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       connect(this, &QQuickItemMapboxGL::queryCoordinateForPixel, n, &QSGMapboxGLTextureNode::queryCoordinateForPixel, Qt::QueuedConnection);
 
       /////////////////////////////////////////////////////
-      /// connect map changed signal
+      /// connect map changed failure signals
       connect(n->map(), &QMapboxGL::mapChanged, this, &QQuickItemMapboxGL::onMapChanged, Qt::QueuedConnection);
+      connect(n->map(), &QMapboxGL::mapLoadingFailed, this, &QQuickItemMapboxGL::onMapLoadingFailed, Qt::QueuedConnection);
     }
 
   if (sz != m_last_size || m_syncState & PixelRatioNeedsSync)
@@ -993,6 +994,11 @@ void QQuickItemMapboxGL::onMapChanged(QMapboxGL::MapChange change)
       m_finalize_data_loading = true;
       update();
     }
+}
+
+void QQuickItemMapboxGL::onMapLoadingFailed(QMapboxGL::MapLoadingFailure /*type*/, const QString &description)
+{
+  setError(description);
 }
 
 ///////////////////////////////////////////////////////////
