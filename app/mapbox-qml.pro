@@ -12,11 +12,13 @@ include(../mapbox-gl-qml.pri)
 CONFIG += link_pkgconfig
 PKGCONFIG += icu-uc icu-io
 
-#INCLUDEPATH += ../../pkg-mapbox-gl-native/mapbox-gl-native/platform/qt/include ../../pkg-mapbox-gl-native/mapbox-gl-native/include
-#LIBS += -L../../pkg-mapbox-gl-native/build -lqmapboxgl -lz -lcurl -lcrypto
-LIBS += -lqmapboxgl -lz -lcurl -lcrypto -ldl
-#INCLUDEPATH += ../../mapbox-gl-native/platform/qt/include ../../mapbox-gl-native/include
-#LIBS += -L../../mapbox-gl-native/build/qt-linux-x86_64/Debug -lqmapboxgl -lz -lcurl
+#use_curl_ssl {
+   CONFIG += link_pkgconfig
+   DEFINES += USE_CURL_SSL
+   PKGCONFIG += libcurl openssl
+#}
+
+LIBS += -lqmapboxgl -lz -lcrypto -ldl
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =

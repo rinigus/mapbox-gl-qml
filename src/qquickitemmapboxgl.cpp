@@ -63,6 +63,7 @@
 
 #include <QDebug>
 
+#ifdef USE_CURL_SSL
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Special handling of cURL and OpenSSL locks, see https://curl.haxx.se/libcurl/c/threaded-ssl.html
 /// not needed if used without curl mapbox gl http backend
@@ -115,6 +116,7 @@ static void kill_locks(void)
 }
 /// cURL + OpenSSL handling functions defined
 /////////////////////////////////////////////////////////
+#endif
 
 QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
   QQuickItem(parent),
@@ -142,17 +144,21 @@ QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
   connect(this, SIGNAL(queryLayerExists(QString)), this, SLOT(update()));
   connect(this, SIGNAL(queryCoordinateForPixel(QPointF,QVariant)), this, SLOT(update()));
 
+#ifdef USE_CURL_SSL
   // init curl and add ssl locks
 
   /* Must initialize libcurl before any threads are started */
   curl_global_init(CURL_GLOBAL_ALL);
   init_locks();
+#endif
 }
 
 QQuickItemMapboxGL::~QQuickItemMapboxGL()
 {
+#ifdef USE_CURL_SSL
   // curl openssl locks
   kill_locks();
+#endif
 }
 
 QVariantList QQuickItemMapboxGL::defaultStyles() const

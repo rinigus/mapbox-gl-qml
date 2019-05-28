@@ -3,12 +3,12 @@ CONFIG += qt plugin
 QT += qml quick positioning location network gui sql
 
 CONFIG += c++14
-#QMAKE_CXX=/opt/gcc6/bin/g++
-#QMAKE_CC=/opt/gcc6/bin/gcc
-#QMAKE_LINK=/opt/gcc6/bin/g++
 
-CONFIG += link_pkgconfig
-PKGCONFIG += libcurl openssl
+use_curl_ssl {
+   CONFIG += link_pkgconfig
+   DEFINES += USE_CURL_SSL
+   PKGCONFIG += libcurl openssl
+}
 
 TARGET = qmlmapboxglplugin
 
