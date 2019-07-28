@@ -1,6 +1,6 @@
 Summary: Mapbox GL Native QML plugin
 Name: mapboxgl-qml
-Version: 1.3.2
+Version: 1.5.0.2
 Release: 1%{?dist}
 License: LGPLv3
 Group: Libraries/Geosciences
@@ -49,6 +49,9 @@ QML plugin for Mapbox GL Native.
 %{_libdir}/qt5/qml/MapboxMap/MapboxMapGestureArea.qml
 
 %changelog
+* Sun Jul 28 2019 rinigus <rinigus.git@gmail.com> - 1.5.0.2
+- Expose runtime changes in styleJson
+
 * Sat Nov 7 2018 rinigus <rinigus.git@gmail.com> - 1.3.2-1
 - Add OpenSSL locks during widget initialization
 - Add Linux compilation instructions
