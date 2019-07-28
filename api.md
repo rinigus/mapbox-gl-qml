@@ -199,9 +199,16 @@ first created map.
     would have to divide the radius of the circle by `pixelRatio` when
     modifying the circle radius by `setPaintProperty` method.
 
-* `string `**`styleJson`** The map style in JSON given as a string. Sets a
-    new style from a JSON that must conform to the
-    [Mapbox style specification](https://www.mapbox.com/mapbox-gl-style-spec/).
+* `string `**`styleJson`** The map style in JSON given as a
+    string. Sets a new style from a JSON that must conform to the
+    [Mapbox style
+    specification](https://www.mapbox.com/mapbox-gl-style-spec/).  If
+    the style is loaded via URL, one can track changes in `styleJson`
+    and adjust it via setting to a new value for runtime styling in
+    QML. For example, replacing all `{name_en}` to some other
+    [supported language
+    indicator](https://docs.mapbox.com/help/troubleshooting/change-language/)
+    would allow to change the language of the map.
 
 * `string `**`styleUrl`** The map style URL. Sets a URL for fetching a JSON
     that will be later fed to `setStyleJson`. URLs using the Mapbox
