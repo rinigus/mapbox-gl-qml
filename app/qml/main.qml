@@ -87,8 +87,8 @@ ApplicationWindow {
         property string styleUrlOrig: "http://localhost:8553/v1/mbgl/style?style=osmbright"
         property int styleIndex: 0
 
-        //styleUrl: "mapbox://styles/mapbox/outdoors-v10" //"mapbox://styles/mapbox/streets-v10"
-        styleUrl: styleUrlOrig
+        styleUrl: "mapbox://styles/mapbox/outdoors-v10" //"mapbox://styles/mapbox/streets-v10"
+        //styleUrl: styleUrlOrig
 
         urlDebug: true
 
@@ -127,6 +127,12 @@ ApplicationWindow {
                 var component = Qt.createComponent("location.qml")
                 component.createObject(appWindow, {"trackname": tname})
             }
+        }
+
+        onStyleJsonChanged: {
+            console.log("Swapping languages")
+            var ns = styleJson.replace("{name_en}", "{name}")
+            styleJson = ns;
         }
 
         Component.onCompleted: {

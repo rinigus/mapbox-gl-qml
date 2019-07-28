@@ -84,7 +84,7 @@ class QQuickItemMapboxGL : public QQuickItem
   Q_PROPERTY(QRectF margins READ margins WRITE setMargins NOTIFY marginsChanged) /// see comments below on interpretation of RectF
 
   Q_PROPERTY(qreal pixelRatio READ pixelRatio WRITE setPixelRatio NOTIFY pixelRatioChanged)
-  Q_PROPERTY(QString styleJson READ styleJson WRITE setStyleJson)
+  Q_PROPERTY(QString styleJson READ styleJson WRITE setStyleJson NOTIFY styleJsonChanged)
   Q_PROPERTY(QString styleUrl READ styleUrl WRITE setStyleUrl)
   Q_PROPERTY(QString urlSuffix READ urlSuffix WRITE setUrlSuffix NOTIFY urlSuffixChanged)
   Q_PROPERTY(bool urlDebug READ urlDebug WRITE setUrlDebug NOTIFY urlDebugChanged)
@@ -379,6 +379,7 @@ private:
   qreal m_pixelRatio;
   QString m_styleUrl;
   QString m_styleJson;
+  bool    m_useUrlForStyle = true;
 
   QMutex m_resourceTransformMutex;
   std::string m_urlSuffix;

@@ -525,7 +525,9 @@ QString QQuickItemMapboxGL::styleJson() const
 
 void QQuickItemMapboxGL::setStyleJson(const QString &json)
 {
+  if (QJsonDocument::fromJson(m_styleJson.toUtf8()) == QJsonDocument::fromJson(json.toUtf8())) return;
   m_styleJson = json;
+  m_useUrlForStyle = false;
   m_styleUrl = QString();
   m_syncState |= StyleNeedsSync;
   m_syncState |= DataNeedsSetupSync;
@@ -543,8 +545,10 @@ QString QQuickItemMapboxGL::styleUrl() const
 
 void QQuickItemMapboxGL::setStyleUrl(const QString &url)
 {
+  if (m_styleUrl == url) return;
   m_styleJson = QString();
   m_styleUrl = url;
+  m_useUrlForStyle = true;
   m_syncState |= StyleNeedsSync;
   m_syncState |= DataNeedsSetupSync;
   m_syncState |= DataNeedsSync;
@@ -847,7 +851,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       connect(this, &QQuickItemMapboxGL::queryCoordinateForPixel, n, &QSGMapboxGLTextureNode::queryCoordinateForPixel, Qt::QueuedConnection);
 
       /////////////////////////////////////////////////////
-      /// connect map changed failure signals
+      /// connect map changed and failure signals
       connect(n->map(), &QMapboxGL::mapChanged, this, &QQuickItemMapboxGL::onMapChanged, Qt::QueuedConnection);
       connect(n->map(), &QMapboxGL::mapLoadingFailed, this, &QQuickItemMapboxGL::onMapLoadingFailed, Qt::QueuedConnection);
     }
@@ -911,7 +915,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   if (m_syncState & StyleNeedsSync)
     {
-      if (m_styleJson.isEmpty())
+      if (m_useUrlForStyle)
         map->setStyleUrl(m_styleUrl);
       else
         map->setStyleJson(m_styleJson);
@@ -934,6 +938,17 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       m_images.apply(map);
       m_layout_properties.apply(map);
       m_paint_properties.apply(map);
+    }
+
+  // check if style changed
+  if (m_syncState & DataNeedsSetupSync)
+    {
+      QString style = map->styleJson();
+      if (m_styleJson != style)
+        {
+          m_styleJson = style;
+          emit styleJsonChanged(m_styleJson);
+        }
     }
 
   // settings done
