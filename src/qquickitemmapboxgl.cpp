@@ -525,17 +525,20 @@ QString QQuickItemMapboxGL::styleJson() const
 
 void QQuickItemMapboxGL::setStyleJson(const QString &json)
 {
-  if (QJsonDocument::fromJson(m_styleJson.toUtf8()) == QJsonDocument::fromJson(json.toUtf8())) return;
+  if (QJsonDocument::fromJson(m_styleJson.toUtf8()) == QJsonDocument::fromJson(json.toUtf8()) && !m_useUrlForStyle) return;
   m_styleJson = json;
   m_useUrlForStyle = false;
-  m_styleUrl = QString();
   m_syncState |= StyleNeedsSync;
   m_syncState |= DataNeedsSetupSync;
   m_syncState |= DataNeedsSync;
   m_block_data_until_loaded = true;
+  if (!m_styleUrl.isEmpty())
+    {
+      m_styleUrl = QString();
+      emit styleUrlChanged(QString());
+    }
   update();
   emit styleJsonChanged(json);
-  emit styleUrlChanged(QString());
 }
 
 QString QQuickItemMapboxGL::styleUrl() const
@@ -545,8 +548,7 @@ QString QQuickItemMapboxGL::styleUrl() const
 
 void QQuickItemMapboxGL::setStyleUrl(const QString &url)
 {
-  if (m_styleUrl == url) return;
-  m_styleJson = QString();
+  if (m_styleUrl == url && m_useUrlForStyle) return;
   m_styleUrl = url;
   m_useUrlForStyle = true;
   m_syncState |= StyleNeedsSync;
@@ -554,7 +556,6 @@ void QQuickItemMapboxGL::setStyleUrl(const QString &url)
   m_syncState |= DataNeedsSync;
   m_block_data_until_loaded = true;
   update();
-  emit styleJsonChanged(QString());
   emit styleUrlChanged(url);
 }
 
