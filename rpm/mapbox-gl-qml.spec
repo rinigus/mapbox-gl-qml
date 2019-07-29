@@ -1,6 +1,6 @@
 Summary: Mapbox GL Native QML plugin
 Name: mapboxgl-qml
-Version: 1.5.0.2
+Version: 1.5.0.3
 Release: 1%{?dist}
 License: LGPLv3
 Group: Libraries/Geosciences
