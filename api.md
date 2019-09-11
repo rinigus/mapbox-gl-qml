@@ -44,7 +44,7 @@ In QML, `MapboxMap` type is defined by this plugin. In C++, use
 In QML
 
 ```
-import QQuickItemMapboxGL 1.0
+import MapboxMap 1.0
 ```
 
 In C++
