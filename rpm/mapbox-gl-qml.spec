@@ -10,7 +10,7 @@ Source: %{name}-%{version}.tar.gz
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
-BuildRequires: opt-gcc gcc-c++
+BuildRequires: gcc-c++
 BuildRequires: pkgconfig(Qt5Core)
 BuildRequires: pkgconfig(Qt5Quick)
 BuildRequires: pkgconfig(Qt5Qml)
@@ -30,7 +30,7 @@ QML plugin for Mapbox GL Native.
 
 %qmake5 'CONFIG+=use_curl_ssl' VERSION='%{version}-%{release}' mapbox-gl-qml.pro
 
-%{__make} CXX=/opt/gcc/bin/g++ CC=/opt/gcc/bin/gcc LINK=/opt/gcc/bin/g++ %{?_smp_mflags}
+%{__make} %{?_smp_mflags}
 
 %install
 %{__rm} -rf %{buildroot}
