@@ -321,7 +321,7 @@ private:
   void onMapChanged(QMapboxGL::MapChange change); ///< Follow the state of the map
   void onMapLoadingFailed(QMapboxGL::MapLoadingFailure type, const QString &description);
 
-  std::string resourceTransform(const std::string &&url); ///< Use resource transform API to change requested URL
+  std::string resourceTransform(const std::string &url); ///< Use resource transform API to change requested URL
 
   void setError(QString error); ///< Set error string, used internally
 

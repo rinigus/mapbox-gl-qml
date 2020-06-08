@@ -114,6 +114,7 @@ bool QSGMapboxGLTextureNode::render(QQuickWindow *window)
 
   // QTBUG-62861
   f->glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
+  f->glDepthRangef(0, 1);
 
   window->resetOpenGLState();
   markDirty(QSGNode::DirtyMaterial);

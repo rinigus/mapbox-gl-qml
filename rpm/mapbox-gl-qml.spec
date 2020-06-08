@@ -18,7 +18,8 @@ BuildRequires: pkgconfig(Qt5Location)
 BuildRequires: pkgconfig(Qt5Positioning)
 BuildRequires: pkgconfig(libcurl)
 BuildRequires: pkgconfig(openssl)
-BuildRequires: qmapboxgl
+BuildRequires: qmapboxgl-devel
+Requires: qmapboxgl
 
 %description
 QML plugin for Mapbox GL Native.

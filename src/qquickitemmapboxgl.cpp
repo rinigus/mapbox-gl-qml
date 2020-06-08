@@ -1059,7 +1059,7 @@ void QQuickItemMapboxGL::setUrlSuffix(const QString &urlsfx)
   emit urlSuffixChanged(urlsfx);
 }
 
-std::string QQuickItemMapboxGL::resourceTransform(const std::string &&url)
+std::string QQuickItemMapboxGL::resourceTransform(const std::string &url)
 {
   QMutexLocker lk(&m_resourceTransformMutex);
   std::string newurl = url + m_urlSuffix;
