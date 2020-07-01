@@ -352,6 +352,8 @@ void QQuickItemMapboxGL::setZoomLevel(qreal zoom, const QPointF &center)
 
   if (m_zoomLevel == zoom) return;
 
+  if (zoom != m_fit_zoomLevel) stopFitView();
+
   m_zoomLevel = zoom;
   m_zoomLevelPoint = center;
 
@@ -365,6 +367,8 @@ void QQuickItemMapboxGL::setZoomLevel(qreal zoom, const QPointF &center)
 void QQuickItemMapboxGL::setCenter(const QGeoCoordinate &coordinate)
 {
   if (m_center == coordinate) return;
+
+  if (coordinate != m_fit_center) stopFitView();
 
   m_center = coordinate;
 
@@ -381,15 +385,17 @@ QGeoCoordinate QQuickItemMapboxGL::center() const
 
 void QQuickItemMapboxGL::pan(int dx, int dy)
 {
+  stopFitView();
   m_pan += QPointF(dx, dy);
 
   m_syncState |= PanNeedsSync;
   update();
 }
 
-void QQuickItemMapboxGL::fitView(const QVariantList &coordinates)
+void QQuickItemMapboxGL::fitView(const QVariantList &coordinates, bool preserve)
 {
   size_t counter = 0;
+  if (!preserve) stopFitView();
 
   for (int i = 0; i < coordinates.size(); ++i)
     {
@@ -412,9 +418,27 @@ void QQuickItemMapboxGL::fitView(const QVariantList &coordinates)
 
   if (counter == 0) return;
 
-  if (counter > 1) m_syncState |= FitViewNeedsSync;
-  else /* counter==1 */ setCenter(QGeoCoordinate(m_fit_ne.first, m_fit_ne.second));
+  if (counter > 1)
+    {
+      m_fit_preserve_box = preserve;
+      m_fit_preserve_center = false;
+      m_syncState |= FitViewNeedsSync;
+    }
+  else /* counter==1 */
+    {
+      m_fit_center = QGeoCoordinate(m_fit_ne.first, m_fit_ne.second);
+      m_fit_preserve_box = false;
+      m_fit_preserve_center = preserve;
+      m_syncState |= FitViewCenterNeedsSync;
+    }
+
   update();
+}
+
+void QQuickItemMapboxGL::stopFitView()
+{
+  m_fit_preserve_box = false;
+  m_fit_preserve_center = false;
 }
 
 qreal QQuickItemMapboxGL::metersPerPixel() const
@@ -440,6 +464,7 @@ qreal QQuickItemMapboxGL::bearing() const
 
 void QQuickItemMapboxGL::setBearing(qreal b)
 {
+  stopFitView();
   m_bearing = b;
   m_syncState |= BearingNeedsSync;
   update();
@@ -453,6 +478,7 @@ qreal QQuickItemMapboxGL::pitch() const
 
 void QQuickItemMapboxGL::setPitch(qreal p)
 {
+  stopFitView();
   m_pitch = p;
   m_syncState |= PitchNeedsSync;
   update();
@@ -829,12 +855,14 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
   if (!n)
     {
       bool wasFitView = (m_syncState & FitViewNeedsSync);
+      bool wasFitCenterView = (m_syncState & FitViewCenterNeedsSync);
 
       n = new QSGMapboxGLTextureNode(m_settings, sz, m_pixelRatio, this);
 
       m_syncState = CenterNeedsSync | ZoomNeedsSync | BearingNeedsSync | PitchNeedsSync |
           StyleNeedsSync | MarginsNeedSync;
       if (wasFitView) m_syncState |= FitViewNeedsSync;
+      if (wasFitCenterView) m_syncState |= FitViewCenterNeedsSync;
 
       m_block_data_until_loaded = true;
       m_finalize_data_loading = false; // set to true only if data is loaded on full style load
@@ -873,13 +901,27 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
                        m_margins.right()*width()/m_pixelRatio, m_margins.bottom()*height()/m_pixelRatio);
       map->setMargins(margins);
       m_syncState |= CenterNeedsSync; // center has to be updated after update of the margins
+      if (m_fit_preserve_box) m_syncState |= FitViewNeedsSync;
+      if (m_fit_preserve_center) m_syncState |= FitViewCenterNeedsSync;
     }
 
   if (m_syncState & FitViewNeedsSync)
     {
       QMapbox::CoordinateZoom cz = map->coordinateZoomForBounds(m_fit_sw, m_fit_ne);
-      setCenter(QGeoCoordinate(cz.first.first, cz.first.second));
-      setZoomLevel(cz.second);
+      m_fit_center = QGeoCoordinate(cz.first.first, cz.first.second);
+      m_fit_zoomLevel = cz.second;
+      setCenter(m_fit_center);
+      setZoomLevel(m_fit_zoomLevel);
+    }
+
+  if (m_syncState & FitViewCenterNeedsSync)
+    {
+      QPointF pf = m_pixelRatio * map->pixelForCoordinate({m_fit_center.latitude(), m_fit_center.longitude()});
+      qreal x = pf.x() / width();
+      qreal y = pf.y() / height();
+      if (x < m_margins.left() || x > 1-m_margins.right() ||
+          y < m_margins.top() || y > 1-m_margins.bottom()) // fit center is invisible
+        setCenter(m_fit_center);
     }
 
   if (m_syncState & CenterNeedsSync)

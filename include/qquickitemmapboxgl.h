@@ -196,8 +196,16 @@ public:
   /// \brief Fits view to fit all given coordinates
   ///
   /// finds zoom and the center that would allow to fit the given list
-  /// of coordinates in the map view
-  Q_INVOKABLE void fitView(const QVariantList &coordinates);
+  /// of coordinates in the map view. When set to preserve, will keep fitting
+  /// unless invoked with preserve=false (even with the empty coordinates list),
+  /// or user pans, changes the center, zoom, pitch, bearing.
+  Q_INVOKABLE void fitView(const QVariantList &coordinates, bool preserve=false);
+
+  /// \brief Stops active fit to view
+  ///
+  /// Use to stop fitting to the view which was set by calling fitView with the
+  /// argument preserve=true.
+  Q_INVOKABLE void stopFitView();
 
   /// \brief Clear cache
   ///
@@ -373,6 +381,10 @@ private:
 
   QMapbox::Coordinate m_fit_sw;
   QMapbox::Coordinate m_fit_ne;
+  QGeoCoordinate m_fit_center;
+  qreal m_fit_zoomLevel = -1;
+  bool m_fit_preserve_box = false;
+  bool m_fit_preserve_center = false;
 
   QString m_errorString;
 
@@ -407,7 +419,8 @@ private:
     MarginsNeedSync = 1 << 7,
     DataNeedsSync = 1 << 8,
     DataNeedsSetupSync = 1 << 9,
-    FitViewNeedsSync = 1 << 10
+    FitViewNeedsSync = 1 << 10,
+    FitViewCenterNeedsSync = 1 << 11
   };
   int m_syncState = NothingNeedsSync;
 

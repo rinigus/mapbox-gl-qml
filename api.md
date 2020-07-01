@@ -140,7 +140,7 @@ first created map.
     database settings will be preserved between runs and, on
     initialization, loaded from configuration file using
     [QSettings](http://doc.qt.io/qt-5/qsettings.html). At present,
-    this concerns only cache maximal size. 
+    this concerns only cache maximal size.
 
 
 ### Map rendering
@@ -250,9 +250,9 @@ for debugging purposes or changed by adding them given suffix.
 
 * `real `**`metersPerPixel`** Meters per pixel at the center of the map
   given for the pixel density as specified by `pixelRatio`.
-  
+
 * `real `**`metersPerPixelTolerance`** Tolerance with which
-  `metersPerPixel` is updated. 
+  `metersPerPixel` is updated.
 
 
 ## Queries and Signals
@@ -325,7 +325,7 @@ Map methods are classified and listed in the following sub-sections.
 
   List of default Mapbox styles returned as a JSON array
 
-* `void `**`fitView`**`(const QVariantList &coordinates)`
+* `void `**`fitView`**`(const QVariantList &coordinates, bool preserve = false)`
 
   Finds zoom and the center that would allow to fit the given list of
   coordinates in the map view taking into account current `margins`,
@@ -333,9 +333,21 @@ Map methods are classified and listed in the following sub-sections.
   coordinates as given by `QGeoCoordinate` (`QtPositioning.coordinate`
   in QML). For example, to fit Helsinki and Tallinn on a map, use
   ```javascript
-     map.fitView([QtPositioning.coordinate(60.170448, 24.942046), 
+     map.fitView([QtPositioning.coordinate(60.170448, 24.942046),
                   QtPositioning.coordinate(59.436962, 24.753574)])
   ```
+
+  Optionally, it can fit the given list if `preserve` is set to `true`. This
+  will compensate changes in margins or map size to ensure that the given
+  coordinates are visible. Such automatic fit can be stopped either by user
+  interaction (pan, change of center, zoom, bearing, or pitch) or by calling
+  `stopFitView`.
+
+  When only one coordinate is given in `coordinates`, the given
+  coordinate will be centered if it falls out of the current
+  margins. As with the list, `preserve` can be used to make it
+  automatic until disabled.
+
 
 * `void `**`pan`**`(int dx, int dy)`
 
@@ -361,6 +373,11 @@ Map methods are classified and listed in the following sub-sections.
   position unchanged while zooming the map. This function could be
   used for implementing a pinch gesture or zooming by using the mouse
   scroll wheel.
+
+* `void `**`stopFitView`**`()`
+
+  Stops automatic fit to view. See `fitView` and its argument
+  `preserve` for description.
 
 
 ### Map sources
@@ -615,15 +632,15 @@ changes.
 
 MapboxMapGestureArea is intended to be used within MapboxMap for mouse
 and touch interaction. On construction, MapboxMapGestureArea property
-_map_ should be given MapboxMap _id_ for interaction with the map. 
+_map_ should be given MapboxMap _id_ for interaction with the map.
 
-Example of MapboxMapGestureArea use is shown below 
+Example of MapboxMapGestureArea use is shown below
 
 ```javascript
     MapboxMap {
         id: map
         anchors.fill: parent
-        
+
         MapboxMapGestureArea {
             id: mouseArea
             map: map
