@@ -53,24 +53,74 @@ Item {
     PinchArea {
         id: pincharea
 
+        anchors.fill: parent
+
         //! Holds previous zoom level value
         property double __oldZoom
 
-        anchors.fill: parent
+        //! Animation properties
+        property var    __startTime
+        property var    __lastUpdateTime
+        property double __rate
+        property double __reference
+        property double __lastUpdateValue
+        property double __animationZoom: 0
+        property var    __animationCenter
+
+        readonly property int    __thresholdTime: 100 // in ms
+        readonly property double __thresholdRate: 0.1 // zoom units per second
+        readonly property double __deceleration: 20 // zoom units per second
+        readonly property double __maxDuration: 3e3 // in ms
+        readonly property double __maxChange: 4 // in zoom units
 
         //! Calculate zoom level
         function calcZoomDelta(zoom, percent) {
             return zoom + Math.log(percent)/Math.log(2)
         }
 
+        function calcRate(zoom) {
+            var t = new Date().getTime();
+            var eL = t - __lastUpdateTime;
+            var eS = t - __startTime;
+            if (eL > __thresholdTime) {
+                __rate = (zoom - __lastUpdateValue) / eL * 1e3;
+                __startTime = __lastUpdateTime + eL;
+                __reference = zoom;
+            } else if (eS > __thresholdTime) {
+                __rate = (zoom - __reference) / eS * 1e3;
+                __startTime = __startTime + eS;
+                __reference = zoom;
+            }
+        }
+
+
+        NumberAnimation {
+            id: pinchAnim
+            target: pincharea
+            property: "__animationZoom"
+            easing.type: Easing.OutQuad
+        }
+
+        on__AnimationZoomChanged: map.setZoomLevel(__animationZoom, __animationCenter)
+
         //! Save previous zoom level when pinch gesture started
         onPinchStarted: {
-            __oldZoom = map.zoomLevel
+            pinchAnim.stop()
+            __oldZoom = map.zoomLevel;
+            __startTime = new Date().getTime();
+            __rate = 0;
+            __reference = __oldZoom;
+            __lastUpdateValue = __oldZoom;
+            __lastUpdateTime = __startTime;
         }
 
         //! Update map's zoom level when pinch is updating
         onPinchUpdated: {
-            map.setZoomLevel(calcZoomDelta(__oldZoom, pinch.scale), pinch.center)
+            var newZoom = calcZoomDelta(__oldZoom, pinch.scale)
+            map.setZoomLevel(newZoom, pinch.center)
+            calcRate(newZoom);
+            __lastUpdateValue = newZoom;
+            __lastUpdateTime = new Date().getTime();
         }
 
         //! Update map's zoom level when pinch is finished
@@ -86,6 +136,20 @@ Item {
                 }
             }
             map.setZoomLevel(newZoom, pinch.center)
+
+            // Start animation if pinch speed was fast towards the end
+            if (Math.abs(__rate) > __thresholdRate) {
+                __oldZoom = newZoom;
+                __animationCenter = pinch.center;
+                __animationZoom = newZoom;
+                pinchAnim.duration = Math.min(Math.abs(__rate) / __deceleration * 1e3, __maxDuration)
+                pinchAnim.from = newZoom;
+                pinchAnim.to = Math.max(map.minimumZoomLevel, __oldZoom - __maxChange,
+                                        Math.min(newZoom + __rate*pinchAnim.duration/1e3,
+                                                 __oldZoom + __maxChange, map.maximumZoomLevel))
+                //console.log('Zoom animation ' + pinchAnim.duration + ' ' + pinchAnim.from + ' ' + pinchAnim.to + ' ' + (newZoom + __rate*pinchAnim.duration/1e3))
+                pinchAnim.start()
+            }
         }
 
         Flickable {
@@ -137,6 +201,10 @@ Item {
 
                 onWheel: {
                     map.setZoomLevel( map.zoomLevel + 0.2 * wheel.angleDelta.y / 120, Qt.point(wheel.x, wheel.y) )
+                }
+
+                onPressed: {
+                    if (pinchAnim.running) pinchAnim.stop();
                 }
 
                 /////////////////////////////////////////////////////////
