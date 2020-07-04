@@ -585,6 +585,24 @@ void QQuickItemMapboxGL::setStyleUrl(const QString &url)
   emit styleUrlChanged(url);
 }
 
+/// Gesture feedback
+bool QQuickItemMapboxGL::gestureInProgress() const
+{
+  return m_gestureInProgress;
+}
+
+void QQuickItemMapboxGL::setGestureInProgress(bool progress)
+{
+  if (m_gestureInProgress == progress) return;
+
+  m_gestureInProgress = progress;
+
+  m_syncState |= GestureInProgressNeedsSync;
+  update();
+
+  emit gestureInProgressChanged(m_gestureInProgress);
+}
+
 /// Interaction with the map
 #define DATA_UPDATE { m_syncState |= DataNeedsSync; update(); }
 
@@ -860,7 +878,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       n = new QSGMapboxGLTextureNode(m_settings, sz, m_pixelRatio, this);
 
       m_syncState = CenterNeedsSync | ZoomNeedsSync | BearingNeedsSync | PitchNeedsSync |
-          StyleNeedsSync | MarginsNeedSync;
+          StyleNeedsSync | MarginsNeedSync | GestureInProgressNeedsSync;
       if (wasFitView) m_syncState |= FitViewNeedsSync;
       if (wasFitCenterView) m_syncState |= FitViewCenterNeedsSync;
 
@@ -955,6 +973,9 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       m_center = QGeoCoordinate(map->latitude(), map->longitude());
       emit centerChanged(m_center);
     }
+
+  if (m_syncState & GestureInProgressNeedsSync)
+    map->setGestureInProgress(m_gestureInProgress);
 
   if (m_syncState & StyleNeedsSync)
     {

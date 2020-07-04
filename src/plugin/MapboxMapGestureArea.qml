@@ -244,4 +244,10 @@ Item {
             }
         }
     }
+
+    Component.onCompleted: {
+        map.gestureInProgress = Qt.binding(function () {
+            return flick.moving || pinchAnim.running || pincharea.pinch.active;
+        });
+    }
 }

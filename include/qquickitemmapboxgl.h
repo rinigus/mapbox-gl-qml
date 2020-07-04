@@ -96,6 +96,9 @@ class QQuickItemMapboxGL : public QQuickItem
   // error
   Q_PROPERTY(QString errorString READ errorString NOTIFY errorChanged)
 
+  // for internal use. used by map area to notify that the gesture is in progress
+  Q_PROPERTY(bool gestureInProgress READ gestureInProgress WRITE setGestureInProgress NOTIFY gestureInProgressChanged)
+
   // used only on construction of the map object
   Q_PROPERTY(QString accessToken READ accessToken WRITE setAccessToken NOTIFY accessTokenChanged)
   Q_PROPERTY(QString apiBaseUrl READ apiBaseUrl WRITE setApiBaseUrl NOTIFY apiBaseUrlChanged)
@@ -171,6 +174,9 @@ public:
 
   bool urlDebug() const;
   void setUrlDebug(bool debug);
+
+  bool gestureInProgress() const;
+  void setGestureInProgress(bool progress);
 
   /// Callable methods from QML
   ///
@@ -279,6 +285,8 @@ signals:
   void urlDebugChanged(bool urlDebug);
 
   void errorChanged(QString error);
+
+  void gestureInProgressChanged(bool gestureInProgress);
 
   void accessTokenChanged(QString token);
   void apiBaseUrlChanged(QString url);
@@ -399,6 +407,8 @@ private:
 
   QHash<QString, LocationTracker> m_location_tracker;
 
+  bool m_gestureInProgress = false;
+
   bool m_block_data_until_loaded{true}; ///< Blocks loading of additional data until base map is loaded
   bool m_finalize_data_loading{true}; ///< Used to load additional data when the base map is fully loaded
   QMapboxSync::SourceList m_sources;
@@ -420,7 +430,8 @@ private:
     DataNeedsSync = 1 << 8,
     DataNeedsSetupSync = 1 << 9,
     FitViewNeedsSync = 1 << 10,
-    FitViewCenterNeedsSync = 1 << 11
+    FitViewCenterNeedsSync = 1 << 11,
+    GestureInProgressNeedsSync = 1 << 12
   };
   int m_syncState = NothingNeedsSync;
 
