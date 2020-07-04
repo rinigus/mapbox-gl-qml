@@ -92,8 +92,8 @@ Item {
             id: flick
 
             anchors.fill: parent
-            contentHeight: height*20
-            contentWidth: width*20
+            contentHeight: height*40
+            contentWidth: width*40
             contentX: contentWidth/2 - width/2
             contentY: contentHeight/2 - height/2
 
