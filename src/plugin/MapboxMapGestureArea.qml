@@ -88,87 +88,78 @@ Item {
             map.setZoomLevel(newZoom, pinch.center)
         }
 
-        //! Map's mouse area for implementation of panning in the map
-        MouseArea {
-            id: mousearea
+        Flickable {
+            id: flick
 
-            property var constants: QtObject {
-                property string eventPrefix: "MAPBOX MAP GESTURE AREA - "
+            anchors.fill: parent
+            contentHeight: height*20
+            contentWidth: width*20
+            contentX: contentWidth/2 - width/2
+            contentY: contentHeight/2 - height/2
+
+            property int  __lastX: 0
+            property int  __lastY: 0
+
+            onMovementEnded: {
+                contentX = contentWidth/2
+                contentY = contentHeight/2
             }
 
-            //! Property used to indicate if panning the map
-            property bool __isPanning: false
-
-            //! Property used to indicate if touching the map
-            property bool __isTouching: false
-
-            //! Last pressed X and Y position
-            property int __lastX: -1
-            property int __lastY: -1
-
-            //! Required distance to be detected as panning
-            property int __panningThreshold: Screen.pixelDensity * 3
-
-            anchors.fill : parent
-
-            //! When pressed, indicate that touching has been started and update saved X and Y values
-            onPressed: {
-                __isPanning = false
-                __isTouching = true
-                __lastX = mouse.x
-                __lastY = mouse.y
+            onMovementStarted: {
+                __lastX = contentX
+                __lastY = contentY
             }
 
-            //! When released, indicate that touching has finished
-            onReleased: {
-                __isTouching = false;
-                mpbxGestureArea.released(mouse);
+            onContentXChanged: update()
+            onContentYChanged: update()
+
+            function update() {
+                if (!moving) return
+                var dx = __lastX - contentX
+                var dy = __lastY - contentY
+                map.pan(dx, dy)
+                __lastX = contentX
+                __lastY = contentY
             }
 
-            //! Move the map when panning
-            onPositionChanged: {
-                if (__isTouching) {
-                    var dx = mouse.x - __lastX
-                    var dy = mouse.y - __lastY
-                    var dist = Math.sqrt(dx * dx + dy * dy)
-                    if (!__isPanning && dist > __panningThreshold)
-                        __isPanning = true
-                    if (__isPanning) {
-                        map.pan(dx, dy)
-                        __lastX = mouse.x
-                        __lastY = mouse.y
-                    }
+            MouseArea {
+                id: mousearea
+
+                height: mpbxGestureArea.height
+                width: mpbxGestureArea.width
+
+                x: flick.contentX
+                y: flick.contentY
+
+                property var constants: QtObject {
+                    property string eventPrefix: "MAPBOX MAP GESTURE AREA - "
                 }
-            }
 
-            //! When canceled, indicate that panning has finished
-            onCanceled: {
-                __isTouching = false;
-            }
+                onWheel: {
+                    map.setZoomLevel( map.zoomLevel + 0.2 * wheel.angleDelta.y / 120, Qt.point(wheel.x, wheel.y) )
+                }
 
-            onWheel: {
-                map.setZoomLevel( map.zoomLevel + 0.2 * wheel.angleDelta.y / 120, Qt.point(wheel.x, wheel.y) )
-            }
+                /////////////////////////////////////////////////////////
+                /// exported signals
 
-            /////////////////////////////////////////////////////////
-            /// exported signals
+                onClicked: {
+                    activeClickedGeo && map.queryCoordinateForPixel(Qt.point(mouse.x, mouse.y), constants.eventPrefix + "onClicked");
+                    mpbxGestureArea.clicked(mouse);
+                }
 
-            onClicked: {
-                if (__isPanning) return;
-                activeClickedGeo && map.queryCoordinateForPixel(Qt.point(mouse.x, mouse.y), constants.eventPrefix + "onClicked");
-                mpbxGestureArea.clicked(mouse);
-            }
+                onDoubleClicked: {
+                    activeClickedGeo && map.queryCoordinateForPixel(Qt.point(mouse.x, mouse.y), constants.eventPrefix + "onDoubleClicked");
+                    mpbxGestureArea.doubleClicked(mouse);
+                }
 
-            onDoubleClicked: {
-                if (__isPanning) return;
-                activeClickedGeo && map.queryCoordinateForPixel(Qt.point(mouse.x, mouse.y), constants.eventPrefix + "onDoubleClicked");
-                mpbxGestureArea.doubleClicked(mouse);
-            }
+                onPressAndHold: {
+                    activePressAndHoldGeo && map.queryCoordinateForPixel(Qt.point(mouse.x, mouse.y), constants.eventPrefix + "onPressAndHold");
+                    mpbxGestureArea.pressAndHold(mouse);
+                }
 
-            onPressAndHold: {
-                if (__isPanning) return;
-                activePressAndHoldGeo && map.queryCoordinateForPixel(Qt.point(mouse.x, mouse.y), constants.eventPrefix + "onPressAndHold");
-                mpbxGestureArea.pressAndHold(mouse);
+                onReleased: {
+                    mpbxGestureArea.released(mouse);
+                }
             }
         }
 
