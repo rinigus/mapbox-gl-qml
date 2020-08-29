@@ -29,13 +29,14 @@ QML plugin for Mapbox GL Native.
 
 %build
 
-%qmake5 'CONFIG+=use_curl_ssl' VERSION='%{version}-%{release}' mapbox-gl-qml.pro
+export QT_SELECT=5
+qmake 'CONFIG+=use_curl_ssl' VERSION='%{version}-%{release}' mapbox-gl-qml.pro
 
 %{__make} %{?_smp_mflags}
 
 %install
 %{__rm} -rf %{buildroot}
-%qmake5_install
+%{__make} install INSTALL_ROOT=%{buildroot}
 
 %clean
 %{__rm} -rf %{buildroot}
