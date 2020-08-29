@@ -18,7 +18,7 @@ BuildRequires: pkgconfig(Qt5Location)
 BuildRequires: pkgconfig(Qt5Positioning)
 BuildRequires: pkgconfig(libcurl)
 BuildRequires: pkgconfig(openssl)
-%if !0{sailfish_build}
+%if !0%{?sailfish_build}
 BuildRequires: qt5-qtbase-devel
 %endif
 BuildRequires: qmapboxgl-devel
