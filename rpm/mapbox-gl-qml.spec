@@ -38,9 +38,9 @@ QML plugin for Mapbox GL Native.
 %if 0%{?suse_version} >= 1500 || 0%{?fedora_version} >= 29 || 0%{?centos_version} >= 800
 %qmake_qt5 \
 %else
-%qmake5 \
+%qmake5 'CONFIG+=use_curl_ssl' \
 %endif
-  'CONFIG+=use_curl_ssl' VERSION='%{version}-%{release}' mapbox-gl-qml.pro
+  VERSION='%{version}-%{release}' mapbox-gl-qml.pro
 
 %{__make} %{?_smp_mflags}
 
