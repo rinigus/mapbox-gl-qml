@@ -18,7 +18,7 @@ BuildRequires: pkgconfig(Qt5Location)
 BuildRequires: pkgconfig(Qt5Positioning)
 BuildRequires: pkgconfig(libcurl)
 BuildRequires: pkgconfig(openssl)
-%if !0%{?sailfish_build}
+%if 0%{?fedora_version} >= 29
 BuildRequires: qt5-qtbase-devel
 %endif
 BuildRequires: qmapboxgl-devel
@@ -33,7 +33,12 @@ QML plugin for Mapbox GL Native.
 %build
 
 export QT_SELECT=5
-qmake 'CONFIG+=use_curl_ssl' VERSION='%{version}-%{release}' mapbox-gl-qml.pro
+%if 0%{?fedora_version} >= 29
+%qmake_qt5 \
+%else
+%qmake5 \
+%endif
+  'CONFIG+=use_curl_ssl' VERSION='%{version}-%{release}' mapbox-gl-qml.pro
 
 %{__make} %{?_smp_mflags}
 
