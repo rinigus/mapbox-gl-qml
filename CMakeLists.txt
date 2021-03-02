@@ -10,7 +10,7 @@ set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-option(USE_CURL_SSL "Use curl SSL" ON)
+option(USE_CURL_SSL "Use curl SSL" OFF)
 
 include(FindPkgConfig)
 include(FeatureSummary)
@@ -21,7 +21,7 @@ find_package(Qt5 ${QT_MIN_VERSION} COMPONENTS Gui Quick Positioning Sql REQUIRED
 find_package(QMapboxGL REQUIRED)
 
 if(USE_CURL_SSL)
-	find_package(PkgConfig)
+	find_package(PkgConfig REQUIRED)
 	pkg_check_modules(CURL libcurl IMPORTED_TARGET)
 	pkg_check_modules(OPENSSL openssl IMPORTED_TARGET)
 
