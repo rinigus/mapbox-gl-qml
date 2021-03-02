@@ -1,10 +1,10 @@
 # Unofficial Mapbox GL Native bindings for Qt QML
 
-These bindings are mainly developed for supporting Mapbox GL Native
-for platforms that lack Qt/QML 5.9 support, such as Sailfish OS, and
-application that are targeting Mapbox GL Native maps specifically. If
-you have access to QtLocation 5.9 or above, consider using the
-official Mapbox GL plugin.
+These bindings were originally developed for supporting Mapbox GL
+Native for platforms that lack Qt/QML 5.9 support, such as Sailfish
+OS, and application that are targeting Mapbox GL Native maps
+specifically. These bindings provide an alternative API that can be
+used to access Mapbox GL Native functionality in QML applications.
 
 These bindings are used by few applications, such as [Pure
 Maps](https://github.com/rinigus/pure-maps) and
