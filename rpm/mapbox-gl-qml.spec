@@ -11,6 +11,7 @@ Source: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: gcc-c++
+BuildRequires: cmake
 BuildRequires: pkgconfig(Qt5Core)
 BuildRequires: pkgconfig(Qt5Quick)
 BuildRequires: pkgconfig(Qt5Qml)
@@ -36,11 +37,10 @@ QML plugin for Mapbox GL Native.
 %build
 
 %if 0%{?suse_version} >= 1500 || 0%{?fedora_version} >= 29 || 0%{?centos_version} >= 800
-%qmake_qt5 \
+%cmake
 %else
-%qmake5 'CONFIG+=use_curl_ssl' \
+%cmake -DUSE_CURL_SSL=ON
 %endif
-  VERSION='%{version}-%{release}' mapbox-gl-qml.pro
 
 %{__make} %{?_smp_mflags}
 
