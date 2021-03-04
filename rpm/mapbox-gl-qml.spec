@@ -46,7 +46,7 @@ QML plugin for Mapbox GL Native.
 
 %install
 %{__rm} -rf %{buildroot}
-%{__make} install INSTALL_ROOT=%{buildroot}
+%{__make} install DESTDIR=%{buildroot}
 
 %clean
 %{__rm} -rf %{buildroot}
