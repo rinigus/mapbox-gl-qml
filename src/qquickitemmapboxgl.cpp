@@ -135,7 +135,7 @@ QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
 
  setFlag(ItemHasContents);
 
-  m_styleUrl = QMapbox::defaultStyles()[0].first;
+  m_styleUrl = QString(); // QMapbox::defaultStyles()[0].first;
   m_styleJson = QString(); // empty
 
   m_settings.setViewportMode(QMapboxGLSettings::DefaultViewport);
@@ -182,14 +182,14 @@ QQuickItemMapboxGL::~QQuickItemMapboxGL()
 QVariantList QQuickItemMapboxGL::defaultStyles() const
 {
   QVariantList array;
-  auto styles = QMapbox::defaultStyles();
-  for (const auto &i: styles)
-    {
-      QVariantMap o;
-      o.insert("url", QVariant(i.first));
-      o.insert("name", QVariant(i.second));
-      array.append(o);
-    }
+  // auto styles = QMapbox::defaultStyles();
+  // for (const auto &i: styles)
+  //   {
+  //     QVariantMap o;
+  //     o.insert("url", QVariant(i.first));
+  //     o.insert("name", QVariant(i.second));
+  //     array.append(o);
+  //   }
 
   return array;
 }
@@ -197,12 +197,12 @@ QVariantList QQuickItemMapboxGL::defaultStyles() const
 /// Properties that have to be set during construction of the map
 QString QQuickItemMapboxGL::accessToken() const
 {
-  return m_settings.accessToken();
+  return m_settings.apiKey();
 }
 
 void QQuickItemMapboxGL::setAccessToken(const QString &token)
 {
-  m_settings.setAccessToken(token);
+  m_settings.setApiKey(token);
   emit accessTokenChanged(accessToken());
 }
 
