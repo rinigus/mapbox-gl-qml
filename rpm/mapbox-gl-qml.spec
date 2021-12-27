@@ -31,6 +31,11 @@ Requires: qmapboxgl
 %description
 QML plugin for Mapbox GL Native.
 
+PackageName: Mapbox GL QML Plugin
+Categories:
+  - Maps
+  - Science
+
 %prep
 %setup -q -n %{name}-%{version}
 
