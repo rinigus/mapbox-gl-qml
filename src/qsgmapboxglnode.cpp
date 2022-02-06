@@ -59,6 +59,7 @@ static const QSize minTextureSize = QSize(64, 64);
 QSGMapboxGLTextureNode::QSGMapboxGLTextureNode(const QMapboxGLSettings &settings, const QSize &size, qreal pixelRatio, QQuickItem *item)
   : QObject(), QSGSimpleTextureNode(), m_pixel_ratio(pixelRatio)
 {
+  qInfo() << "Using QSGMapboxGLTextureNode for map rendering";
   setTextureCoordinatesTransform(QSGSimpleTextureNode::MirrorVertically);
   setFiltering(QSGTexture::Linear);
 
@@ -161,7 +162,8 @@ QSGMapboxGLRenderNode::QSGMapboxGLRenderNode(const QMapboxGLSettings &settings, 
                                              qreal pixelRatio, QQuickItem *item)
   : QObject(), QSGRenderNode(), m_pixel_ratio(pixelRatio)
 {
-  m_map.reset(new QMapboxGL(nullptr, settings, size, pixelRatio));
+  qInfo() << "Using QSGMapboxGLRenderNode for map rendering";
+  m_map.reset(new QMapboxGL(nullptr, settings, size, pixelRatio*item->window()->screen()->devicePixelRatio()));
   QObject::connect(m_map.data(), &QMapboxGL::needsRendering, item, &QQuickItem::update);
   QObject::connect(m_map.data(), &QMapboxGL::copyrightsChanged, item, &QQuickItem::update);
 }
@@ -187,6 +189,15 @@ void QSGMapboxGLRenderNode::render(const RenderState *state)
   // QTBUG-62861
   f->glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
   f->glDepthRangef(0, 1);
+}
+
+void QSGMapboxGLRenderNode::resize(const QSize &size, qreal pixelRatio)
+{
+  //const QSize& minSize = size.expandedTo(minTextureSize);
+  QSize minSize = size.expandedTo(minTextureSize);
+
+  m_pixel_ratio = pixelRatio;
+  m_map->resize(minSize / pixelRatio);
 }
 
 QSGRenderNode::StateFlags QSGMapboxGLRenderNode::changedStates() const

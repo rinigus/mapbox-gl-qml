@@ -948,14 +948,14 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
     }
   else
     {
-      if (m_useFBO) map = static_cast<QSGMapboxGLTextureNode *>(node)->map();
-      else map = static_cast<QSGMapboxGLRenderNode *>(node)->map();
+      map = m_useFBO ? static_cast<QSGMapboxGLTextureNode *>(node)->map() :
+                       static_cast<QSGMapboxGLRenderNode *>(node)->map();
     }
 
   if (sz != m_last_size || m_syncState & PixelRatioNeedsSync)
     {
       if (m_useFBO) static_cast<QSGMapboxGLTextureNode *>(node)->resize(sz, m_pixelRatio);
-      else map->resize(sz);
+      else static_cast<QSGMapboxGLRenderNode *>(node)->resize(sz, m_pixelRatio);
       m_syncState |= MarginsNeedSync;
       m_last_size = sz;
     }

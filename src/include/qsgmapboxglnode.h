@@ -90,6 +90,8 @@ public:
 
   QMapboxGL* map() const;
 
+  void resize(const QSize &size, qreal pixelRatio);
+
   // QSGRenderNode
   void render(const RenderState *state) override;
   StateFlags changedStates() const override;
