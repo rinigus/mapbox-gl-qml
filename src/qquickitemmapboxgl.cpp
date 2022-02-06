@@ -63,6 +63,8 @@
 
 #include <QDebug>
 
+//#define USE_FBO
+
 #ifdef USE_CURL_SSL
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Special handling of cURL and OpenSSL locks, see https://curl.haxx.se/libcurl/c/threaded-ssl.html
@@ -120,7 +122,12 @@ static void kill_locks(void)
 
 QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
   QQuickItem(parent),
-  m_margins(0, 0, 0, 0)
+  m_margins(0, 0, 0, 0),
+#ifndef USE_FBO
+  m_useFBO(false)
+#else
+  m_useFBO(true)
+#endif
 {
   setFlag(ItemHasContents);
 
@@ -288,6 +295,23 @@ void QQuickItemMapboxGL::setCacheDatabaseStoreSettings(bool s)
       setCacheDatabaseMaximalSize(sz);
     }
   if (old != s) emit cacheDatabaseStoreSettingsChanged(s);
+}
+
+bool QQuickItemMapboxGL::useFBO() const
+{
+  return m_useFBO;
+}
+
+void QQuickItemMapboxGL::setUseFBO(bool fbo)
+{
+  if (m_first_init_done)
+    {
+      qWarning() << "Use FBO cannot be changed after the initialization of the map. Set it at creation of the widget";
+      return;
+    }
+
+  m_useFBO = fbo;
+  emit useFBOChanged(fbo);
 }
 
 /// Error feedback
@@ -867,15 +891,14 @@ void QQuickItemMapboxGL::clearCache()
 /// Update map
 QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData *)
 {
-  QSGMapboxGLTextureNode *n = static_cast<QSGMapboxGLTextureNode *>(node);
   QSize sz(width(), height());
+  QMapboxGL *map = nullptr;
+  m_first_init_done = true;
 
-  if (!n)
+  if (!node)
     {
       bool wasFitView = (m_syncState & FitViewNeedsSync);
       bool wasFitCenterView = (m_syncState & FitViewCenterNeedsSync);
-
-      n = new QSGMapboxGLTextureNode(m_settings, sz, m_pixelRatio, this);
 
       m_syncState = CenterNeedsSync | ZoomNeedsSync | BearingNeedsSync | PitchNeedsSync |
           StyleNeedsSync | MarginsNeedSync | GestureInProgressNeedsSync;
@@ -886,32 +909,57 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       m_finalize_data_loading = false; // set to true only if data is loaded on full style load
 
       /////////////////////////////////////////////////////
-      /// connect all queries
+      /// create node and connect all queries
+      if (m_useFBO)
+        {
+          QSGMapboxGLTextureNode *n = new QSGMapboxGLTextureNode(m_settings, sz, m_pixelRatio, this);
+          node = n;
+          map = n->map();
 
-      connect(n, &QSGMapboxGLTextureNode::replySourceExists, this, &QQuickItemMapboxGL::replySourceExists, Qt::QueuedConnection);
-      connect(this, &QQuickItemMapboxGL::querySourceExists, n, &QSGMapboxGLTextureNode::querySourceExists, Qt::QueuedConnection);
+          connect(n, &QSGMapboxGLTextureNode::replySourceExists, this, &QQuickItemMapboxGL::replySourceExists, Qt::QueuedConnection);
+          connect(this, &QQuickItemMapboxGL::querySourceExists, n, &QSGMapboxGLTextureNode::querySourceExists, Qt::QueuedConnection);
 
-      connect(n, &QSGMapboxGLTextureNode::replyLayerExists, this, &QQuickItemMapboxGL::replyLayerExists, Qt::QueuedConnection);
-      connect(this, &QQuickItemMapboxGL::queryLayerExists, n, &QSGMapboxGLTextureNode::queryLayerExists, Qt::QueuedConnection);
+          connect(n, &QSGMapboxGLTextureNode::replyLayerExists, this, &QQuickItemMapboxGL::replyLayerExists, Qt::QueuedConnection);
+          connect(this, &QQuickItemMapboxGL::queryLayerExists, n, &QSGMapboxGLTextureNode::queryLayerExists, Qt::QueuedConnection);
 
-      connect(n, &QSGMapboxGLTextureNode::replyCoordinateForPixel, this, &QQuickItemMapboxGL::replyCoordinateForPixel, Qt::QueuedConnection);
-      connect(this, &QQuickItemMapboxGL::queryCoordinateForPixel, n, &QSGMapboxGLTextureNode::queryCoordinateForPixel, Qt::QueuedConnection);
+          connect(n, &QSGMapboxGLTextureNode::replyCoordinateForPixel, this, &QQuickItemMapboxGL::replyCoordinateForPixel, Qt::QueuedConnection);
+          connect(this, &QQuickItemMapboxGL::queryCoordinateForPixel, n, &QSGMapboxGLTextureNode::queryCoordinateForPixel, Qt::QueuedConnection);
+        }
+      else
+        {
+          QSGMapboxGLRenderNode *n = new QSGMapboxGLRenderNode(m_settings, sz, m_pixelRatio, this);
+          node = n;
+          map = n->map();
+
+          connect(n, &QSGMapboxGLRenderNode::replySourceExists, this, &QQuickItemMapboxGL::replySourceExists, Qt::QueuedConnection);
+          connect(this, &QQuickItemMapboxGL::querySourceExists, n, &QSGMapboxGLRenderNode::querySourceExists, Qt::QueuedConnection);
+
+          connect(n, &QSGMapboxGLRenderNode::replyLayerExists, this, &QQuickItemMapboxGL::replyLayerExists, Qt::QueuedConnection);
+          connect(this, &QQuickItemMapboxGL::queryLayerExists, n, &QSGMapboxGLRenderNode::queryLayerExists, Qt::QueuedConnection);
+
+          connect(n, &QSGMapboxGLRenderNode::replyCoordinateForPixel, this, &QQuickItemMapboxGL::replyCoordinateForPixel, Qt::QueuedConnection);
+          connect(this, &QQuickItemMapboxGL::queryCoordinateForPixel, n, &QSGMapboxGLRenderNode::queryCoordinateForPixel, Qt::QueuedConnection);
+        }
 
       /////////////////////////////////////////////////////
       /// connect map changed and failure signals
-      connect(n->map(), &QMapboxGL::mapChanged, this, &QQuickItemMapboxGL::onMapChanged, Qt::QueuedConnection);
-      connect(n->map(), &QMapboxGL::mapLoadingFailed, this, &QQuickItemMapboxGL::onMapLoadingFailed, Qt::QueuedConnection);
+      connect(map, &QMapboxGL::mapChanged, this, &QQuickItemMapboxGL::onMapChanged, Qt::QueuedConnection);
+      connect(map, &QMapboxGL::mapLoadingFailed, this, &QQuickItemMapboxGL::onMapLoadingFailed, Qt::QueuedConnection);
+    }
+  else
+    {
+      if (m_useFBO) map = static_cast<QSGMapboxGLTextureNode *>(node)->map();
+      else map = static_cast<QSGMapboxGLRenderNode *>(node)->map();
     }
 
   if (sz != m_last_size || m_syncState & PixelRatioNeedsSync)
     {
-      n->resize(sz, m_pixelRatio);
+      if (m_useFBO) static_cast<QSGMapboxGLTextureNode *>(node)->resize(sz, m_pixelRatio);
+      else map->resize(sz);
       m_syncState |= MarginsNeedSync;
       m_last_size = sz;
     }
 
-  // update all settings
-  QMapboxGL *map = n->map();
 
   if (m_syncState & MarginsNeedSync)
     {
@@ -1019,7 +1067,9 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
   m_syncState = NothingNeedsSync;
 
   // render the map and trigger the timer if the map is not loaded fully
-  bool loaded = n->render(window());
+  bool loaded = map->isFullyLoaded();
+  if (m_useFBO) static_cast<QSGMapboxGLTextureNode *>(node)->render(window());
+  node->markDirty(QSGNode::DirtyMaterial);
 
   // check if we can add user-added sources, layers ...
   // its probably not needed here since the condition should be reached
@@ -1060,7 +1110,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
     emit startRefreshTimer();
   else if (loaded && m_timer.isActive())
     emit stopRefreshTimer();
-  return n;
+  return node;
 }
 
 void QQuickItemMapboxGL::onMapChanged(QMapboxGL::MapChange change)

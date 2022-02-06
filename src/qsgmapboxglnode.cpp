@@ -45,6 +45,7 @@
 
 #include <QtGui/QOpenGLContext>
 #include <QtGui/QOpenGLFunctions>
+#include <QScreen>
 
 #include <math.h>
 
@@ -52,6 +53,8 @@
 
 static const QSize minTextureSize = QSize(64, 64);
 
+////////////////////////////////////////////
+/// QSGMapboxGLTextureNode
 
 QSGMapboxGLTextureNode::QSGMapboxGLTextureNode(const QMapboxGLSettings &settings, const QSize &size, qreal pixelRatio, QQuickItem *item)
   : QObject(), QSGSimpleTextureNode(), m_pixel_ratio(pixelRatio)
@@ -73,7 +76,8 @@ QSGMapboxGLTextureNode::~QSGMapboxGLTextureNode()
 
 void QSGMapboxGLTextureNode::resize(const QSize &size, qreal pixelRatio)
 {
-  const QSize& minSize = size.expandedTo(minTextureSize);
+  //const QSize& minSize = size.expandedTo(minTextureSize);
+  QSize minSize = size.expandedTo(minTextureSize);
   const QSize fbSize = minSize;
 
   m_pixel_ratio = pixelRatio;
@@ -95,12 +99,10 @@ void QSGMapboxGLTextureNode::resize(const QSize &size, qreal pixelRatio)
     }
 
   setRect(QRectF(QPointF(), minSize));
-  markDirty(QSGNode::DirtyGeometry);
 }
 
-bool QSGMapboxGLTextureNode::render(QQuickWindow *window)
+void QSGMapboxGLTextureNode::render(QQuickWindow *window)
 {
-  bool loaded = m_map->isFullyLoaded();
   QOpenGLFunctions *f = window->openglContext()->functions();
   f->glViewport(0, 0, m_fbo->width(), m_fbo->height());
 
@@ -117,9 +119,6 @@ bool QSGMapboxGLTextureNode::render(QQuickWindow *window)
   f->glDepthRangef(0, 1);
 
   window->resetOpenGLState();
-  markDirty(QSGNode::DirtyMaterial);
-
-  return loaded;
 }
 
 ///////////////////////////////////
@@ -136,6 +135,85 @@ void QSGMapboxGLTextureNode::queryLayerExists(const QString &sourceID)
 }
 
 void QSGMapboxGLTextureNode::queryCoordinateForPixel(QPointF p, const QVariant &tag)
+{
+  p /=  m_pixel_ratio;
+  QMapbox::Coordinate mbc = m_map->coordinateForPixel(p);
+  QGeoCoordinate coor(mbc.first, mbc.second);
+
+  // get sensitivity of coordinates to the changes in pixel coordinates
+  double bearing = m_map->bearing() / 180. * M_PI;
+  double sinB = sin(bearing);
+  double cosB = cos(bearing);
+  p += QPointF(cosB + sinB, -sinB + cosB);
+  QMapbox::Coordinate mbc_shift = m_map->coordinateForPixel(p);
+
+  qreal degLatPerPixel = fabs(mbc_shift.first - mbc.first) / m_pixel_ratio;
+  qreal degLonPerPixel = fabs(mbc_shift.second - mbc.second) / m_pixel_ratio;
+
+  emit replyCoordinateForPixel(p, coor, degLatPerPixel, degLonPerPixel, tag);
+}
+
+
+////////////////////////////////////////////
+/// QSGMapboxGLRenderNode
+
+QSGMapboxGLRenderNode::QSGMapboxGLRenderNode(const QMapboxGLSettings &settings, const QSize &size,
+                                             qreal pixelRatio, QQuickItem *item)
+  : QObject(), QSGRenderNode(), m_pixel_ratio(pixelRatio)
+{
+  m_map.reset(new QMapboxGL(nullptr, settings, size, pixelRatio));
+  QObject::connect(m_map.data(), &QMapboxGL::needsRendering, item, &QQuickItem::update);
+  QObject::connect(m_map.data(), &QMapboxGL::copyrightsChanged, item, &QQuickItem::update);
+}
+
+QMapboxGL* QSGMapboxGLRenderNode::map() const
+{
+  return m_map.data();
+}
+
+void QSGMapboxGLRenderNode::render(const RenderState *state)
+{
+  // QMapboxGL assumes we've prepared the viewport prior to render().
+  QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
+  f->glViewport(state->scissorRect().x(), state->scissorRect().y(), state->scissorRect().width(), state->scissorRect().height());
+  f->glScissor(state->scissorRect().x(), state->scissorRect().y(), state->scissorRect().width(), state->scissorRect().height());
+  f->glEnable(GL_SCISSOR_TEST);
+
+  GLint alignment;
+  f->glGetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);
+
+  m_map->render();
+
+  // QTBUG-62861
+  f->glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
+  f->glDepthRangef(0, 1);
+}
+
+QSGRenderNode::StateFlags QSGMapboxGLRenderNode::changedStates() const
+{
+  return QSGRenderNode::DepthState
+      | QSGRenderNode::StencilState
+      | QSGRenderNode::ScissorState
+      | QSGRenderNode::ColorState
+      | QSGRenderNode::BlendState
+      | QSGRenderNode::ViewportState
+      | QSGRenderNode::RenderTargetState;
+}
+
+///////////////////////////////////
+/// queries
+
+void QSGMapboxGLRenderNode::querySourceExists(const QString &sourceID)
+{
+  emit replySourceExists(sourceID, m_map->sourceExists(sourceID));
+}
+
+void QSGMapboxGLRenderNode::queryLayerExists(const QString &sourceID)
+{
+  emit replyLayerExists(sourceID, m_map->layerExists(sourceID));
+}
+
+void QSGMapboxGLRenderNode::queryCoordinateForPixel(QPointF p, const QVariant &tag)
 {
   p /=  m_pixel_ratio;
   QMapbox::Coordinate mbc = m_map->coordinateForPixel(p);

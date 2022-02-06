@@ -15,17 +15,17 @@ within MapboxMap for interacting with it.
       * [Include statements](#include-statements)
       * [General comments](#general-comments)
       * [Properties](#properties)
-         * [Map settings on initialization](#map-settings-on-initialization)
-         * [Map rendering](#map-rendering)
-         * [Mangling of URLs](#mangling-of-urls)
-         * [Other properties](#other-properties)
+	 * [Map settings on initialization](#map-settings-on-initialization)
+	 * [Map rendering](#map-rendering)
+	 * [Mangling of URLs](#mangling-of-urls)
+	 * [Other properties](#other-properties)
       * [Queries and Signals](#queries-and-signals)
       * [Methods](#methods)
-         * [General methods](#general-methods)
-         * [Map sources](#map-sources)
-         * [Map layers](#map-layers)
-         * [Map layout and paint properties](#map-layout-and-paint-properties)
-         * [Tracking locations on the map](#tracking-locations-on-the-map)
+	 * [General methods](#general-methods)
+	 * [Map sources](#map-sources)
+	 * [Map layers](#map-layers)
+	 * [Map layout and paint properties](#map-layout-and-paint-properties)
+	 * [Tracking locations on the map](#tracking-locations-on-the-map)
    * [MapboxMapGestureArea](#mapboxmapgesturearea)
       * [Signals](#signals)
       * [Properties](#properties-1)
@@ -141,6 +141,11 @@ first created map.
     initialization, loaded from configuration file using
     [QSettings](http://doc.qt.io/qt-5/qsettings.html). At present,
     this concerns only cache maximal size.
+
+* `bool `**`useFBO`** When set to `true` (default), Mapbox GL will use
+    a framebuffer object to render a map. When set to `false`,
+    the map is rendered issuing OpenGL commands directly, through a
+    QSGRenderNode.
 
 
 ### Map rendering
@@ -296,16 +301,16 @@ filter only the responses that are of interest.
   specific method if it was deemed to be nearby:
 
   ```javascript
-        // 15 pixels at 96dpi would correspond to 4 mm
-        var nearby_lat = map.pixelRatio * 15 * degLatPerPixel;
-        var nearby_lon = map.pixelRatio * 15 * degLonPerPixel;
+	// 15 pixels at 96dpi would correspond to 4 mm
+	var nearby_lat = map.pixelRatio * 15 * degLatPerPixel;
+	var nearby_lon = map.pixelRatio * 15 * degLonPerPixel;
 
-        // check if its current position
-        if ( Math.abs(coordinate.longitude - map.position.coordinate.longitude) < nearby_lon &&
-                Math.abs(coordinate.latitude - map.position.coordinate.latitude) < nearby_lat ) {
-            positionMarker.mouseClick();
-            return;
-        }
+	// check if its current position
+	if ( Math.abs(coordinate.longitude - map.position.coordinate.longitude) < nearby_lon &&
+		Math.abs(coordinate.latitude - map.position.coordinate.latitude) < nearby_lat ) {
+	    positionMarker.mouseClick();
+	    return;
+	}
    ```
 
 
@@ -334,7 +339,7 @@ Map methods are classified and listed in the following sub-sections.
   in QML). For example, to fit Helsinki and Tallinn on a map, use
   ```javascript
      map.fitView([QtPositioning.coordinate(60.170448, 24.942046),
-                  QtPositioning.coordinate(59.436962, 24.753574)])
+		  QtPositioning.coordinate(59.436962, 24.753574)])
   ```
 
   Optionally, it can fit the given list if `preserve` is set to `true`. This
@@ -398,68 +403,68 @@ methods of QMapboxGL and can be considered synonyms withing this API.
 
     The following QML snippet adds a point on the map
     ```javascript
-                map.addSource("location",
-                          {"type": "geojson",
-                              "data": {
-                                  "type": "Feature",
-                                  "properties": { "name": "location" },
-                                  "geometry": {
-                                      "type": "Point",
-                                      "coordinates": [
-                                          (24.94),
-                                          (60.16)
-                                      ]
-                                  }
-                              }
-                          })
+		map.addSource("location",
+			  {"type": "geojson",
+			      "data": {
+				  "type": "Feature",
+				  "properties": { "name": "location" },
+				  "geometry": {
+				      "type": "Point",
+				      "coordinates": [
+					  (24.94),
+					  (60.16)
+				      ]
+				  }
+			      }
+			  })
     ```
 
     and the following QML snippet adds a small line source
 
     ```
-            var routeSource = {
-                "type": "geojson",
-                "data": '{
-                    "type": "Feature",
-                    "properties": {},
-                    "geometry": {
-                        "type": "LineString",
-                        "coordinates": [
-                            [24.942046, 60.170448],
-                            [
-                                24.934420000000003,
-                                60.163500000000006
-                            ],
-                            [
-                                24.923490008921945,
-                                60.16159500239787
-                            ],
-                            [
-                                24.916150000000002,
-                                60.171530000000004
-                            ],
-                            [
-                                24.931620000000002,
-                                60.18218
-                            ],
-                            [
-                                24.961660000000002,
-                                60.17557000000001
-                            ],
-                            [
-                                24.954860000000004,
-                                60.158930000000005
-                            ],
-                            [
-                                24.943690000000004,
-                                60.155280000000005
-                            ]
-                        ]
-                    }
-                }'
-            }
+	    var routeSource = {
+		"type": "geojson",
+		"data": '{
+		    "type": "Feature",
+		    "properties": {},
+		    "geometry": {
+			"type": "LineString",
+			"coordinates": [
+			    [24.942046, 60.170448],
+			    [
+				24.934420000000003,
+				60.163500000000006
+			    ],
+			    [
+				24.923490008921945,
+				60.16159500239787
+			    ],
+			    [
+				24.916150000000002,
+				60.171530000000004
+			    ],
+			    [
+				24.931620000000002,
+				60.18218
+			    ],
+			    [
+				24.961660000000002,
+				60.17557000000001
+			    ],
+			    [
+				24.954860000000004,
+				60.158930000000005
+			    ],
+			    [
+				24.943690000000004,
+				60.155280000000005
+			    ]
+			]
+		    }
+		}'
+	    }
 
-            map.addSource("route", routeSource)
+	    map.addSource("route", routeSource)
 
     ```
 
@@ -638,24 +643,24 @@ Example of MapboxMapGestureArea use is shown below
 
 ```javascript
     MapboxMap {
-        id: map
-        anchors.fill: parent
+	id: map
+	anchors.fill: parent
 
-        MapboxMapGestureArea {
-            id: mouseArea
-            map: map
-            activeClickedGeo: true
-            activeDoubleClickedGeo: true
-            activePressAndHoldGeo: true
+	MapboxMapGestureArea {
+	    id: mouseArea
+	    map: map
+	    activeClickedGeo: true
+	    activeDoubleClickedGeo: true
+	    activePressAndHoldGeo: true
 
-            onClicked: console.log("Click: " + mouse)
-            onDoubleClicked: console.log("Double click: " + mouse)
-            onPressAndHold: console.log("Press and hold: " + mouse)
+	    onClicked: console.log("Click: " + mouse)
+	    onDoubleClicked: console.log("Double click: " + mouse)
+	    onPressAndHold: console.log("Press and hold: " + mouse)
 
-            onClickedGeo: console.log("Click geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
-            onDoubleClickedGeo: console.log("Double click geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
-            onPressAndHoldGeo: console.log("Press and hold geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
-        }
+	    onClickedGeo: console.log("Click geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
+	    onDoubleClickedGeo: console.log("Double click geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
+	    onPressAndHoldGeo: console.log("Press and hold geo: " + geocoordinate + " sensitivity: " + degLatPerPixel + " " + degLonPerPixel)
+	}
     }
 ```
 

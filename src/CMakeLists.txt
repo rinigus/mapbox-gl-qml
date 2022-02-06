@@ -44,6 +44,10 @@ if(USE_CURL_SSL)
 		PkgConfig::OPENSSL)
 endif()
 
+if(USE_FBO)
+        add_definitions(-DUSE_FBO=1)
+endif()
+
 FindQtInstallQml()
 
 install(FILES 

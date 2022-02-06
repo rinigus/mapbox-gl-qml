@@ -45,6 +45,7 @@
 
 #include <QtQuick/QQuickWindow>
 #include <QtQuick/QSGSimpleTextureNode>
+#include <QSGRenderNode>
 #include <QtGui/QOpenGLFramebufferObject>
 #include <QQuickItem>
 #include <QGeoCoordinate>
@@ -56,28 +57,56 @@ class QSGMapboxGLTextureNode : public QObject, public QSGSimpleTextureNode
   Q_OBJECT
 
 public:
-    QSGMapboxGLTextureNode(const QMapboxGLSettings &, const QSize &, qreal pixelRatio, QQuickItem *item);
-    ~QSGMapboxGLTextureNode();
+  QSGMapboxGLTextureNode(const QMapboxGLSettings &, const QSize &, qreal pixelRatio, QQuickItem *item);
+  ~QSGMapboxGLTextureNode();
 
-    QMapboxGL* map() const { return m_map.data(); }
+  QMapboxGL* map() const { return m_map.data(); }
 
-    void resize(const QSize &size, qreal pixelRatio);
-    bool render(QQuickWindow *);
+  void resize(const QSize &size, qreal pixelRatio);
+  void render(QQuickWindow *);
 
 public slots:
-    void querySourceExists(const QString &id);
-    void queryLayerExists(const QString &id);
-    void queryCoordinateForPixel(QPointF p, const QVariant &tag);
+  void querySourceExists(const QString &id);
+  void queryLayerExists(const QString &id);
+  void queryCoordinateForPixel(QPointF p, const QVariant &tag);
 
 signals:
-    void replySourceExists(const QString id, bool exists);
-    void replyLayerExists(const QString id, bool exists);
-    void replyCoordinateForPixel(const QPointF p, QGeoCoordinate geo, qreal degLatPerPixel, qreal degLonPerPixel, const QVariant &tag);
+  void replySourceExists(const QString id, bool exists);
+  void replyLayerExists(const QString id, bool exists);
+  void replyCoordinateForPixel(const QPointF p, QGeoCoordinate geo, qreal degLatPerPixel, qreal degLonPerPixel, const QVariant &tag);
 
 private:
-    QScopedPointer<QMapboxGL> m_map;
-    QScopedPointer<QOpenGLFramebufferObject> m_fbo;
-    qreal m_pixel_ratio;
+  QScopedPointer<QMapboxGL> m_map;
+  QScopedPointer<QOpenGLFramebufferObject> m_fbo;
+  qreal m_pixel_ratio;
+};
+
+class QSGMapboxGLRenderNode : public QObject, public QSGRenderNode
+{
+  Q_OBJECT
+
+public:
+  QSGMapboxGLRenderNode(const QMapboxGLSettings &, const QSize &, qreal pixelRatio, QQuickItem *item);
+
+  QMapboxGL* map() const;
+
+  // QSGRenderNode
+  void render(const RenderState *state) override;
+  StateFlags changedStates() const override;
+
+public slots:
+  void querySourceExists(const QString &id);
+  void queryLayerExists(const QString &id);
+  void queryCoordinateForPixel(QPointF p, const QVariant &tag);
+
+signals:
+  void replySourceExists(const QString id, bool exists);
+  void replyLayerExists(const QString id, bool exists);
+  void replyCoordinateForPixel(const QPointF p, QGeoCoordinate geo, qreal degLatPerPixel, qreal degLonPerPixel, const QVariant &tag);
+
+private:
+  QScopedPointer<QMapboxGL> m_map;
+  qreal m_pixel_ratio;
 };
 
 #endif // QSGMAPBOXGLNODE_H

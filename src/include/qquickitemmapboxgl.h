@@ -88,6 +88,7 @@ class QQuickItemMapboxGL : public QQuickItem
   Q_PROPERTY(QString styleUrl READ styleUrl WRITE setStyleUrl)
   Q_PROPERTY(QString urlSuffix READ urlSuffix WRITE setUrlSuffix NOTIFY urlSuffixChanged)
   Q_PROPERTY(bool urlDebug READ urlDebug WRITE setUrlDebug NOTIFY urlDebugChanged)
+  Q_PROPERTY(bool useFBO READ useFBO WRITE setUseFBO NOTIFY useFBOChanged)
 
   /// tracks meters per pixel for the map center
   Q_PROPERTY(qreal metersPerPixel READ metersPerPixel NOTIFY metersPerPixelChanged)
@@ -174,6 +175,9 @@ public:
 
   bool urlDebug() const;
   void setUrlDebug(bool debug);
+
+  bool useFBO() const;
+  void setUseFBO(bool fbo);
 
   bool gestureInProgress() const;
   void setGestureInProgress(bool progress);
@@ -283,6 +287,7 @@ signals:
   void styleUrlChanged(QString url);
   void urlSuffixChanged(QString urlSuffix);
   void urlDebugChanged(bool urlDebug);
+  void useFBOChanged(bool useFBO);
 
   void errorChanged(QString error);
 
@@ -341,8 +346,6 @@ private:
 
   void setError(QString error); ///< Set error string, used internally
 
-
-
 private:
 
   /// \brief Private class to track locations
@@ -365,6 +368,10 @@ private:
 
 private:
   QMapboxGLSettings m_settings;
+
+  /// Signals that the first full init is done and setup-related
+  /// properties cannot be changed
+  bool m_first_init_done{false};
 
   bool m_cache_default_path{false};
   bool m_cache_store_settings{false};
@@ -400,6 +407,7 @@ private:
   QString m_styleUrl;
   QString m_styleJson;
   bool    m_useUrlForStyle = true;
+  bool    m_useFBO = true;
 
   QMutex m_resourceTransformMutex;
   std::string m_urlSuffix;
