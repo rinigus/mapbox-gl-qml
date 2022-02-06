@@ -155,6 +155,7 @@ void QSGMapboxGLTextureNode::queryCoordinateForPixel(QPointF p, const QVariant &
 }
 
 
+#if HAS_SGRENDERNODE
 ////////////////////////////////////////////
 /// QSGMapboxGLRenderNode
 
@@ -242,3 +243,5 @@ void QSGMapboxGLRenderNode::queryCoordinateForPixel(QPointF p, const QVariant &t
 
   emit replyCoordinateForPixel(p, coor, degLatPerPixel, degLonPerPixel, tag);
 }
+
+#endif

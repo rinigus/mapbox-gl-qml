@@ -143,9 +143,10 @@ first created map.
     this concerns only cache maximal size.
 
 * `bool `**`useFBO`** When set to `true` (default), Mapbox GL will use
-    a framebuffer object to render a map. When set to `false`,
-    the map is rendered issuing OpenGL commands directly, through a
-    QSGRenderNode.
+    a framebuffer object to render a map. When set to `false`, the map
+    is rendered issuing OpenGL commands directly, through a
+    QSGRenderNode. This is supported only for platforms starting with
+    Qt version 5.8.
 
 
 ### Map rendering

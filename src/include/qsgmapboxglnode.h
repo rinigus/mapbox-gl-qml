@@ -43,9 +43,10 @@
 #ifndef QSGMAPBOXGLNODE_H
 #define QSGMAPBOXGLNODE_H
 
+#define HAS_SGRENDERNODE (QT_VERSION >= QT_VERSION_CHECK(5,8,0))
+
 #include <QtQuick/QQuickWindow>
 #include <QtQuick/QSGSimpleTextureNode>
-#include <QSGRenderNode>
 #include <QtGui/QOpenGLFramebufferObject>
 #include <QQuickItem>
 #include <QGeoCoordinate>
@@ -81,6 +82,9 @@ private:
   qreal m_pixel_ratio;
 };
 
+#if HAS_SGRENDERNODE
+#include <QSGRenderNode>
+
 class QSGMapboxGLRenderNode : public QObject, public QSGRenderNode
 {
   Q_OBJECT
@@ -110,5 +114,6 @@ private:
   QScopedPointer<QMapboxGL> m_map;
   qreal m_pixel_ratio;
 };
+#endif
 
 #endif // QSGMAPBOXGLNODE_H

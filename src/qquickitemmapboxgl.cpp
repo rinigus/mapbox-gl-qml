@@ -63,8 +63,6 @@
 
 #include <QDebug>
 
-//#define USE_FBO
-
 #ifdef USE_CURL_SSL
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Special handling of cURL and OpenSSL locks, see https://curl.haxx.se/libcurl/c/threaded-ssl.html
@@ -122,14 +120,17 @@ static void kill_locks(void)
 
 QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
   QQuickItem(parent),
-  m_margins(0, 0, 0, 0),
-#ifndef USE_FBO
-  m_useFBO(false)
-#else
-  m_useFBO(true)
-#endif
+  m_margins(0, 0, 0, 0)
 {
-  setFlag(ItemHasContents);
+#if HAS_SGRENDERNODE
+#ifndef USE_FBO
+  m_useFBO = false;
+#else
+  m_useFBO = true;
+#endif
+#endif
+
+ setFlag(ItemHasContents);
 
   m_styleUrl = QMapbox::defaultStyles()[0].first;
   m_styleJson = QString(); // empty
@@ -310,7 +311,9 @@ void QQuickItemMapboxGL::setUseFBO(bool fbo)
       return;
     }
 
+#if HAS_SGRENDERNODE
   m_useFBO = fbo;
+#endif
   emit useFBOChanged(fbo);
 }
 
@@ -897,6 +900,14 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   if (!node)
     {
+#if !HAS_SGRENDERNODE
+      if (!m_useFBO)
+        {
+          qCritical() << "Requesting map rendering via QSGRenderNode while on the platform without it. Error in QML plugin, this shouldn't happen.";
+          return node;
+        }
+#endif
+
       bool wasFitView = (m_syncState & FitViewNeedsSync);
       bool wasFitCenterView = (m_syncState & FitViewCenterNeedsSync);
 
@@ -925,6 +936,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
           connect(n, &QSGMapboxGLTextureNode::replyCoordinateForPixel, this, &QQuickItemMapboxGL::replyCoordinateForPixel, Qt::QueuedConnection);
           connect(this, &QQuickItemMapboxGL::queryCoordinateForPixel, n, &QSGMapboxGLTextureNode::queryCoordinateForPixel, Qt::QueuedConnection);
         }
+#if HAS_SGRENDERNODE
       else
         {
           QSGMapboxGLRenderNode *n = new QSGMapboxGLRenderNode(m_settings, sz, m_pixelRatio, this);
@@ -940,6 +952,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
           connect(n, &QSGMapboxGLRenderNode::replyCoordinateForPixel, this, &QQuickItemMapboxGL::replyCoordinateForPixel, Qt::QueuedConnection);
           connect(this, &QQuickItemMapboxGL::queryCoordinateForPixel, n, &QSGMapboxGLRenderNode::queryCoordinateForPixel, Qt::QueuedConnection);
         }
+#endif
 
       /////////////////////////////////////////////////////
       /// connect map changed and failure signals
@@ -948,14 +961,20 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
     }
   else
     {
-      map = m_useFBO ? static_cast<QSGMapboxGLTextureNode *>(node)->map() :
-                       static_cast<QSGMapboxGLRenderNode *>(node)->map();
+      map =
+    #if HAS_SGRENDERNODE
+          !m_useFBO ?
+            static_cast<QSGMapboxGLRenderNode *>(node)->map() :
+    #endif
+            static_cast<QSGMapboxGLTextureNode *>(node)->map();
     }
 
   if (sz != m_last_size || m_syncState & PixelRatioNeedsSync)
     {
       if (m_useFBO) static_cast<QSGMapboxGLTextureNode *>(node)->resize(sz, m_pixelRatio);
+#if HAS_SGRENDERNODE
       else static_cast<QSGMapboxGLRenderNode *>(node)->resize(sz, m_pixelRatio);
+#endif
       m_syncState |= MarginsNeedSync;
       m_last_size = sz;
     }
