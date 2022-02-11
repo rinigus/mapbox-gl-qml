@@ -142,6 +142,21 @@ first created map.
     [QSettings](http://doc.qt.io/qt-5/qsettings.html). At present,
     this concerns only cache maximal size.
 
+* `qreal`**`devicePixelRatio`** Device pixel ratio that is used during
+    construction of the map widget. This should correspond to the true
+    physical to logical pixel ratio as given in Qt via
+    devicePixelRatio method of QScreen. This property allows sharp
+    rendering of the widget in HiDPI cases if the rendering through
+    framebuffer is used (see `useFBO`). For direct rendering case
+    (`useFBO=false`), `devicePixelRatio` is not used.
+
+    If `devicePixelRatio` is not specified, it is determined on the
+    basis of the parent QQuickItem, or if absent, on the basis of the
+    primary screen.
+
+    See also `pixelRatio` that can be changed after the widget is
+    constructed.
+
 * `bool `**`useFBO`** When set to `true` (default), Mapbox GL will use
     a framebuffer object to render a map. When set to `false`, the map
     is rendered issuing OpenGL commands directly, through a
@@ -190,15 +205,17 @@ first created map.
     resulting in a two-dimensional map. It is constrained at 60
     degrees.
 
-* `real `**`pixelRatio`** Relative pixel density of the screen when compared
-    to 96dpi. All the map elements will be scaled by this ratio when
-    drawn. This allows to use the same style on the screens with the
-    different pixel densities.
+* `real `**`pixelRatio`** Relative pixel density of the screen when
+    compared to 96dpi. All the map elements will be scaled by this
+    ratio when drawn. This allows to use the same style on the screens
+    with the different pixel densities and adjust the scale on
+    fly. Note that the minimal `pixelRatio` is set to
+    `devicePixelRatio` used at the map widget construction.
 
     Care should be taken when having `pixelRatio` different from one
     and using `metersPerPixel` to draw something on the map (such as
     uncertainty of position, for example). Since `metersPerPixel`
-    gives the scale on the actual screen and all objects are scaled up
+    gives the scale in map pixel units and all objects are scaled up
     by `pixelRatio`, you may have to reduce the drawn objects by
     `pixelRatio` when adding them on the map. For example, when
     drawing uncertainty of position as a circle around position, you
@@ -553,13 +570,18 @@ Map layers can be added or removed.
   Add image with _name_ given by QImage _sprite_. After addition of the image,
   it can be referred to by its name in the layer or paint properties.
 
-* `bool `**`addImagePath`**`(const QString &name, const QString &path)`
+* `bool `**`addImagePath`**`(const QString &name, const QString &path, int svgX=-1, int svgY=-1)`
 
   Add image using image file path or url starting with `file://`. For
   example, this can be used to specify the image in QML as in
   ```javascript
   map.addImagePath("position-icon", Qt.resolvedUrl("icons/position"))
   ```
+
+  The method can load and render SVGs (determined by file extension
+  "svg") using the size provided via `svgX` and `svgY`. If only `svgX`
+  is given, it is assumed that `svgY=svgX`. If none of the sizes are
+  given and file is assumed to be SVG, it is rendered to 32x32 pixels.
 
   The method would return `true` if image was found and loaded by Qt.
 

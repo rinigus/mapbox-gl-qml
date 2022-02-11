@@ -58,7 +58,7 @@ class QSGMapboxGLTextureNode : public QObject, public QSGSimpleTextureNode
   Q_OBJECT
 
 public:
-  QSGMapboxGLTextureNode(const QMapboxGLSettings &, const QSize &, qreal pixelRatio, QQuickItem *item);
+  QSGMapboxGLTextureNode(const QMapboxGLSettings &, const QSize &, qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item);
   ~QSGMapboxGLTextureNode();
 
   QMapboxGL* map() const { return m_map.data(); }
@@ -80,6 +80,7 @@ private:
   QScopedPointer<QMapboxGL> m_map;
   QScopedPointer<QOpenGLFramebufferObject> m_fbo;
   qreal m_pixel_ratio;
+  qreal m_device_pixel_ratio{1};
 };
 
 #if HAS_SGRENDERNODE
@@ -90,7 +91,7 @@ class QSGMapboxGLRenderNode : public QObject, public QSGRenderNode
   Q_OBJECT
 
 public:
-  QSGMapboxGLRenderNode(const QMapboxGLSettings &, const QSize &, qreal pixelRatio, QQuickItem *item);
+  QSGMapboxGLRenderNode(const QMapboxGLSettings &, const QSize &, qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item);
 
   QMapboxGL* map() const;
 

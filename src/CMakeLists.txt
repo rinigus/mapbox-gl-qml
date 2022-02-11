@@ -35,6 +35,7 @@ target_link_libraries(qmlmapboxglplugin PRIVATE
 	Qt5::Quick
 	Qt5::Positioning
 	Qt5::Sql
+        Qt5::Svg
 	qmapboxgl)
 
 if(USE_CURL_SSL)

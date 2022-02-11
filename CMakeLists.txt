@@ -18,7 +18,7 @@ include(FeatureSummary)
 include(GNUInstallDirs)
 
 set(QT_MIN_VERSION "5.6.0")
-find_package(Qt5 ${QT_MIN_VERSION} COMPONENTS Gui Quick Positioning Sql REQUIRED)
+find_package(Qt5 ${QT_MIN_VERSION} COMPONENTS Gui Quick Positioning Sql Svg REQUIRED)
 find_package(QMapboxGL REQUIRED)
 
 if(USE_CURL_SSL)

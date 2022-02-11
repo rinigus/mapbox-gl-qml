@@ -83,6 +83,7 @@ class QQuickItemMapboxGL : public QQuickItem
   Q_PROPERTY(qreal zoomLevel READ zoomLevel WRITE setZoomLevel NOTIFY zoomLevelChanged)
   Q_PROPERTY(QRectF margins READ margins WRITE setMargins NOTIFY marginsChanged) /// see comments below on interpretation of RectF
 
+  Q_PROPERTY(qreal devicePixelRatio READ devicePixelRatio WRITE setDevicePixelRatio NOTIFY devicePixelRatioChanged)
   Q_PROPERTY(qreal pixelRatio READ pixelRatio WRITE setPixelRatio NOTIFY pixelRatioChanged)
   Q_PROPERTY(QString styleJson READ styleJson WRITE setStyleJson NOTIFY styleJsonChanged)
   Q_PROPERTY(QString styleUrl READ styleUrl WRITE setStyleUrl)
@@ -144,6 +145,9 @@ public:
 
   QString styleUrl() const;
   void setStyleUrl(const QString &url);
+
+  void setDevicePixelRatio(qreal devicePixelRatio);
+  qreal devicePixelRatio() const;
 
   void setPixelRatio(qreal pixelRatio);
   qreal pixelRatio() const;
@@ -251,7 +255,7 @@ public:
   Q_INVOKABLE void removeLayer(const QString &id);
 
   Q_INVOKABLE void addImage(const QString &name, const QImage &sprite);
-  Q_INVOKABLE bool addImagePath(const QString &name, const QString &path); ///< Add image using image file path or url starting with file://
+  Q_INVOKABLE bool addImagePath(const QString &name, const QString &path, const int svgX=0, const int svgY=0); ///< Add image using image file path or url starting with file://
   Q_INVOKABLE void removeImage(const QString &name);
 
   Q_INVOKABLE void setLayoutProperty(const QString &layer, const QString &property, const QVariant &value);
@@ -282,6 +286,7 @@ signals:
   void centerChanged(const QGeoCoordinate &coordinate);
   void marginsChanged(const QMarginsF &margins);
 
+  void devicePixelRatioChanged(qreal devicePixelRatio);
   void pixelRatioChanged(qreal pixelRatio);
   void styleJsonChanged(QString json);
   void styleUrlChanged(QString url);
@@ -403,6 +408,7 @@ private:
 
   QString m_errorString;
 
+  qreal m_devicePixelRatio;
   qreal m_pixelRatio;
   QString m_styleUrl;
   QString m_styleJson;

@@ -2,6 +2,7 @@
 **
 ** Based on the implementation of Mapbox GL Native QtLocation plugin at
 ** https://github.com/qt/qtlocation/tree/5.9/src/plugins/geoservices/mapboxgl
+** and later versions
 **
 ** The original code license is below
 **
@@ -45,7 +46,6 @@
 
 #include <QtGui/QOpenGLContext>
 #include <QtGui/QOpenGLFunctions>
-#include <QScreen>
 
 #include <math.h>
 
@@ -56,10 +56,14 @@ static const QSize minTextureSize = QSize(64, 64);
 ////////////////////////////////////////////
 /// QSGMapboxGLTextureNode
 
-QSGMapboxGLTextureNode::QSGMapboxGLTextureNode(const QMapboxGLSettings &settings, const QSize &size, qreal pixelRatio, QQuickItem *item)
-  : QObject(), QSGSimpleTextureNode(), m_pixel_ratio(pixelRatio)
+QSGMapboxGLTextureNode::QSGMapboxGLTextureNode(const QMapboxGLSettings &settings, const QSize &size,
+                                               qreal devicePixelRatio,
+                                               qreal pixelRatio, QQuickItem *item)
+  : QObject(), QSGSimpleTextureNode(), m_device_pixel_ratio(devicePixelRatio), m_pixel_ratio(pixelRatio)
 {
-  qInfo() << "Using QSGMapboxGLTextureNode for map rendering";
+  qInfo() << "Using QSGMapboxGLTextureNode for map rendering."
+          << "devicePixelRatio:" << devicePixelRatio;
+
   setTextureCoordinatesTransform(QSGSimpleTextureNode::MirrorVertically);
   setFiltering(QSGTexture::Linear);
 
@@ -77,15 +81,16 @@ QSGMapboxGLTextureNode::~QSGMapboxGLTextureNode()
 
 void QSGMapboxGLTextureNode::resize(const QSize &size, qreal pixelRatio)
 {
-  //const QSize& minSize = size.expandedTo(minTextureSize);
-  QSize minSize = size.expandedTo(minTextureSize);
-  const QSize fbSize = minSize;
-
   m_pixel_ratio = pixelRatio;
-  m_map->resize(minSize / pixelRatio);
+
+  const QSize minSize = size.expandedTo(minTextureSize);
+  const QSize fbSize = minSize * m_device_pixel_ratio; // physical pixels
+  const QSize mapSize = minSize * m_device_pixel_ratio / m_pixel_ratio; // ensure zoom
+
+  m_map->resize(mapSize);
 
   m_fbo.reset(new QOpenGLFramebufferObject(fbSize, QOpenGLFramebufferObject::CombinedDepthStencil));
-  m_map->setFramebufferObject(m_fbo->handle(), minSize);
+  m_map->setFramebufferObject(m_fbo->handle(), fbSize); //minSize);
 
   QSGTexturePlain *fboTexture = static_cast<QSGTexturePlain *>(texture());
   if (!fboTexture)
@@ -137,7 +142,7 @@ void QSGMapboxGLTextureNode::queryLayerExists(const QString &sourceID)
 
 void QSGMapboxGLTextureNode::queryCoordinateForPixel(QPointF p, const QVariant &tag)
 {
-  p /=  m_pixel_ratio;
+  p /=  m_pixel_ratio / m_device_pixel_ratio;
   QMapbox::Coordinate mbc = m_map->coordinateForPixel(p);
   QGeoCoordinate coor(mbc.first, mbc.second);
 
@@ -148,8 +153,8 @@ void QSGMapboxGLTextureNode::queryCoordinateForPixel(QPointF p, const QVariant &
   p += QPointF(cosB + sinB, -sinB + cosB);
   QMapbox::Coordinate mbc_shift = m_map->coordinateForPixel(p);
 
-  qreal degLatPerPixel = fabs(mbc_shift.first - mbc.first) / m_pixel_ratio;
-  qreal degLonPerPixel = fabs(mbc_shift.second - mbc.second) / m_pixel_ratio;
+  qreal degLatPerPixel = fabs(mbc_shift.first - mbc.first) * m_device_pixel_ratio / m_pixel_ratio;
+  qreal degLonPerPixel = fabs(mbc_shift.second - mbc.second) * m_device_pixel_ratio / m_pixel_ratio;
 
   emit replyCoordinateForPixel(p, coor, degLatPerPixel, degLonPerPixel, tag);
 }
@@ -160,11 +165,12 @@ void QSGMapboxGLTextureNode::queryCoordinateForPixel(QPointF p, const QVariant &
 /// QSGMapboxGLRenderNode
 
 QSGMapboxGLRenderNode::QSGMapboxGLRenderNode(const QMapboxGLSettings &settings, const QSize &size,
-                                             qreal pixelRatio, QQuickItem *item)
+                                             qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item)
   : QObject(), QSGRenderNode(), m_pixel_ratio(pixelRatio)
 {
-  qInfo() << "Using QSGMapboxGLRenderNode for map rendering";
-  m_map.reset(new QMapboxGL(nullptr, settings, size, pixelRatio*item->window()->screen()->devicePixelRatio()));
+  qInfo() << "Using QSGMapboxGLRenderNode for map rendering. "
+          << "devicePixelRatio:" << devicePixelRatio;
+  m_map.reset(new QMapboxGL(nullptr, settings, size, pixelRatio));
   QObject::connect(m_map.data(), &QMapboxGL::needsRendering, item, &QQuickItem::update);
   QObject::connect(m_map.data(), &QMapboxGL::copyrightsChanged, item, &QQuickItem::update);
 }
@@ -194,8 +200,7 @@ void QSGMapboxGLRenderNode::render(const RenderState *state)
 
 void QSGMapboxGLRenderNode::resize(const QSize &size, qreal pixelRatio)
 {
-  //const QSize& minSize = size.expandedTo(minTextureSize);
-  QSize minSize = size.expandedTo(minTextureSize);
+  const QSize minSize = size.expandedTo(minTextureSize);
 
   m_pixel_ratio = pixelRatio;
   m_map->resize(minSize / pixelRatio);

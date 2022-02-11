@@ -46,16 +46,19 @@
 
 #include <mbgl/util/constants.hpp>
 
-#include <QCoreApplication>
+#include <QGuiApplication>
 #include <QDir>
 #include <QFileInfo>
 #include <QJsonDocument>
 #include <QMutexLocker>
+#include <QScreen>
 #include <QSettings>
 #include <QStandardPaths>
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QSvgRenderer>
+#include <QPainter>
 #include <QVariantMap>
 
 #include <math.h>
@@ -140,7 +143,14 @@ QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
   m_settings.setResourceTransform(std::bind(&QQuickItemMapboxGL::resourceTransform,
                                             this, std::placeholders::_1));
 
-  m_pixelRatio = 1;
+  QScreen *screen = (parent && parent->window() && parent->window()->screen()) ?
+        parent->window()->screen() : QGuiApplication::primaryScreen();
+  if (screen)
+    m_devicePixelRatio = screen->devicePixelRatio();
+  else
+    m_devicePixelRatio = -1;
+
+  m_pixelRatio = m_devicePixelRatio;
 
   m_timer.setInterval(250);
   connect(&m_timer, &QTimer::timeout, this, &QQuickItemMapboxGL::update);
@@ -558,6 +568,26 @@ void QQuickItemMapboxGL::setMargins(const QRectF &margins_box)
 }
 
 /// Rendering details
+qreal QQuickItemMapboxGL::devicePixelRatio() const
+{
+  return m_devicePixelRatio > 0 ? m_devicePixelRatio : 1;
+}
+
+void QQuickItemMapboxGL::setDevicePixelRatio(qreal devicePixelRatio)
+{
+  if (m_first_init_done)
+    {
+      qWarning() << "DevicePixelRatio cannot be changed after the initialization of the map. Set it at creation of the widget";
+      return;
+    }
+
+  m_devicePixelRatio = qMax((qreal)1.0, devicePixelRatio);
+  m_syncState |= PixelRatioNeedsSync;
+  if (m_pixelRatio < m_devicePixelRatio) setPixelRatio(m_devicePixelRatio);
+  update();
+  emit devicePixelRatioChanged(m_devicePixelRatio);
+}
+
 qreal QQuickItemMapboxGL::pixelRatio() const
 {
   return m_pixelRatio;
@@ -565,7 +595,7 @@ qreal QQuickItemMapboxGL::pixelRatio() const
 
 void QQuickItemMapboxGL::setPixelRatio(qreal pixelRatio)
 {
-  m_pixelRatio = qMax((qreal)1.0, pixelRatio);
+  m_pixelRatio = qMax(m_devicePixelRatio, pixelRatio);
   m_syncState |= PixelRatioNeedsSync;
   update();
   emit pixelRatioChanged(m_pixelRatio);
@@ -777,7 +807,8 @@ void QQuickItemMapboxGL::addImage(const QString &name, const QImage &sprite)
   m_images.add(name, sprite); DATA_UPDATE;
 }
 
-bool QQuickItemMapboxGL::addImagePath(const QString &name, const QString &path)
+bool QQuickItemMapboxGL::addImagePath(const QString &name, const QString &path,
+                                      const int svgX, const int svgY)
 {
   QString p;
   QString furl = "file://";
@@ -785,7 +816,22 @@ bool QQuickItemMapboxGL::addImagePath(const QString &name, const QString &path)
   else p = path;
 
   QImage image;
-  if (!image.load(p)) return false;
+  if (p.endsWith(QStringLiteral(".svg")))
+    {
+      QSvgRenderer render(p);
+      QImage i(svgX > 0 ? svgX: 32,
+               svgY > 0 ? svgY: svgX > 0 ? svgX: 32,
+               QImage::Format_ARGB32_Premultiplied);
+      i.fill(0);
+      QPainter painter(&i);
+      render.render(&painter);
+      image = i;
+    }
+  else
+    if (!image.load(p)) return false;
+
+  if (image.isNull()) return false;
+
   addImage(name, image);
   return true;
 }
@@ -923,7 +969,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       /// create node and connect all queries
       if (m_useFBO)
         {
-          QSGMapboxGLTextureNode *n = new QSGMapboxGLTextureNode(m_settings, sz, m_pixelRatio, this);
+          QSGMapboxGLTextureNode *n = new QSGMapboxGLTextureNode(m_settings, sz, m_devicePixelRatio, m_pixelRatio, this);
           node = n;
           map = n->map();
 
@@ -939,7 +985,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 #if HAS_SGRENDERNODE
       else
         {
-          QSGMapboxGLRenderNode *n = new QSGMapboxGLRenderNode(m_settings, sz, m_pixelRatio, this);
+          QSGMapboxGLRenderNode *n = new QSGMapboxGLRenderNode(m_settings, sz, m_devicePixelRatio, m_pixelRatio, this);
           node = n;
           map = n->map();
 
