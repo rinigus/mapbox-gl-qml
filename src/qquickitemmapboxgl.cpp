@@ -1172,7 +1172,8 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
         i != m_location_tracker.end(); ++i)
     {
       LocationTracker& tracker = i.value();
-      QPointF pf = m_pixelRatio * map->pixelForCoordinate({tracker.coordinate().latitude(), tracker.coordinate().longitude()});
+      QPointF pf = map->pixelForCoordinate({tracker.coordinate().latitude(), tracker.coordinate().longitude()});
+      pf /= n->mapToQtPixelRatio();
       QPoint p(pf.x(), pf.y());
       if (tracker.set_position(p, sz))
         emit locationChanged(i.key(), tracker.visible(), tracker.position());
