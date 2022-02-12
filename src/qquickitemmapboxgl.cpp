@@ -1048,9 +1048,9 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   if (m_syncState & FitViewCenterNeedsSync)
     {
-      QPointF pf = m_pixelRatio * map->pixelForCoordinate({m_fit_center.latitude(), m_fit_center.longitude()});
-      qreal x = pf.x() / width();
-      qreal y = pf.y() / height();
+      QPointF pf = map->pixelForCoordinate({m_fit_center.latitude(), m_fit_center.longitude()});
+      qreal x = pf.x() / n->width();
+      qreal y = pf.y() / n->height();
       if (x < m_margins.left() || x > 1-m_margins.right() ||
           y < m_margins.top() || y > 1-m_margins.bottom()) // fit center is invisible
         setCenter(m_fit_center);
@@ -1069,7 +1069,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       else
         {
           qreal newscale = pow(2.0, zoomLevel());
-          map->setScale(newscale, m_zoomLevelPoint / m_pixelRatio);
+          map->setScale(newscale, m_zoomLevelPoint * n->mapToQtPixelRatio());
           m_zoomLevelPoint = QPointF();
         }
     }
@@ -1082,7 +1082,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   if (m_syncState & PanNeedsSync)
     {
-      map->moveBy(m_pan / m_pixelRatio);
+      map->moveBy(m_pan * n->mapToQtPixelRatio());
       m_pan = QPointF();
       m_center = QGeoCoordinate(map->latitude(), map->longitude());
       emit centerChanged(m_center);
@@ -1153,7 +1153,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   { // metersPerPixel
     const double tol = metersPerPixelTolerance(); // tolerance used when comparing floating point numbers
-    qreal meters = map->metersPerPixelAtLatitude( map->coordinate().first, map->zoom() ) / m_pixelRatio;
+    qreal meters = map->metersPerPixelAtLatitude( map->coordinate().first, map->zoom() ) * n->mapToQtPixelRatio();
     if ( fabs(meters - metersPerPixel()) > tol )
       {
         m_metersPerPixel = meters;

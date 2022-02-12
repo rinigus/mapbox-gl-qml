@@ -63,6 +63,7 @@ public:
   QMapboxGL* map() const { return m_map.data(); }
   float height() const { return m_map_size.height(); }
   float width() const { return m_map_size.width(); }
+  float mapToQtPixelRatio() const;
 
   virtual void resize(const QSize &size, qreal pixelRatio);
   virtual void render(QQuickWindow *) {}

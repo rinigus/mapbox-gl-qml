@@ -73,6 +73,12 @@ void QSGMapboxGLAbstractNode::resize(const QSize &size, qreal pixelRatio)
   m_pixel_ratio = pixelRatio;
 }
 
+float QSGMapboxGLAbstractNode::mapToQtPixelRatio() const
+{
+  return 0.5 * (width()/m_item_size.width() +
+                height()/m_item_size.height());
+}
+
 ///////////////////////////////////
 /// queries
 
