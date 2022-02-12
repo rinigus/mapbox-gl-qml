@@ -524,6 +524,9 @@ void QQuickItemMapboxGL::setPitch(qreal p)
 
 void QQuickItemMapboxGL::setMargins(qreal left, qreal top, qreal right, qreal bottom)
 {
+  if (!finite(left) || !finite(top) || !finite(right) || !finite(bottom))
+    return;
+
   m_margins.setLeft(left);
   m_margins.setTop(top);
   m_margins.setRight(right);
@@ -560,6 +563,9 @@ QRectF QQuickItemMapboxGL::margins() const
 
 void QQuickItemMapboxGL::setMargins(const QRectF &margins_box)
 {
+  if (!finite(margins_box.bottom()) || !finite(margins_box.left()) ||
+      !finite(margins_box.width()) || !finite(margins_box.height()))
+      return;
   QMarginsF margins = qrect2qmargins(margins_box);
   m_margins = margins;
   m_syncState |= MarginsNeedSync;
@@ -1023,8 +1029,8 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   if (m_syncState & MarginsNeedSync)
     {
-      QMargins margins(m_margins.left()*width()/m_pixelRatio, m_margins.top()*height()/m_pixelRatio,
-                       m_margins.right()*width()/m_pixelRatio, m_margins.bottom()*height()/m_pixelRatio);
+      QMargins margins(m_margins.left()*n->width(), m_margins.top()*n->height(),
+                       m_margins.right()*n->width(), m_margins.bottom()*n->height());
       map->setMargins(margins);
       m_syncState |= CenterNeedsSync; // center has to be updated after update of the margins
       if (m_fit_preserve_box) m_syncState |= FitViewNeedsSync;

@@ -61,8 +61,8 @@ public:
   QSGMapboxGLAbstractNode(const QMapboxGLSettings &, const QSize &, qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item);
 
   QMapboxGL* map() const { return m_map.data(); }
-  int height() const { return m_map_size.width(); }
-  int width() const { return m_map_size.height(); }
+  float height() const { return m_map_size.height(); }
+  float width() const { return m_map_size.width(); }
 
   virtual void resize(const QSize &size, qreal pixelRatio);
   virtual void render(QQuickWindow *) {}

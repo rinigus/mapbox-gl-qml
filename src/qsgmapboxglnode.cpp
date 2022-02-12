@@ -88,8 +88,8 @@ void QSGMapboxGLAbstractNode::queryLayerExists(const QString &sourceID)
 
 void QSGMapboxGLAbstractNode::queryCoordinateForPixel(QPointF p, const QVariant &tag)
 {
-  double rx = ((float)m_map_size.width()) / ((float)m_item_size.width());
-  double ry = ((float)m_map_size.height()) / ((float)m_item_size.height());
+  float rx = ((float)m_map_size.width()) / ((float)m_item_size.width());
+  float ry = ((float)m_map_size.height()) / ((float)m_item_size.height());
 
   p.setX(p.x() * rx);
   p.setY(p.y() * ry);
