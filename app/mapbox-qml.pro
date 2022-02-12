@@ -7,16 +7,14 @@ SOURCES += src/main.cpp
 
 RESOURCES += qml.qrc
 
-include(../mapbox-gl-qml.pri)
-
 CONFIG += link_pkgconfig
 PKGCONFIG += icu-uc icu-io
 
-#use_curl_ssl {
+use_curl_ssl {
    CONFIG += link_pkgconfig
    DEFINES += USE_CURL_SSL
    PKGCONFIG += libcurl openssl
-#}
+}
 
 LIBS += -lqmapboxgl -lz -lcrypto -ldl
 

@@ -3,8 +3,7 @@ import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 import QtPositioning 5.3
 
-import QQuickItemMapboxGL 1.0
-//import MapboxMap 1.0
+import MapboxMap 1.0
 
 import "."
 
@@ -27,6 +26,7 @@ ApplicationWindow {
         minimumZoomLevel: 0
         maximumZoomLevel: 20
         pixelRatio: 1.0
+        useFBO: true //false
 
         bearing: bearingSlider.value
         pitch: pitchSlider.value
@@ -87,8 +87,8 @@ ApplicationWindow {
         property string styleUrlOrig: "http://localhost:8553/v1/mbgl/style?style=osmbright"
         property int styleIndex: 0
 
-        styleUrl: "mapbox://styles/mapbox/outdoors-v10" //"mapbox://styles/mapbox/streets-v10"
-        //styleUrl: styleUrlOrig
+        //styleUrl: "mapbox://styles/mapbox/outdoors-v10" //"mapbox://styles/mapbox/streets-v10"
+        styleUrl: styleUrlOrig
 
         urlDebug: true
 
