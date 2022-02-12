@@ -53,18 +53,19 @@
 
 #include <QMapboxGL>
 
-class QSGMapboxGLTextureNode : public QObject, public QSGSimpleTextureNode
+class QSGMapboxGLAbstractNode : public QObject
 {
   Q_OBJECT
 
 public:
-  QSGMapboxGLTextureNode(const QMapboxGLSettings &, const QSize &, qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item);
-  ~QSGMapboxGLTextureNode();
+  QSGMapboxGLAbstractNode(const QMapboxGLSettings &, const QSize &, qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item);
 
   QMapboxGL* map() const { return m_map.data(); }
+  int height() const { return m_map_size.width(); }
+  int width() const { return m_map_size.height(); }
 
-  void resize(const QSize &size, qreal pixelRatio);
-  void render(QQuickWindow *);
+  virtual void resize(const QSize &size, qreal pixelRatio);
+  virtual void render(QQuickWindow *) {}
 
 public slots:
   void querySourceExists(const QString &id);
@@ -76,17 +77,35 @@ signals:
   void replyLayerExists(const QString id, bool exists);
   void replyCoordinateForPixel(const QPointF p, QGeoCoordinate geo, qreal degLatPerPixel, qreal degLonPerPixel, const QVariant &tag);
 
-private:
+protected:
   QScopedPointer<QMapboxGL> m_map;
-  QScopedPointer<QOpenGLFramebufferObject> m_fbo;
+  QSize m_map_size; ///<- size as set for map
+  QSize m_item_size; ///<- size of Qt item in Qt logical pixels units
   qreal m_pixel_ratio;
   qreal m_device_pixel_ratio{1};
+};
+
+class QSGMapboxGLTextureNode : public QSGMapboxGLAbstractNode, public QSGSimpleTextureNode
+{
+  Q_OBJECT
+
+public:
+  QSGMapboxGLTextureNode(const QMapboxGLSettings &, const QSize &, qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item);
+  ~QSGMapboxGLTextureNode();
+
+  QMapboxGL* map() const { return m_map.data(); }
+
+  void resize(const QSize &size, qreal pixelRatio) override;
+  void render(QQuickWindow *) override;
+
+private:
+  QScopedPointer<QOpenGLFramebufferObject> m_fbo;
 };
 
 #if HAS_SGRENDERNODE
 #include <QSGRenderNode>
 
-class QSGMapboxGLRenderNode : public QObject, public QSGRenderNode
+class QSGMapboxGLRenderNode : public QSGMapboxGLAbstractNode, public QSGRenderNode
 {
   Q_OBJECT
 
@@ -110,10 +129,6 @@ signals:
   void replySourceExists(const QString id, bool exists);
   void replyLayerExists(const QString id, bool exists);
   void replyCoordinateForPixel(const QPointF p, QGeoCoordinate geo, qreal degLatPerPixel, qreal degLonPerPixel, const QVariant &tag);
-
-private:
-  QScopedPointer<QMapboxGL> m_map;
-  qreal m_pixel_ratio;
 };
 #endif
 
