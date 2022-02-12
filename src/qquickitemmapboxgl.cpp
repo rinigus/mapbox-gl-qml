@@ -483,6 +483,11 @@ qreal QQuickItemMapboxGL::metersPerPixel() const
   return m_metersPerPixel;
 }
 
+qreal QQuickItemMapboxGL::metersPerMapPixel() const
+{
+  return m_metersPerMapPixel;
+}
+
 void QQuickItemMapboxGL::setMetersPerPixelTolerance(qreal tol)
 {
   m_metersPerPixelTolerance = tol;
@@ -1153,10 +1158,12 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   { // metersPerPixel
     const double tol = metersPerPixelTolerance(); // tolerance used when comparing floating point numbers
-    qreal meters = map->metersPerPixelAtLatitude( map->coordinate().first, map->zoom() ) * n->mapToQtPixelRatio();
+    qreal mapmeters = map->metersPerPixelAtLatitude( map->coordinate().first, map->zoom() );
+    qreal meters = mapmeters * n->mapToQtPixelRatio();
     if ( fabs(meters - metersPerPixel()) > tol )
       {
         m_metersPerPixel = meters;
+        m_metersPerMapPixel = mapmeters;
         emit metersPerPixelChanged(meters);
       }
   }

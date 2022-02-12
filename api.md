@@ -212,16 +212,6 @@ first created map.
     fly. Note that the minimal `pixelRatio` is set to
     `devicePixelRatio` used at the map widget construction.
 
-    Care should be taken when having `pixelRatio` different from one
-    and using `metersPerPixel` to draw something on the map (such as
-    uncertainty of position, for example). Since `metersPerPixel`
-    gives the scale in map pixel units and all objects are scaled up
-    by `pixelRatio`, you may have to reduce the drawn objects by
-    `pixelRatio` when adding them on the map. For example, when
-    drawing uncertainty of position as a circle around position, you
-    would have to divide the radius of the circle by `pixelRatio` when
-    modifying the circle radius by `setPaintProperty` method.
-
 * `string `**`styleJson`** The map style in JSON given as a
     string. Sets a new style from a JSON that must conform to the
     [Mapbox style
@@ -271,8 +261,14 @@ for debugging purposes or changed by adding them given suffix.
   `errorChanged` to trigger error processing and don't rely on
   clearance of errorString property.
 
-* `real `**`metersPerPixel`** Meters per pixel at the center of the map
-  given for the pixel density as specified by `pixelRatio`.
+* `real `**`metersPerPixel`** Meters per Qt logical pixel at the
+  center of the map.
+
+* `real `**`metersPerMapPixel`** Meters per map logical pixel at the
+  center of the map. Use this property when drawing objects on the map
+  that are specified in pixels, such as map style, and can be then
+  converted to meters. For example, when drawing location precision
+  with a circle by giving its radius in map pixels.
 
 * `real `**`metersPerPixelTolerance`** Tolerance with which
   `metersPerPixel` is updated.
