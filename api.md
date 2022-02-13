@@ -180,6 +180,19 @@ first created map.
     construct (see http://doc.qt.io/qt-5/qml-coordinate.html and
     http://doc.qt.io/qt-5/qgeocoordinate.html for details).
 
+* `real `**`mapToQtPixelRatio`** Ratio between logical map and Qt
+    pixel sizes. When wishing to add elements on a map which should
+    have a fixed size in relation to other Qt UI elements, use this
+    property to when specifying sizes in map styles. For example, when
+    adding icons to the map.
+
+pixel density of the screen when
+    compared to 96dpi. All the map elements will be scaled by this
+    ratio when drawn. This allows to use the same style on the screens
+    with the different pixel densities and adjust the scale on
+    fly. Note that the minimal `pixelRatio` is set to
+    `devicePixelRatio` used at the map widget construction.
+
 * `rect `**`margins`** Relative margins that determine position of the
     center on the map. Margins specify the relative active area of the
     widget and the position of the active area. When given by a
@@ -211,6 +224,14 @@ first created map.
     with the different pixel densities and adjust the scale on
     fly. Note that the minimal `pixelRatio` is set to
     `devicePixelRatio` used at the map widget construction.
+
+    It is recommended to use this property for adjusting map overall
+    zoom for HiDPI cases. However, do not assume relationships between
+    Qt and map logical pixel sizes as it will depend on selected
+    implementation of the rendering and may change in future. Instead,
+    for adding custom elements through map styles, use the properties
+    made for such conversion: `mapToQtPixelRatio`, `metersPerPixel`,
+    `metersPerMapPixel`.
 
 * `string `**`styleJson`** The map style in JSON given as a
     string. Sets a new style from a JSON that must conform to the

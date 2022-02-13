@@ -85,6 +85,7 @@ class QQuickItemMapboxGL : public QQuickItem
 
   Q_PROPERTY(qreal devicePixelRatio READ devicePixelRatio WRITE setDevicePixelRatio NOTIFY devicePixelRatioChanged)
   Q_PROPERTY(qreal pixelRatio READ pixelRatio WRITE setPixelRatio NOTIFY pixelRatioChanged)
+  Q_PROPERTY(qreal mapToQtPixelRatio READ mapToQtPixelRatio NOTIFY mapToQtPixelRatioChanged)
   Q_PROPERTY(QString styleJson READ styleJson WRITE setStyleJson NOTIFY styleJsonChanged)
   Q_PROPERTY(QString styleUrl READ styleUrl WRITE setStyleUrl)
   Q_PROPERTY(QString urlSuffix READ urlSuffix WRITE setUrlSuffix NOTIFY urlSuffixChanged)
@@ -153,6 +154,8 @@ public:
 
   void setPixelRatio(qreal pixelRatio);
   qreal pixelRatio() const;
+
+  qreal mapToQtPixelRatio() const;
 
   /// Settings related
   QString accessToken() const;
@@ -337,6 +340,7 @@ signals:
   /// Tracking the state of the map
   void metersPerPixelChanged(qreal metersPerPixel);
   void metersPerPixelToleranceChanged(qreal metersPerPixelTolerance);
+  void mapToQtPixelRatioChanged(qreal mapToQtPixelRatio);
 
 public slots:
   void setCenter(const QGeoCoordinate &center);
@@ -411,8 +415,9 @@ private:
 
   QString m_errorString;
 
-  qreal m_devicePixelRatio;
-  qreal m_pixelRatio;
+  qreal m_devicePixelRatio = 1;
+  qreal m_pixelRatio = 1;
+  qreal m_mapToQtPixelRatio = 1;
   QString m_styleUrl;
   QString m_styleJson;
   bool    m_useUrlForStyle = true;

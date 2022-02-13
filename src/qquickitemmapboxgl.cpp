@@ -612,6 +612,11 @@ void QQuickItemMapboxGL::setPixelRatio(qreal pixelRatio)
   emit pixelRatioChanged(m_pixelRatio);
 }
 
+qreal QQuickItemMapboxGL::mapToQtPixelRatio() const
+{
+  return m_mapToQtPixelRatio;
+}
+
 QString QQuickItemMapboxGL::styleJson() const
 {
   return m_styleJson;
@@ -1031,7 +1036,6 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       m_last_size = sz;
     }
 
-
   if (m_syncState & MarginsNeedSync)
     {
       QMargins margins(m_margins.left()*n->width(), m_margins.top()*n->height(),
@@ -1165,6 +1169,20 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
         m_metersPerPixel = meters;
         m_metersPerMapPixel = mapmeters;
         emit metersPerPixelChanged(meters);
+      }
+  }
+
+  { // mapToQtPixelRatio
+    // as it is expected that qt pixels are larger than the map pixels,
+    // comparison is done using inverted ratios
+    const float tol = 1e-2;
+    const float pub = 1/m_mapToQtPixelRatio;
+    const float cur = 1/n->mapToQtPixelRatio();
+    if ( fabs(pub - cur) > tol )
+      {
+        m_mapToQtPixelRatio = n->mapToQtPixelRatio();
+        emit mapToQtPixelRatioChanged(m_mapToQtPixelRatio);
+        qDebug() << "mapToQtPixelRatioChanged" << m_mapToQtPixelRatio << pub << cur;
       }
   }
 
