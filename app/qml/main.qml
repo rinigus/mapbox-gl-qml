@@ -26,7 +26,7 @@ ApplicationWindow {
         minimumZoomLevel: 0
         maximumZoomLevel: 20
         pixelRatio: 1.0
-        useFBO: true //false
+        useFBO: true
 
         bearing: bearingSlider.value
         pitch: pitchSlider.value
