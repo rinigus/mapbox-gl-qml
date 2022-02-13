@@ -186,13 +186,6 @@ first created map.
     property to when specifying sizes in map styles. For example, when
     adding icons to the map.
 
-pixel density of the screen when
-    compared to 96dpi. All the map elements will be scaled by this
-    ratio when drawn. This allows to use the same style on the screens
-    with the different pixel densities and adjust the scale on
-    fly. Note that the minimal `pixelRatio` is set to
-    `devicePixelRatio` used at the map widget construction.
-
 * `rect `**`margins`** Relative margins that determine position of the
     center on the map. Margins specify the relative active area of the
     widget and the position of the active area. When given by a
@@ -337,8 +330,8 @@ filter only the responses that are of interest.
 
   ```javascript
 	// 15 pixels at 96dpi would correspond to 4 mm
-	var nearby_lat = map.pixelRatio * 15 * degLatPerPixel;
-	var nearby_lon = map.pixelRatio * 15 * degLonPerPixel;
+	var nearby_lat = 15 * degLatPerPixel;
+	var nearby_lon = 15 * degLonPerPixel;
 
 	// check if its current position
 	if ( Math.abs(coordinate.longitude - map.position.coordinate.longitude) < nearby_lon &&
