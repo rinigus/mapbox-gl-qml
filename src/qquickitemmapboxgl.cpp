@@ -1182,7 +1182,6 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
       {
         m_mapToQtPixelRatio = n->mapToQtPixelRatio();
         emit mapToQtPixelRatioChanged(m_mapToQtPixelRatio);
-        qDebug() << "mapToQtPixelRatioChanged" << m_mapToQtPixelRatio << pub << cur;
       }
   }
 
