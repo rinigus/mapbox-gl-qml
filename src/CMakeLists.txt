@@ -49,7 +49,10 @@ if(USE_FBO)
         add_definitions(-DUSE_FBO=1)
 endif()
 
-FindQtInstallQml()
+if(NOT DEFINED QT_INSTALL_QML)
+  FindQtInstallQml()
+  message(STATUS "Found QT_INSTALL_QML path: ${QT_INSTALL_QML}")
+endif()
 
 install(FILES 
 	plugin/MapboxMapGestureArea.qml
