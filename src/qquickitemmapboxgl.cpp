@@ -49,6 +49,7 @@
 #include <QGuiApplication>
 #include <QDir>
 #include <QFileInfo>
+#include <QFont>
 #include <QJsonDocument>
 #include <QMutexLocker>
 #include <QScreen>
@@ -140,6 +141,12 @@ QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
 
   m_settings.setViewportMode(QMapboxGLSettings::DefaultViewport);
 
+  QFont font;
+  font.setStyleHint(QFont::SansSerif);
+  m_settings.setLocalFontFamily(font.defaultFamily());
+
+  m_settings.resetToTemplate(QMapboxGLSettings::MapboxSettings);
+
   m_settings.setResourceTransform(std::bind(&QQuickItemMapboxGL::resourceTransform,
                                             this, std::placeholders::_1));
 
@@ -182,14 +189,14 @@ QQuickItemMapboxGL::~QQuickItemMapboxGL()
 QVariantList QQuickItemMapboxGL::defaultStyles() const
 {
   QVariantList array;
-  // auto styles = QMapbox::defaultStyles();
-  // for (const auto &i: styles)
-  //   {
-  //     QVariantMap o;
-  //     o.insert("url", QVariant(i.first));
-  //     o.insert("name", QVariant(i.second));
-  //     array.append(o);
-  //   }
+  auto styles = m_settings.defaultStyles();
+  for (const auto &i: styles)
+    {
+      QVariantMap o;
+      o.insert("url", QVariant(i.first));
+      o.insert("name", QVariant(i.second));
+      array.append(o);
+    }
 
   return array;
 }

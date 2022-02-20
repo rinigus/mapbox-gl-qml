@@ -84,9 +84,9 @@ the map's frame buffer object is recreated. Some of them (such as
 cache-related properties) would be used as they were specified for the
 first created map.
 
-* `string `**`accessToken`** Mapbox-hosted vector tiles and styles require an API
-    [access token](https://www.mapbox.com/help/define-access-token/),
-    which you can obtain from the
+* `string `**`accessToken`** When hosted vector tiles and styles require an API
+    [access token](https://www.mapbox.com/help/define-access-token/), you can specify
+    them using `accessToken`. For example , for Mapbox you can obtain it from the
     [Mapbox account page](https://www.mapbox.com/studio/account/tokens/). Access
     tokens associate requests to Mapbox's vector tile and style APIs
     with your Mapbox account. They also deter other developers from
