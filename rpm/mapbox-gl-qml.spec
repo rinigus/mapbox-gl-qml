@@ -26,11 +26,10 @@ BuildRequires: qt5-qtbase-devel
 %if 0%{?suse_version} >= 1500
 BuildRequires: libqt5-qtbase-devel
 %endif
-BuildRequires: qmapboxgl-devel
-Requires: qmapboxgl
+BuildRequires: qmaplibregl-devel
 
 %description
-QML plugin for Mapbox GL Native.
+QML plugin for Maplibre GL Native.
 
 PackageName: Mapbox GL QML Plugin
 Categories:

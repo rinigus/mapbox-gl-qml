@@ -49,6 +49,7 @@
 #include <QGuiApplication>
 #include <QDir>
 #include <QFileInfo>
+#include <QFont>
 #include <QJsonDocument>
 #include <QMutexLocker>
 #include <QScreen>
@@ -135,10 +136,16 @@ QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
 
  setFlag(ItemHasContents);
 
-  m_styleUrl = QMapbox::defaultStyles()[0].first;
+  m_styleUrl = QString(); // QMapbox::defaultStyles()[0].first;
   m_styleJson = QString(); // empty
 
   m_settings.setViewportMode(QMapboxGLSettings::DefaultViewport);
+
+  QFont font;
+  font.setStyleHint(QFont::SansSerif);
+  m_settings.setLocalFontFamily(font.defaultFamily());
+
+  m_settings.resetToTemplate(QMapboxGLSettings::MapboxSettings);
 
   m_settings.setResourceTransform(std::bind(&QQuickItemMapboxGL::resourceTransform,
                                             this, std::placeholders::_1));
@@ -182,7 +189,7 @@ QQuickItemMapboxGL::~QQuickItemMapboxGL()
 QVariantList QQuickItemMapboxGL::defaultStyles() const
 {
   QVariantList array;
-  auto styles = QMapbox::defaultStyles();
+  auto styles = m_settings.defaultStyles();
   for (const auto &i: styles)
     {
       QVariantMap o;
@@ -197,12 +204,12 @@ QVariantList QQuickItemMapboxGL::defaultStyles() const
 /// Properties that have to be set during construction of the map
 QString QQuickItemMapboxGL::accessToken() const
 {
-  return m_settings.accessToken();
+  return m_settings.apiKey();
 }
 
 void QQuickItemMapboxGL::setAccessToken(const QString &token)
 {
-  m_settings.setAccessToken(token);
+  m_settings.setApiKey(token);
   emit accessTokenChanged(accessToken());
 }
 
