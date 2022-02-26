@@ -1,6 +1,6 @@
 Summary: Mapbox GL Native QML plugin
 Name: mapboxgl-qml
-Version: 1.7.0
+Version: 2.0.0
 Release: 1%{?dist}
 License: LGPLv3
 Group: Libraries/Geosciences
@@ -29,7 +29,7 @@ BuildRequires: libqt5-qtbase-devel
 BuildRequires: qmaplibregl-devel
 
 %description
-QML plugin for Maplibre GL Native.
+QML plugin for Maplibre GL Native, Mapbox GL Native fork.
 
 PackageName: Mapbox GL QML Plugin
 Categories:
