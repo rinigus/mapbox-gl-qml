@@ -134,9 +134,9 @@ QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
 #endif
 #endif
 
- setFlag(ItemHasContents);
+  setFlag(ItemHasContents);
 
-  m_styleUrl = QString(); // QMapbox::defaultStyles()[0].first;
+  m_styleUrl = QStringLiteral("mapbox://styles/mapbox/streets-v10");
   m_styleJson = QString(); // empty
 
   m_settings.setViewportMode(QMapboxGLSettings::DefaultViewport);
