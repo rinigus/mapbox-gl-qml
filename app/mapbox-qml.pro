@@ -16,7 +16,7 @@ use_curl_ssl {
    PKGCONFIG += libcurl openssl
 }
 
-LIBS += -lqmapboxgl -lz -lcrypto -ldl
+LIBS += -lqmaplibregl -lz -lcrypto -ldl
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =

@@ -4,7 +4,7 @@
 
 #include <QDebug>
 
-using namespace QMapboxSync;
+using namespace QMapLibreSync;
 
 /// Source
 
@@ -14,7 +14,7 @@ SourceList::SourceAction::SourceAction(Type t, const QString id, const QVariantM
 {
 }
 
-void SourceList::SourceAction::apply(QMapboxGL *map)
+void SourceList::SourceAction::apply(QMapLibreGL *map)
 {
   // special treatment of "data" field
   if (m_asset.params.contains("data"))
@@ -76,7 +76,7 @@ void SourceList::add_to_stack(Action::Type t, const QString &id, const QVariantM
   m_action_stack.append( SourceAction(t, id, params) );
 }
 
-void SourceList::apply(QMapboxGL *map)
+void SourceList::apply(QMapLibreGL *map)
 {
   for (SourceAction &action: m_action_stack)
     {
@@ -112,7 +112,7 @@ void SourceList::apply(QMapboxGL *map)
   m_action_stack.clear();
 }
 
-void SourceList::setup(QMapboxGL *map)
+void SourceList::setup(QMapLibreGL *map)
 {
   for (Asset &asset: m_assets)
     {
@@ -131,7 +131,7 @@ LayerList::LayerAction::LayerAction(Type t, const QString id, const QVariantMap 
   m_asset.params["id"] = id;
 }
 
-void LayerList::LayerAction::apply(QMapboxGL *map)
+void LayerList::LayerAction::apply(QMapLibreGL *map)
 {
   if (type() == Add)
     {
@@ -155,7 +155,7 @@ void LayerList::remove(const QString &id)
   m_action_stack.append( LayerAction(Action::Remove, id) );
 }
 
-void LayerList::apply(QMapboxGL *map)
+void LayerList::apply(QMapLibreGL *map)
 {
   for (LayerAction &action: m_action_stack)
     {
@@ -175,7 +175,7 @@ void LayerList::apply(QMapboxGL *map)
   m_action_stack.clear();
 }
 
-void LayerList::setup(QMapboxGL *map)
+void LayerList::setup(QMapLibreGL *map)
 {
   for (Asset &asset: m_assets)
     {
@@ -191,7 +191,7 @@ void PropertyList::add(const QString &layer, const QString &property, const QVar
   m_action_stack.append( Property(layer, property, value) );
 }
 
-void PropertyList::apply(QMapboxGL *map)
+void PropertyList::apply(QMapLibreGL *map)
 {
   for (Property &p: m_action_stack)
     {
@@ -202,7 +202,7 @@ void PropertyList::apply(QMapboxGL *map)
   m_action_stack.clear();
 }
 
-void PropertyList::setup(QMapboxGL *map)
+void PropertyList::setup(QMapLibreGL *map)
 {
   for (Property &p: m_properties)
     {
@@ -210,12 +210,12 @@ void PropertyList::setup(QMapboxGL *map)
     }
 }
 
-void LayoutPropertyList::apply_property(QMapboxGL *map, Property &p)
+void LayoutPropertyList::apply_property(QMapLibreGL *map, Property &p)
 {
   map->setLayoutProperty(p.layer, p.property, p.value);
 }
 
-void PaintPropertyList::apply_property(QMapboxGL *map, Property &p)
+void PaintPropertyList::apply_property(QMapLibreGL *map, Property &p)
 {
   map->setPaintProperty(p.layer, p.property, p.value);
 }
@@ -231,7 +231,7 @@ ImageList::ImageAction::ImageAction(Type t, const QString id, const QImage im):
 {
 }
 
-void ImageList::ImageAction::apply(QMapboxGL *map)
+void ImageList::ImageAction::apply(QMapLibreGL *map)
 {
   if (type() == Add)
     map->addImage(m_image.id, m_image.image);
@@ -251,7 +251,7 @@ void ImageList::remove(const QString &id)
   m_action_stack.append( ImageAction(Action::Remove, id) );
 }
 
-void ImageList::apply(QMapboxGL *map)
+void ImageList::apply(QMapLibreGL *map)
 {
   for (ImageAction &action: m_action_stack)
     {
@@ -271,7 +271,7 @@ void ImageList::apply(QMapboxGL *map)
   m_action_stack.clear();
 }
 
-void ImageList::setup(QMapboxGL *map)
+void ImageList::setup(QMapLibreGL *map)
 {
   for (Image &image: m_images)
     {

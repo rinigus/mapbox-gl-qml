@@ -1,17 +1,17 @@
 #ifndef QMAPBOXSYNC_H
 #define QMAPBOXSYNC_H
 
-#include <QMapboxGL>
+#include <QMapLibreGL>
 
 #include <QString>
 #include <QVariantMap>
 #include <QList>
 #include <QImage>
 
-namespace QMapboxSync
+namespace QMapLibreSync
 {
   //////////////////////////////////////////////////////////////////////////
-  /// QMapboxSync namespace contains classes that are responsible
+  /// QMapLibreSync namespace contains classes that are responsible
   /// for application of dynamic settings, such as manipulation with
   /// additional sources, layers, paint properties. All supported
   /// assets have similar approach. On addition/update/removal, the request
@@ -34,7 +34,7 @@ namespace QMapboxSync
   public:
     Action(Type t): m_type(t) {}
 
-    virtual void apply(QMapboxGL *map) = 0;
+    virtual void apply(QMapLibreGL *map) = 0;
 
     Type type() const { return m_type; }
 
@@ -68,15 +68,15 @@ namespace QMapboxSync
     void update(const QString &id, const QVariantMap& params);
     void remove(const QString &id);
 
-    void apply(QMapboxGL *map);
-    void setup(QMapboxGL *map);
+    void apply(QMapLibreGL *map);
+    void setup(QMapLibreGL *map);
 
   protected:
 
     class SourceAction: public Action {
     public:
       SourceAction(Type t, const QString id, const QVariantMap params = QVariantMap());
-      virtual void apply(QMapboxGL *map);
+      virtual void apply(QMapLibreGL *map);
       Asset& asset() { return m_asset; }
 
     protected:
@@ -101,15 +101,15 @@ namespace QMapboxSync
     void add(const QString &id, const QVariantMap& params, const QString &before);
     void remove(const QString &id);
 
-    void apply(QMapboxGL *map);
-    void setup(QMapboxGL *map);
+    void apply(QMapLibreGL *map);
+    void setup(QMapLibreGL *map);
 
   protected:
 
     class LayerAction: public Action {
     public:
       LayerAction(Type t, const QString id, const QVariantMap params = QVariantMap(), const QString before = QString());
-      virtual void apply(QMapboxGL *map);
+      virtual void apply(QMapLibreGL *map);
       Asset& asset() { return m_asset; }
 
     protected:
@@ -141,11 +141,11 @@ namespace QMapboxSync
 
     void add(const QString &layer, const QString &property, const QVariant& value);
 
-    void apply(QMapboxGL *map);
-    void setup(QMapboxGL *map);
+    void apply(QMapLibreGL *map);
+    void setup(QMapLibreGL *map);
 
   protected:
-    virtual void apply_property(QMapboxGL *map, Property &p) = 0;
+    virtual void apply_property(QMapLibreGL *map, Property &p) = 0;
 
   protected:
     QList<Property> m_properties;
@@ -156,14 +156,14 @@ namespace QMapboxSync
   public:
     LayoutPropertyList(): PropertyList() {}
   protected:
-    virtual void apply_property(QMapboxGL *map, Property &p);
+    virtual void apply_property(QMapLibreGL *map, Property &p);
   };
 
   class PaintPropertyList: public PropertyList {
   public:
     PaintPropertyList(): PropertyList() {}
   protected:
-    virtual void apply_property(QMapboxGL *map, Property &p);
+    virtual void apply_property(QMapLibreGL *map, Property &p);
   };
 
   ///////////////////////////////////////////////////////////
@@ -187,14 +187,14 @@ namespace QMapboxSync
     void add(const QString &id, const QImage &sprite);
     void remove(const QString &id);
 
-    void apply(QMapboxGL *map);
-    void setup(QMapboxGL *map);
+    void apply(QMapLibreGL *map);
+    void setup(QMapLibreGL *map);
 
   protected:
     class ImageAction: public Action {
     public:
       ImageAction(Type t, const QString id, const QImage image = QImage());
-      virtual void apply(QMapboxGL *map);
+      virtual void apply(QMapLibreGL *map);
       Image& image() { return m_image; }
 
     protected:

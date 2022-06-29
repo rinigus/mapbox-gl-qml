@@ -139,13 +139,13 @@ QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
   m_styleUrl = QStringLiteral("mapbox://styles/mapbox/streets-v10");
   m_styleJson = QString(); // empty
 
-  m_settings.setViewportMode(QMapboxGLSettings::DefaultViewport);
+  m_settings.setViewportMode(QMapLibreSettings::DefaultViewport);
 
   QFont font;
   font.setStyleHint(QFont::SansSerif);
   m_settings.setLocalFontFamily(font.defaultFamily());
 
-  m_settings.resetToTemplate(QMapboxGLSettings::MapboxSettings);
+  m_settings.resetToTemplate(QMapLibreSettings::MapboxSettings);
 
   m_settings.setResourceTransform(std::bind(&QQuickItemMapboxGL::resourceTransform,
                                             this, std::placeholders::_1));
@@ -964,7 +964,7 @@ void QQuickItemMapboxGL::clearCache()
 QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData *)
 {
   QSize sz(width(), height());
-  QMapboxGL *map = nullptr;
+  QMapLibreGL *map = nullptr;
   m_first_init_done = true;
 
   QSGMapboxGLAbstractNode *n = nullptr;
@@ -1030,8 +1030,8 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
       /////////////////////////////////////////////////////
       /// connect map changed and failure signals
-      connect(map, &QMapboxGL::mapChanged, this, &QQuickItemMapboxGL::onMapChanged, Qt::QueuedConnection);
-      connect(map, &QMapboxGL::mapLoadingFailed, this, &QQuickItemMapboxGL::onMapLoadingFailed, Qt::QueuedConnection);
+      connect(map, &QMapLibreGL::mapChanged, this, &QQuickItemMapboxGL::onMapChanged, Qt::QueuedConnection);
+      connect(map, &QMapLibreGL::mapLoadingFailed, this, &QQuickItemMapboxGL::onMapLoadingFailed, Qt::QueuedConnection);
     }
   else
     map = n->map();
@@ -1055,7 +1055,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   if (m_syncState & FitViewNeedsSync)
     {
-      QMapbox::CoordinateZoom cz = map->coordinateZoomForBounds(m_fit_sw, m_fit_ne);
+      QMapLibre::CoordinateZoom cz = map->coordinateZoomForBounds(m_fit_sw, m_fit_ne);
       m_fit_center = QGeoCoordinate(cz.first.first, cz.first.second);
       m_fit_zoomLevel = cz.second;
       setCenter(m_fit_center);
@@ -1211,10 +1211,10 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
   return node;
 }
 
-void QQuickItemMapboxGL::onMapChanged(QMapboxGL::MapChange change)
+void QQuickItemMapboxGL::onMapChanged(QMapLibreGL::MapChange change)
 {
   // check if we can add user-added sources, layers ...
-  if (QMapboxGL::MapChangeDidFinishLoadingStyle == change && m_block_data_until_loaded)
+  if (QMapLibreGL::MapChangeDidFinishLoadingStyle == change && m_block_data_until_loaded)
     {
       m_syncState |= DataNeedsSetupSync;
       m_syncState |= DataNeedsSync;
@@ -1229,7 +1229,7 @@ void QQuickItemMapboxGL::onMapChanged(QMapboxGL::MapChange change)
     }
 }
 
-void QQuickItemMapboxGL::onMapLoadingFailed(QMapboxGL::MapLoadingFailure /*type*/, const QString &description)
+void QQuickItemMapboxGL::onMapLoadingFailed(QMapLibreGL::MapLoadingFailure /*type*/, const QString &description)
 {
   setError(description);
 }

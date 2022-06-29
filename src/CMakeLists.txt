@@ -1,6 +1,6 @@
 ### Sets QT_INSTALL_QML to the directory where QML Plugins should be installed
 function(FindQtInstallQml)
-    find_program(QMAKE NAMES qmake-qt5 qmake)
+    find_program(QMAKE NAMES qmake-qt5 qmake qmake5)
     if(NOT QMAKE)
 	message(FATAL_ERROR "qmake not found")
     endif()
@@ -36,7 +36,7 @@ target_link_libraries(qmlmapboxglplugin PRIVATE
 	Qt5::Positioning
 	Qt5::Sql
         Qt5::Svg
-	QMapboxGL)
+	QMapLibreGL)
 
 if(USE_CURL_SSL)
 	add_definitions(-DUSE_CURL_SSL=1)

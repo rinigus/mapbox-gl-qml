@@ -51,16 +51,16 @@
 #include <QQuickItem>
 #include <QGeoCoordinate>
 
-#include <QMapboxGL>
+#include <QMapLibreGL>
 
 class QSGMapboxGLAbstractNode : public QObject
 {
   Q_OBJECT
 
 public:
-  QSGMapboxGLAbstractNode(const QMapboxGLSettings &, const QSize &, qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item);
+  QSGMapboxGLAbstractNode(const QMapLibreSettings &, const QSize &, qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item);
 
-  QMapboxGL* map() const { return m_map.data(); }
+  QMapLibreGL* map() const { return m_map.data(); }
   float height() const { return m_map_size.height(); }
   float width() const { return m_map_size.width(); }
   float mapToQtPixelRatio() const;
@@ -79,7 +79,7 @@ signals:
   void replyCoordinateForPixel(const QPointF p, QGeoCoordinate geo, qreal degLatPerPixel, qreal degLonPerPixel, const QVariant &tag);
 
 protected:
-  QScopedPointer<QMapboxGL> m_map;
+  QScopedPointer<QMapLibreGL> m_map;
   QSize m_map_size; ///<- size as set for map
   QSize m_item_size; ///<- size of Qt item in Qt logical pixels units
   qreal m_pixel_ratio;
@@ -91,10 +91,10 @@ class QSGMapboxGLTextureNode : public QSGMapboxGLAbstractNode, public QSGSimpleT
   Q_OBJECT
 
 public:
-  QSGMapboxGLTextureNode(const QMapboxGLSettings &, const QSize &, qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item);
+  QSGMapboxGLTextureNode(const QMapLibreSettings &, const QSize &, qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item);
   ~QSGMapboxGLTextureNode();
 
-  QMapboxGL* map() const { return m_map.data(); }
+  QMapLibreGL* map() const { return m_map.data(); }
 
   void resize(const QSize &size, qreal pixelRatio) override;
   void render(QQuickWindow *) override;
@@ -111,9 +111,9 @@ class QSGMapboxGLRenderNode : public QSGMapboxGLAbstractNode, public QSGRenderNo
   Q_OBJECT
 
 public:
-  QSGMapboxGLRenderNode(const QMapboxGLSettings &, const QSize &, qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item);
+  QSGMapboxGLRenderNode(const QMapLibreSettings &, const QSize &, qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item);
 
-  QMapboxGL* map() const;
+  QMapLibreGL* map() const;
 
   void resize(const QSize &size, qreal pixelRatio);
 

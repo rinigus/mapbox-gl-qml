@@ -56,15 +56,15 @@ static const QSize minTextureSize = QSize(16, 16);
 ////////////////////////////////////////////
 /// QSGMapboxGLAbstractNode
 
-QSGMapboxGLAbstractNode::QSGMapboxGLAbstractNode(const QMapboxGLSettings &settings, const QSize &size,
+QSGMapboxGLAbstractNode::QSGMapboxGLAbstractNode(const QMapLibreSettings &settings, const QSize &size,
                                                  qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item):
   QObject(), m_map_size(size), m_item_size(size),
   m_device_pixel_ratio(devicePixelRatio), m_pixel_ratio(pixelRatio)
 {
-  m_map.reset(new QMapboxGL(nullptr, settings, size.expandedTo(minTextureSize), pixelRatio));
+  m_map.reset(new QMapLibreGL(nullptr, settings, size.expandedTo(minTextureSize), pixelRatio));
 
-  QObject::connect(m_map.data(), &QMapboxGL::needsRendering, item, &QQuickItem::update);
-  QObject::connect(m_map.data(), &QMapboxGL::copyrightsChanged, item, &QQuickItem::update);
+  QObject::connect(m_map.data(), &QMapLibreGL::needsRendering, item, &QQuickItem::update);
+  QObject::connect(m_map.data(), &QMapLibreGL::copyrightsChanged, item, &QQuickItem::update);
 }
 
 void QSGMapboxGLAbstractNode::resize(const QSize &size, qreal pixelRatio)
@@ -99,7 +99,7 @@ void QSGMapboxGLAbstractNode::queryCoordinateForPixel(QPointF p, const QVariant 
 
   p.setX(p.x() * rx);
   p.setY(p.y() * ry);
-  QMapbox::Coordinate mbc = m_map->coordinateForPixel(p);
+  QMapLibre::Coordinate mbc = m_map->coordinateForPixel(p);
   QGeoCoordinate coor(mbc.first, mbc.second);
 
   // get sensitivity of coordinates to the changes in pixel coordinates
@@ -107,7 +107,7 @@ void QSGMapboxGLAbstractNode::queryCoordinateForPixel(QPointF p, const QVariant 
   double sinB = sin(bearing);
   double cosB = cos(bearing);
   p += QPointF(cosB + sinB, -sinB + cosB);
-  QMapbox::Coordinate mbc_shift = m_map->coordinateForPixel(p);
+  QMapLibre::Coordinate mbc_shift = m_map->coordinateForPixel(p);
 
   qreal degLatPerPixel = fabs(mbc_shift.first - mbc.first) * rx;
   qreal degLonPerPixel = fabs(mbc_shift.second - mbc.second) * ry;
@@ -119,7 +119,7 @@ void QSGMapboxGLAbstractNode::queryCoordinateForPixel(QPointF p, const QVariant 
 ////////////////////////////////////////////
 /// QSGMapboxGLTextureNode
 
-QSGMapboxGLTextureNode::QSGMapboxGLTextureNode(const QMapboxGLSettings &settings, const QSize &size,
+QSGMapboxGLTextureNode::QSGMapboxGLTextureNode(const QMapLibreSettings &settings, const QSize &size,
                                                qreal devicePixelRatio,
                                                qreal pixelRatio, QQuickItem *item)
   : QSGMapboxGLAbstractNode(settings, size, devicePixelRatio, pixelRatio, item),
@@ -190,7 +190,7 @@ void QSGMapboxGLTextureNode::render(QQuickWindow *window)
 ////////////////////////////////////////////
 /// QSGMapboxGLRenderNode
 
-QSGMapboxGLRenderNode::QSGMapboxGLRenderNode(const QMapboxGLSettings &settings, const QSize &size,
+QSGMapboxGLRenderNode::QSGMapboxGLRenderNode(const QMapLibreSettings &settings, const QSize &size,
                                              qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item)
   : QSGMapboxGLAbstractNode(settings, size, devicePixelRatio, pixelRatio, item)
 {
@@ -208,7 +208,7 @@ void QSGMapboxGLRenderNode::resize(const QSize &size, qreal pixelRatio)
 
 void QSGMapboxGLRenderNode::render(const RenderState *state)
 {
-  // QMapboxGL assumes we've prepared the viewport prior to render().
+  // QMapLibreGL assumes we've prepared the viewport prior to render().
   QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
   f->glViewport(state->scissorRect().x(), state->scissorRect().y(), state->scissorRect().width(), state->scissorRect().height());
   f->glScissor(state->scissorRect().x(), state->scissorRect().y(), state->scissorRect().width(), state->scissorRect().height());

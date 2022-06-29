@@ -54,7 +54,7 @@
 #include <QHash>
 #include <QMutex>
 
-#include <QMapboxGL>
+#include <QMapLibreGL>
 #include <QGeoCoordinate>
 
 #include <string>
@@ -64,7 +64,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// \brief The QQuickItemMapboxGL class
 ///
-/// Interface with QMapboxGL for QML. API is documented in api.md available at
+/// Interface with QMapLibreGL for QML. API is documented in api.md available at
 /// https://github.com/rinigus/mapbox-gl-qml/blob/master/api.md
 ///
 /// Note that there is a difference in the order of coordinates when using GeoJSON and
@@ -350,8 +350,8 @@ protected:
 
 private:
 
-  void onMapChanged(QMapboxGL::MapChange change); ///< Follow the state of the map
-  void onMapLoadingFailed(QMapboxGL::MapLoadingFailure type, const QString &description);
+  void onMapChanged(QMapLibreGL::MapChange change); ///< Follow the state of the map
+  void onMapLoadingFailed(QMapLibreGL::MapLoadingFailure type, const QString &description);
 
   std::string resourceTransform(const std::string &url); ///< Use resource transform API to change requested URL
 
@@ -378,7 +378,7 @@ private:
   };
 
 private:
-  QMapboxGLSettings m_settings;
+  QMapLibreSettings m_settings;
 
   /// Signals that the first full init is done and setup-related
   /// properties cannot be changed
@@ -406,8 +406,8 @@ private:
   qreal m_pitch = 0;
   QMarginsF m_margins;  
 
-  QMapbox::Coordinate m_fit_sw;
-  QMapbox::Coordinate m_fit_ne;
+  QMapLibre::Coordinate m_fit_sw;
+  QMapLibre::Coordinate m_fit_ne;
   QGeoCoordinate m_fit_center;
   qreal m_fit_zoomLevel = -1;
   bool m_fit_preserve_box = false;
@@ -433,11 +433,11 @@ private:
 
   bool m_block_data_until_loaded{true}; ///< Blocks loading of additional data until base map is loaded
   bool m_finalize_data_loading{true}; ///< Used to load additional data when the base map is fully loaded
-  QMapboxSync::SourceList m_sources;
-  QMapboxSync::LayerList m_layers;
-  QMapboxSync::LayoutPropertyList m_layout_properties;
-  QMapboxSync::PaintPropertyList m_paint_properties;
-  QMapboxSync::ImageList m_images;
+  QMapLibreSync::SourceList m_sources;
+  QMapLibreSync::LayerList m_layers;
+  QMapLibreSync::LayoutPropertyList m_layout_properties;
+  QMapLibreSync::PaintPropertyList m_paint_properties;
+  QMapLibreSync::ImageList m_images;
 
   enum SyncState {
     NothingNeedsSync = 0,
