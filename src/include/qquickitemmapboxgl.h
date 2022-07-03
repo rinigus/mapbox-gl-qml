@@ -54,7 +54,8 @@
 #include <QHash>
 #include <QMutex>
 
-#include <QMapLibreGL>
+#include <QMapLibreGL/Map>
+#include <QMapLibreGL/Settings>
 #include <QGeoCoordinate>
 
 #include <string>
@@ -350,8 +351,8 @@ protected:
 
 private:
 
-  void onMapChanged(QMapLibreGL::MapChange change); ///< Follow the state of the map
-  void onMapLoadingFailed(QMapLibreGL::MapLoadingFailure type, const QString &description);
+  void onMapChanged(QMapLibreGL::Map::MapChange change); ///< Follow the state of the map
+  void onMapLoadingFailed(QMapLibreGL::Map::MapLoadingFailure type, const QString &description);
 
   std::string resourceTransform(const std::string &url); ///< Use resource transform API to change requested URL
 
@@ -378,7 +379,7 @@ private:
   };
 
 private:
-  QMapLibreSettings m_settings;
+  QMapLibreGL::Settings m_settings;
 
   /// Signals that the first full init is done and setup-related
   /// properties cannot be changed
@@ -406,8 +407,8 @@ private:
   qreal m_pitch = 0;
   QMarginsF m_margins;  
 
-  QMapLibre::Coordinate m_fit_sw;
-  QMapLibre::Coordinate m_fit_ne;
+  QMapLibreGL::Coordinate m_fit_sw;
+  QMapLibreGL::Coordinate m_fit_ne;
   QGeoCoordinate m_fit_center;
   qreal m_fit_zoomLevel = -1;
   bool m_fit_preserve_box = false;
