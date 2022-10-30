@@ -780,6 +780,17 @@ void QQuickItemMapboxGL::updateSourceLine(const QString &sourceID, const QVarian
 {
   QVariantList coor;
 
+  // Mapbox geojson-hpp requires at least 2 points for a line. As a result, source addition or update
+  // will fail unless it is imported as an empty feature - done by the point import.
+  // Related issue: https://github.com/rinigus/pure-maps/issues/639
+  if (coordinates.size() < 2)
+    {
+      QVariantList names;
+      for (int i=0; i < coordinates.size(); ++i) names.append(name);
+      updateSourcePoints(sourceID, coordinates, names);
+      return;
+    }
+
   for (int i = 0; i < coordinates.size(); ++i)
     {
       QGeoCoordinate c = coordinates[i].value<QGeoCoordinate>();
