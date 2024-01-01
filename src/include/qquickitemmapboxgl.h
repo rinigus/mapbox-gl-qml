@@ -54,8 +54,8 @@
 #include <QHash>
 #include <QMutex>
 
-#include <QMapLibreGL/Map>
-#include <QMapLibreGL/Settings>
+#include <QMapLibre/Map>
+#include <QMapLibre/Settings>
 #include <QGeoCoordinate>
 
 #include <string>
@@ -65,7 +65,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// \brief The QQuickItemMapboxGL class
 ///
-/// Interface with QMapLibreGL for QML. API is documented in api.md available at
+/// Interface with QMapLibre for QML. API is documented in api.md available at
 /// https://github.com/rinigus/mapbox-gl-qml/blob/master/api.md
 ///
 /// Note that there is a difference in the order of coordinates when using GeoJSON and
@@ -351,8 +351,8 @@ protected:
 
 private:
 
-  void onMapChanged(QMapLibreGL::Map::MapChange change); ///< Follow the state of the map
-  void onMapLoadingFailed(QMapLibreGL::Map::MapLoadingFailure type, const QString &description);
+  void onMapChanged(QMapLibre::Map::MapChange change); ///< Follow the state of the map
+  void onMapLoadingFailed(QMapLibre::Map::MapLoadingFailure type, const QString &description);
 
   std::string resourceTransform(const std::string &url); ///< Use resource transform API to change requested URL
 
@@ -379,7 +379,7 @@ private:
   };
 
 private:
-  QMapLibreGL::Settings m_settings;
+  QMapLibre::Settings m_settings;
 
   /// Signals that the first full init is done and setup-related
   /// properties cannot be changed
@@ -407,8 +407,8 @@ private:
   qreal m_pitch = 0;
   QMarginsF m_margins;  
 
-  QMapLibreGL::Coordinate m_fit_sw;
-  QMapLibreGL::Coordinate m_fit_ne;
+  QMapLibre::Coordinate m_fit_sw;
+  QMapLibre::Coordinate m_fit_ne;
   QGeoCoordinate m_fit_center;
   qreal m_fit_zoomLevel = -1;
   bool m_fit_preserve_box = false;

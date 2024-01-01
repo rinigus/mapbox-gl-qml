@@ -62,7 +62,7 @@
 #include <QPainter>
 #include <QVariantMap>
 
-#include <QMapLibreGL/Utils>
+#include <QMapLibre/Utils>
 
 #include <math.h>
 #include <iostream>
@@ -141,13 +141,13 @@ QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent):
   m_styleUrl = QStringLiteral("mapbox://styles/mapbox/streets-v10");
   m_styleJson = QString(); // empty
 
-  m_settings.setViewportMode(QMapLibreGL::Settings::DefaultViewport);
+  m_settings.setViewportMode(QMapLibre::Settings::DefaultViewport);
 
   QFont font;
   font.setStyleHint(QFont::SansSerif);
   m_settings.setLocalFontFamily(font.defaultFamily());
 
-  m_settings.resetToTemplate(QMapLibreGL::Settings::MapboxSettings);
+  m_settings.setProviderTemplate(QMapLibre::Settings::MapboxProvider);
 
   m_settings.setResourceTransform(std::bind(&QQuickItemMapboxGL::resourceTransform,
                                             this, std::placeholders::_1));
@@ -191,12 +191,12 @@ QQuickItemMapboxGL::~QQuickItemMapboxGL()
 QVariantList QQuickItemMapboxGL::defaultStyles() const
 {
   QVariantList array;
-  auto styles = m_settings.defaultStyles();
+  auto styles = m_settings.providerStyles();
   for (const auto &i: styles)
     {
       QVariantMap o;
-      o.insert("url", QVariant(i.first));
-      o.insert("name", QVariant(i.second));
+      o.insert("url", QVariant(i.url));
+      o.insert("name", QVariant(i.name));
       array.append(o);
     }
 
@@ -977,7 +977,7 @@ void QQuickItemMapboxGL::clearCache()
 QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData *)
 {
   QSize sz(width(), height());
-  QMapLibreGL::Map *map = nullptr;
+  QMapLibre::Map *map = nullptr;
   m_first_init_done = true;
 
   QSGMapboxGLAbstractNode *n = nullptr;
@@ -1043,8 +1043,8 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
       /////////////////////////////////////////////////////
       /// connect map changed and failure signals
-      connect(map, &QMapLibreGL::Map::mapChanged, this, &QQuickItemMapboxGL::onMapChanged, Qt::QueuedConnection);
-      connect(map, &QMapLibreGL::Map::mapLoadingFailed, this, &QQuickItemMapboxGL::onMapLoadingFailed, Qt::QueuedConnection);
+      connect(map, &QMapLibre::Map::mapChanged, this, &QQuickItemMapboxGL::onMapChanged, Qt::QueuedConnection);
+      connect(map, &QMapLibre::Map::mapLoadingFailed, this, &QQuickItemMapboxGL::onMapLoadingFailed, Qt::QueuedConnection);
     }
   else
     map = n->map();
@@ -1068,7 +1068,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   if (m_syncState & FitViewNeedsSync)
     {
-      QMapLibreGL::CoordinateZoom cz = map->coordinateZoomForBounds(m_fit_sw, m_fit_ne);
+      QMapLibre::CoordinateZoom cz = map->coordinateZoomForBounds(m_fit_sw, m_fit_ne);
       m_fit_center = QGeoCoordinate(cz.first.first, cz.first.second);
       m_fit_zoomLevel = cz.second;
       setCenter(m_fit_center);
@@ -1182,7 +1182,7 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
   { // metersPerPixel
     const double tol = metersPerPixelTolerance(); // tolerance used when comparing floating point numbers
-    qreal mapmeters = QMapLibreGL::metersPerPixelAtLatitude( map->coordinate().first, map->zoom() );
+    qreal mapmeters = QMapLibre::metersPerPixelAtLatitude( map->coordinate().first, map->zoom() );
     qreal meters = mapmeters * n->mapToQtPixelRatio();
     if ( fabs(meters - metersPerPixel()) > tol )
       {
@@ -1224,10 +1224,10 @@ QSGNode* QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
   return node;
 }
 
-void QQuickItemMapboxGL::onMapChanged(QMapLibreGL::Map::MapChange change)
+void QQuickItemMapboxGL::onMapChanged(QMapLibre::Map::MapChange change)
 {
   // check if we can add user-added sources, layers ...
-  if (QMapLibreGL::Map::MapChangeDidFinishLoadingStyle == change && m_block_data_until_loaded)
+  if (QMapLibre::Map::MapChangeDidFinishLoadingStyle == change && m_block_data_until_loaded)
     {
       m_syncState |= DataNeedsSetupSync;
       m_syncState |= DataNeedsSync;
@@ -1242,7 +1242,7 @@ void QQuickItemMapboxGL::onMapChanged(QMapLibreGL::Map::MapChange change)
     }
 }
 
-void QQuickItemMapboxGL::onMapLoadingFailed(QMapLibreGL::Map::MapLoadingFailure /*type*/, const QString &description)
+void QQuickItemMapboxGL::onMapLoadingFailed(QMapLibre::Map::MapLoadingFailure /*type*/, const QString &description)
 {
   setError(description);
 }
