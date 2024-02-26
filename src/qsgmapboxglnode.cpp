@@ -59,7 +59,7 @@ static const QSize minTextureSize = QSize(16, 16);
 QSGMapboxGLAbstractNode::QSGMapboxGLAbstractNode(const QMapLibre::Settings &settings, const QSize &size,
                                                  qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item):
   QObject(), m_map_size(size), m_item_size(size),
-  m_device_pixel_ratio(devicePixelRatio), m_pixel_ratio(pixelRatio)
+  m_pixel_ratio(pixelRatio), m_device_pixel_ratio(devicePixelRatio)
 {
   m_map.reset(new QMapLibre::Map(nullptr, settings, size.expandedTo(minTextureSize), pixelRatio));
 
