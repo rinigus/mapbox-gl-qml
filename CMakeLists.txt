@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.6.0)
 
 project(mapbox-gl-qml
-	VERSION 1.7.6
+	VERSION 3.0.0
 	DESCRIPTION "Unofficial Mapbox GL Native bindings for Qt QML")
 
 set(CMAKE_AUTOMOC ON)
