@@ -41,11 +41,7 @@ Categories:
 
 %build
 
-%if 0%{?suse_version} >= 1500 || 0%{?fedora_version} >= 29 || 0%{?centos_version} >= 800
 %cmake
-%else
-%cmake -DUSE_CURL_SSL=ON
-%endif
 
 %{__make} %{?_smp_mflags}
 
