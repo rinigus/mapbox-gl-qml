@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6.0)
+cmake_minimum_required(VERSION 3.10.0)
 
 project(mapbox-gl-qml
 	VERSION 3.0.0
@@ -17,8 +17,28 @@ include(FindPkgConfig)
 include(FeatureSummary)
 include(GNUInstallDirs)
 
-set(QT_MIN_VERSION "5.6.0")
-find_package(Qt5 ${QT_MIN_VERSION} COMPONENTS Gui Quick Positioning Sql Svg REQUIRED)
+# Find Qt
+if("${QT_VERSION_MAJOR}" STREQUAL "")
+    find_package(Qt6 QUIET COMPONENTS Core)
+    if(Qt6_FOUND)
+        set(QT_VERSION_MAJOR 6)
+    else()
+        find_package(Qt5 REQUIRED COMPONENTS Core)
+        set(QT_VERSION_MAJOR 5)
+    endif()
+else()
+    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
+endif()
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Gui Quick Positioning Sql Svg REQUIRED)
+
+set(QT_VERSION ${Qt${QT_VERSION_MAJOR}_VERSION})
+
+if("${QT_VERSION}" STREQUAL "")
+    message(FATAL_ERROR "Qt version unknown")
+endif()
+
+message(STATUS "Using Qt${QT_VERSION_MAJOR} (${QT_VERSION})")
+
 find_package(QMapLibre REQUIRED)
 
 if(USE_CURL_SSL)
@@ -45,4 +65,3 @@ endif()
 add_subdirectory(src)
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
-

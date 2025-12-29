@@ -1,6 +1,6 @@
 ### Sets QT_INSTALL_QML to the directory where QML Plugins should be installed
 function(FindQtInstallQml)
-    find_program(QMAKE NAMES qmake-qt5 qmake qmake5)
+    find_program(QMAKE NAMES qmake-qt${QT_VERSION_MAJOR} qmake qmake${QT_VERSION_MAJOR})
     if(NOT QMAKE)
 	message(FATAL_ERROR "qmake not found")
     endif()
@@ -30,13 +30,13 @@ add_library(qmlmapboxglplugin SHARED ${SRC} ${HEADERS})
 target_include_directories(qmlmapboxglplugin PRIVATE include src)
 
 target_link_libraries(qmlmapboxglplugin PRIVATE
-	Qt5::Gui
-	Qt5::Qml
-	Qt5::Quick
-	Qt5::Positioning
-	Qt5::Sql
-        Qt5::Svg
-        QMapLibre)
+	Qt${QT_VERSION_MAJOR}::Gui
+	Qt${QT_VERSION_MAJOR}::Qml
+	Qt${QT_VERSION_MAJOR}::Quick
+	Qt${QT_VERSION_MAJOR}::Positioning
+	Qt${QT_VERSION_MAJOR}::Sql
+	Qt${QT_VERSION_MAJOR}::Svg
+	QMapLibre)
 
 if(USE_CURL_SSL)
 	add_definitions(-DUSE_CURL_SSL=1)
@@ -46,12 +46,12 @@ if(USE_CURL_SSL)
 endif()
 
 if(USE_FBO)
-        add_definitions(-DUSE_FBO=1)
+	add_definitions(-DUSE_FBO=1)
 endif()
 
 if(NOT DEFINED QT_INSTALL_QML)
-  FindQtInstallQml()
-  message(STATUS "Found QT_INSTALL_QML path: ${QT_INSTALL_QML}")
+	FindQtInstallQml()
+	message(STATUS "Found QT_INSTALL_QML path: ${QT_INSTALL_QML}")
 endif()
 
 install(FILES 
