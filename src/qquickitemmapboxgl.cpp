@@ -863,7 +863,7 @@ QSGNode *QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
     QMapLibre::Map *map = nullptr;
     m_first_init_done = true;
 
-    QSGMapboxGLAbstractNode *n = nullptr;
+    QMapboxGLAbstractNode *n = nullptr;
     if (m_useFBO)
         n = static_cast<QSGMapboxGLTextureNode *>(node);
 #if HAS_SGRENDERNODE

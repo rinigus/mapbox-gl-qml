@@ -14,13 +14,18 @@ endfunction()
 
 set(SRC
 	qquickitemmapboxgl.cpp
-	qsgmapboxglnode.cpp
+	qmapboxglabstractnode.cpp
+	qsgmapboxgltexturenode.cpp
+	qsgmapboxglrendernode.cpp
 	qsgtextureplain.cpp
 	qmapboxsync.cpp
 	plugin/mapboxglextensionplugin.cpp)
 set(HEADERS
 	macros.h
 	qmapboxsync.h
+	qmapboxglabstractnode.h
+	qsgmapboxgltexturenode.h
+	qsgmapboxglrendernode.h
 	qsgmapboxglnode.h
 	qquickitemmapboxgl.h
 	qsgtextureplain.h
