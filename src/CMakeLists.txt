@@ -19,6 +19,7 @@ set(SRC
 	qmapboxsync.cpp
 	plugin/mapboxglextensionplugin.cpp)
 set(HEADERS
+	macros.h
 	qmapboxsync.h
 	qsgmapboxglnode.h
 	qquickitemmapboxgl.h

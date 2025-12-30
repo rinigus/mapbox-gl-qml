@@ -43,7 +43,7 @@
 #ifndef QSGMAPBOXGLNODE_H
 #define QSGMAPBOXGLNODE_H
 
-#define HAS_SGRENDERNODE (QT_VERSION >= QT_VERSION_CHECK(5, 8, 0))
+#include "macros.h"
 
 #include <QGeoCoordinate>
 #include <QQuickItem>
