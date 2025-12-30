@@ -60,7 +60,7 @@
 
 #include <string>
 
-#include "qmapboxsync_p.h"
+#include "qmapboxsync.h"
 
 ///////////////////////////////////////////////////////////////////////////////////
 /// \brief The QQuickItemMapboxGL class

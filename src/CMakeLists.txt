@@ -19,15 +19,13 @@ set(SRC
 	qmapboxsync.cpp
 	plugin/mapboxglextensionplugin.cpp)
 set(HEADERS
-	qmapboxsync_p.h
-	include/qsgmapboxglnode.h
-	include/qquickitemmapboxgl.h
-	include/qsgtextureplain.h
+	qmapboxsync.h
+	qsgmapboxglnode.h
+	qquickitemmapboxgl.h
+	qsgtextureplain.h
 	plugin/mapboxglextensionplugin.h)
 
 add_library(qmlmapboxglplugin SHARED ${SRC} ${HEADERS})
-
-target_include_directories(qmlmapboxglplugin PRIVATE include src)
 
 target_link_libraries(qmlmapboxglplugin PRIVATE
 	Qt${QT_VERSION_MAJOR}::Gui
