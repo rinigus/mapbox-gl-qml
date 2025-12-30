@@ -56,134 +56,123 @@ static const QSize minTextureSize = QSize(16, 16);
 ////////////////////////////////////////////
 /// QSGMapboxGLAbstractNode
 
-QSGMapboxGLAbstractNode::QSGMapboxGLAbstractNode(const QMapLibre::Settings &settings, const QSize &size,
-                                                 qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item):
-  QObject(), m_map_size(size), m_item_size(size),
-  m_pixel_ratio(pixelRatio), m_device_pixel_ratio(devicePixelRatio)
-{
-  m_map.reset(new QMapLibre::Map(nullptr, settings, size.expandedTo(minTextureSize), pixelRatio));
+QSGMapboxGLAbstractNode::QSGMapboxGLAbstractNode(const QMapLibre::Settings &settings,
+                                                 const QSize &size, qreal devicePixelRatio,
+                                                 qreal pixelRatio, QQuickItem *item)
+    : QObject(), m_map_size(size), m_item_size(size), m_pixel_ratio(pixelRatio),
+      m_device_pixel_ratio(devicePixelRatio) {
+    m_map.reset(new QMapLibre::Map(nullptr, settings, size.expandedTo(minTextureSize), pixelRatio));
 
-  QObject::connect(m_map.data(), &QMapLibre::Map::needsRendering, item, &QQuickItem::update);
-  QObject::connect(m_map.data(), &QMapLibre::Map::copyrightsChanged, item, &QQuickItem::update);
+    QObject::connect(m_map.data(), &QMapLibre::Map::needsRendering, item, &QQuickItem::update);
+    QObject::connect(m_map.data(), &QMapLibre::Map::copyrightsChanged, item, &QQuickItem::update);
 }
 
-void QSGMapboxGLAbstractNode::resize(const QSize &size, qreal pixelRatio)
-{
-  m_item_size = size;
-  m_pixel_ratio = pixelRatio;
+void QSGMapboxGLAbstractNode::resize(const QSize &size, qreal pixelRatio) {
+    m_item_size = size;
+    m_pixel_ratio = pixelRatio;
 }
 
-float QSGMapboxGLAbstractNode::mapToQtPixelRatio() const
-{
-  return 0.5 * (width()/m_item_size.width() +
-                height()/m_item_size.height());
+float QSGMapboxGLAbstractNode::mapToQtPixelRatio() const {
+    return 0.5 * (width() / m_item_size.width() + height() / m_item_size.height());
 }
 
 ///////////////////////////////////
 /// queries
 
-void QSGMapboxGLAbstractNode::querySourceExists(const QString &sourceID)
-{
-  emit replySourceExists(sourceID, m_map->sourceExists(sourceID));
+void QSGMapboxGLAbstractNode::querySourceExists(const QString &sourceID) {
+    emit replySourceExists(sourceID, m_map->sourceExists(sourceID));
 }
 
-void QSGMapboxGLAbstractNode::queryLayerExists(const QString &sourceID)
-{
-  emit replyLayerExists(sourceID, m_map->layerExists(sourceID));
+void QSGMapboxGLAbstractNode::queryLayerExists(const QString &sourceID) {
+    emit replyLayerExists(sourceID, m_map->layerExists(sourceID));
 }
 
-void QSGMapboxGLAbstractNode::queryCoordinateForPixel(QPointF p, const QVariant &tag)
-{
-  float rx = ((float)m_map_size.width()) / ((float)m_item_size.width());
-  float ry = ((float)m_map_size.height()) / ((float)m_item_size.height());
+void QSGMapboxGLAbstractNode::queryCoordinateForPixel(QPointF p, const QVariant &tag) {
+    float rx = ((float)m_map_size.width()) / ((float)m_item_size.width());
+    float ry = ((float)m_map_size.height()) / ((float)m_item_size.height());
 
-  p.setX(p.x() * rx);
-  p.setY(p.y() * ry);
-  QMapLibre::Coordinate mbc = m_map->coordinateForPixel(p);
-  QGeoCoordinate coor(mbc.first, mbc.second);
+    p.setX(p.x() * rx);
+    p.setY(p.y() * ry);
+    QMapLibre::Coordinate mbc = m_map->coordinateForPixel(p);
+    QGeoCoordinate coor(mbc.first, mbc.second);
 
-  // get sensitivity of coordinates to the changes in pixel coordinates
-  double bearing = m_map->bearing() / 180. * M_PI;
-  double sinB = sin(bearing);
-  double cosB = cos(bearing);
-  p += QPointF(cosB + sinB, -sinB + cosB);
-  QMapLibre::Coordinate mbc_shift = m_map->coordinateForPixel(p);
+    // get sensitivity of coordinates to the changes in pixel coordinates
+    double bearing = m_map->bearing() / 180. * M_PI;
+    double sinB = sin(bearing);
+    double cosB = cos(bearing);
+    p += QPointF(cosB + sinB, -sinB + cosB);
+    QMapLibre::Coordinate mbc_shift = m_map->coordinateForPixel(p);
 
-  qreal degLatPerPixel = fabs(mbc_shift.first - mbc.first) * rx;
-  qreal degLonPerPixel = fabs(mbc_shift.second - mbc.second) * ry;
+    qreal degLatPerPixel = fabs(mbc_shift.first - mbc.first) * rx;
+    qreal degLonPerPixel = fabs(mbc_shift.second - mbc.second) * ry;
 
-  emit replyCoordinateForPixel(p, coor, degLatPerPixel, degLonPerPixel, tag);
+    emit replyCoordinateForPixel(p, coor, degLatPerPixel, degLonPerPixel, tag);
 }
-
 
 ////////////////////////////////////////////
 /// QSGMapboxGLTextureNode
 
-QSGMapboxGLTextureNode::QSGMapboxGLTextureNode(const QMapLibre::Settings &settings, const QSize &size,
-                                               qreal devicePixelRatio,
+QSGMapboxGLTextureNode::QSGMapboxGLTextureNode(const QMapLibre::Settings &settings,
+                                               const QSize &size, qreal devicePixelRatio,
                                                qreal pixelRatio, QQuickItem *item)
-  : QSGMapboxGLAbstractNode(settings, size, devicePixelRatio, pixelRatio, item),
-    QSGSimpleTextureNode()
-{
-  qInfo() << "Using QSGMapboxGLTextureNode for map rendering."
-          << "devicePixelRatio:" << devicePixelRatio;
+    : QSGMapboxGLAbstractNode(settings, size, devicePixelRatio, pixelRatio, item),
+      QSGSimpleTextureNode() {
+    qInfo() << "Using QSGMapboxGLTextureNode for map rendering."
+            << "devicePixelRatio:" << devicePixelRatio;
 
-  setTextureCoordinatesTransform(QSGSimpleTextureNode::MirrorVertically);
-  setFiltering(QSGTexture::Linear);
+    setTextureCoordinatesTransform(QSGSimpleTextureNode::MirrorVertically);
+    setFiltering(QSGTexture::Linear);
 
-  resize(size, pixelRatio); // to fill and attach fbo
+    resize(size, pixelRatio); // to fill and attach fbo
 }
 
-QSGMapboxGLTextureNode::~QSGMapboxGLTextureNode()
-{
-}
+QSGMapboxGLTextureNode::~QSGMapboxGLTextureNode() {}
 
-void QSGMapboxGLTextureNode::resize(const QSize &size, qreal pixelRatio)
-{
-  const QSize minSize = size.expandedTo(minTextureSize);
-  QSGMapboxGLAbstractNode::resize(minSize, pixelRatio);
+void QSGMapboxGLTextureNode::resize(const QSize &size, qreal pixelRatio) {
+    const QSize minSize = size.expandedTo(minTextureSize);
+    QSGMapboxGLAbstractNode::resize(minSize, pixelRatio);
 
-  const QSize fbSize = minSize * m_device_pixel_ratio; // physical pixels
-  m_map_size = minSize * m_device_pixel_ratio / m_pixel_ratio; // ensure zoom
+    const QSize fbSize = minSize * m_device_pixel_ratio;         // physical pixels
+    m_map_size = minSize * m_device_pixel_ratio / m_pixel_ratio; // ensure zoom
 
-  m_map->resize(m_map_size);
+    m_map->resize(m_map_size);
 
-  m_fbo.reset(new QOpenGLFramebufferObject(fbSize, QOpenGLFramebufferObject::CombinedDepthStencil));
-  m_map->setOpenGLFramebufferObject(m_fbo->handle(), fbSize);
+    m_fbo.reset(
+        new QOpenGLFramebufferObject(fbSize, QOpenGLFramebufferObject::CombinedDepthStencil));
+    m_map->setOpenGLFramebufferObject(m_fbo->handle(), fbSize);
 
-  QSGTexturePlain *fboTexture = static_cast<QSGTexturePlain *>(texture());
-  if (!fboTexture)
-    fboTexture = new QSGTexturePlain;
+    QSGTexturePlain *fboTexture = static_cast<QSGTexturePlain *>(texture());
+    if (!fboTexture)
+        fboTexture = new QSGTexturePlain;
 
-  fboTexture->setTextureId(m_fbo->texture());
-  fboTexture->setTextureSize(fbSize);
+    fboTexture->setTextureId(m_fbo->texture());
+    fboTexture->setTextureSize(fbSize);
 
-  if (!texture()) {
-      setTexture(fboTexture);
-      setOwnsTexture(true);
+    if (!texture()) {
+        setTexture(fboTexture);
+        setOwnsTexture(true);
     }
 
-  setRect(QRectF(QPointF(), minSize));
+    setRect(QRectF(QPointF(), minSize));
 }
 
-void QSGMapboxGLTextureNode::render(QQuickWindow *window)
-{
-  QOpenGLFunctions *f = window->openglContext()->functions();
-  f->glViewport(0, 0, m_fbo->width(), m_fbo->height());
+void QSGMapboxGLTextureNode::render(QQuickWindow *window) {
+    QOpenGLFunctions *f = window->openglContext()->functions();
+    f->glViewport(0, 0, m_fbo->width(), m_fbo->height());
 
-  GLint alignment;
-  f->glGetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);
+    GLint alignment;
+    f->glGetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);
 
-  m_fbo->bind();
-  m_map->render();
-  //    m_logo.render();
-  m_fbo->release();
+    m_fbo->bind();
+    m_map->render();
+    //    m_logo.render();
+    m_fbo->release();
 
-  // QTBUG-62861
-  f->glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
-  f->glDepthRangef(0, 1);
+    // QTBUG-62861
+    f->glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
+    f->glDepthRangef(0, 1);
 
-  window->resetOpenGLState();
+    window->resetOpenGLState();
 }
 
 #if HAS_SGRENDERNODE
@@ -191,48 +180,43 @@ void QSGMapboxGLTextureNode::render(QQuickWindow *window)
 /// QSGMapboxGLRenderNode
 
 QSGMapboxGLRenderNode::QSGMapboxGLRenderNode(const QMapLibre::Settings &settings, const QSize &size,
-                                             qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item)
-  : QSGMapboxGLAbstractNode(settings, size, devicePixelRatio, pixelRatio, item)
-{
-  qInfo() << "Using QSGMapboxGLRenderNode for map rendering. "
-          << "devicePixelRatio:" << devicePixelRatio;
+                                             qreal devicePixelRatio, qreal pixelRatio,
+                                             QQuickItem *item)
+    : QSGMapboxGLAbstractNode(settings, size, devicePixelRatio, pixelRatio, item) {
+    qInfo() << "Using QSGMapboxGLRenderNode for map rendering. "
+            << "devicePixelRatio:" << devicePixelRatio;
 }
 
-void QSGMapboxGLRenderNode::resize(const QSize &size, qreal pixelRatio)
-{
-  const QSize minSize = size.expandedTo(minTextureSize);
-  QSGMapboxGLAbstractNode::resize(size, pixelRatio);
-  m_map_size = minSize / pixelRatio;
-  m_map->resize(m_map_size);
+void QSGMapboxGLRenderNode::resize(const QSize &size, qreal pixelRatio) {
+    const QSize minSize = size.expandedTo(minTextureSize);
+    QSGMapboxGLAbstractNode::resize(size, pixelRatio);
+    m_map_size = minSize / pixelRatio;
+    m_map->resize(m_map_size);
 }
 
-void QSGMapboxGLRenderNode::render(const RenderState *state)
-{
-  // QMapLibre assumes we've prepared the viewport prior to render().
-  QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
-  f->glViewport(state->scissorRect().x(), state->scissorRect().y(), state->scissorRect().width(), state->scissorRect().height());
-  f->glScissor(state->scissorRect().x(), state->scissorRect().y(), state->scissorRect().width(), state->scissorRect().height());
-  f->glEnable(GL_SCISSOR_TEST);
+void QSGMapboxGLRenderNode::render(const RenderState *state) {
+    // QMapLibre assumes we've prepared the viewport prior to render().
+    QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
+    f->glViewport(state->scissorRect().x(), state->scissorRect().y(), state->scissorRect().width(),
+                  state->scissorRect().height());
+    f->glScissor(state->scissorRect().x(), state->scissorRect().y(), state->scissorRect().width(),
+                 state->scissorRect().height());
+    f->glEnable(GL_SCISSOR_TEST);
 
-  GLint alignment;
-  f->glGetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);
+    GLint alignment;
+    f->glGetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);
 
-  m_map->render();
+    m_map->render();
 
-  // QTBUG-62861
-  f->glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
-  f->glDepthRangef(0, 1);
+    // QTBUG-62861
+    f->glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
+    f->glDepthRangef(0, 1);
 }
 
-QSGRenderNode::StateFlags QSGMapboxGLRenderNode::changedStates() const
-{
-  return QSGRenderNode::DepthState
-      | QSGRenderNode::StencilState
-      | QSGRenderNode::ScissorState
-      | QSGRenderNode::ColorState
-      | QSGRenderNode::BlendState
-      | QSGRenderNode::ViewportState
-      | QSGRenderNode::RenderTargetState;
+QSGRenderNode::StateFlags QSGMapboxGLRenderNode::changedStates() const {
+    return QSGRenderNode::DepthState | QSGRenderNode::StencilState | QSGRenderNode::ScissorState |
+           QSGRenderNode::ColorState | QSGRenderNode::BlendState | QSGRenderNode::ViewportState |
+           QSGRenderNode::RenderTargetState;
 }
 
 #endif

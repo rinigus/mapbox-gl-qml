@@ -48,10 +48,9 @@
 
 #include <QSGTexture>
 
-class QSGTexturePlain : public QSGTexture
-{
+class QSGTexturePlain : public QSGTexture {
     Q_OBJECT
-public:
+  public:
     QSGTexturePlain();
     virtual ~QSGTexturePlain();
 
@@ -70,7 +69,7 @@ public:
 
     void bind() override;
 
-protected:
+  protected:
     uint m_texture_id;
     QSize m_texture_size;
     QRectF m_texture_rect;
@@ -80,7 +79,7 @@ protected:
     uint m_dirty_bind_options : 1;
     uint m_owns_texture : 1;
     uint m_mipmaps_generated : 1;
-    uint m_retain_image: 1;
+    uint m_retain_image : 1;
 };
 
 #endif // QSGTEXTUREPLAIN_H
