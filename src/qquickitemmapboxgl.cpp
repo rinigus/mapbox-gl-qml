@@ -61,6 +61,7 @@
 #include <QStandardPaths>
 #include <QSvgRenderer>
 #include <QVariantMap>
+#include <QtQuick/QQuickWindow>
 
 #include <QMapLibre/Utils>
 

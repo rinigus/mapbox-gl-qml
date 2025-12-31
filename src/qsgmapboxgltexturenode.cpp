@@ -46,6 +46,7 @@
 
 #include <QtGui/QOpenGLContext>
 #include <QtGui/QOpenGLFunctions>
+#include <QtQuick/QQuickWindow>
 
 #include <math.h>
 

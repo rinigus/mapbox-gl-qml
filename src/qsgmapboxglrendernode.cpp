@@ -43,6 +43,7 @@
 
 #include "qsgmapboxglrendernode.h"
 
+#include <QSize>
 #include <QtGui/QOpenGLContext>
 #include <QtGui/QOpenGLFunctions>
 
