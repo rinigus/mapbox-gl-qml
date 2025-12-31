@@ -59,7 +59,6 @@ Categories:
 %pre
 
 %files
-%files
 %defattr(-, root, root, 0755)
 %{_libdir}/qt5/qml/MapboxMap/libqmlmapboxglplugin.so
 %{_libdir}/qt5/qml/MapboxMap/qmldir
@@ -69,16 +68,8 @@ Categories:
 * Sun Jul 28 2019 rinigus <rinigus.git@gmail.com> - 1.5.0.2
 - Expose runtime changes in styleJson
 
-* Sat Nov 7 2018 rinigus <rinigus.git@gmail.com> - 1.3.2-1
-- Add OpenSSL locks during widget initialization
-- Add Linux compilation instructions
-
 * Sat Sep 15 2018 rinigus <rinigus.git@gmail.com> - 1.3.1-1
 - Add threshold for metersPerPixel property
-
-* Sun Mar 10 2018 rinigus <rinigus.git@gmail.com> - 1.3.0-1
-- Add pan threshold
-- Update to QMapboxGL qt-1.3.0 API
 
 * Sun Mar 4 2018 rinigus <rinigus.git@gmail.com> - 1.2.0-1
 - Add property to snap to integer zoom levels

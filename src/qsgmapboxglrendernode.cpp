@@ -51,8 +51,6 @@
 
 #include <QDebug>
 
-static const QSize minTextureSize = QSize(16, 16);
-
 #if HAS_SGRENDERNODE
 //////////////////////////////////////////
 /// QSGMapboxGLRenderNode
@@ -66,7 +64,7 @@ QSGMapboxGLRenderNode::QSGMapboxGLRenderNode(const QMapLibre::Settings &settings
 }
 
 void QSGMapboxGLRenderNode::resize(const QSize &size, qreal pixelRatio) {
-    const QSize minSize = size.expandedTo(minTextureSize);
+    const QSize minSize = size.expandedTo(MIN_TEXTURE_SIZE);
     QMapboxGLAbstractNode::resize(size, pixelRatio);
     m_map_size = minSize / pixelRatio;
     m_map->resize(m_map_size);

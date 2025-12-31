@@ -42,7 +42,9 @@
 ****************************************************************************/
 
 #include "qquickitemmapboxgl.h"
-#include "qsgmapboxglnode.h"
+
+#include "qsgmapboxglrendernode.h"
+#include "qsgmapboxgltexturenode.h"
 
 #include <mbgl/util/constants.hpp>
 

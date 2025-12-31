@@ -44,6 +44,8 @@
 #include "qsgmapboxgltexturenode.h"
 #include "qsgtextureplain.h"
 
+#include "macros.h"
+
 #include <QtGui/QOpenGLContext>
 #include <QtGui/QOpenGLFunctions>
 #include <QtQuick/QQuickWindow>
@@ -51,8 +53,6 @@
 #include <math.h>
 
 #include <QDebug>
-
-static const QSize minTextureSize = QSize(16, 16);
 
 //////////////////////////////////////////
 /// QSGMapboxGLTextureNode
@@ -74,7 +74,7 @@ QSGMapboxGLTextureNode::QSGMapboxGLTextureNode(const QMapLibre::Settings &settin
 QSGMapboxGLTextureNode::~QSGMapboxGLTextureNode() {}
 
 void QSGMapboxGLTextureNode::resize(const QSize &size, qreal pixelRatio) {
-    const QSize minSize = size.expandedTo(minTextureSize);
+    const QSize minSize = size.expandedTo(MIN_TEXTURE_SIZE);
     QMapboxGLAbstractNode::resize(minSize, pixelRatio);
 
     const QSize fbSize = minSize * m_device_pixel_ratio;         // physical pixels

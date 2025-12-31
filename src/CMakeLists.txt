@@ -26,7 +26,6 @@ set(HEADERS
 	qmapboxglabstractnode.h
 	qsgmapboxgltexturenode.h
 	qsgmapboxglrendernode.h
-	qsgmapboxglnode.h
 	qquickitemmapboxgl.h
 	qsgtextureplain.h
 	plugin/mapboxglextensionplugin.h)

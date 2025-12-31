@@ -1,13 +1,8 @@
 #include "qmapboxglabstractnode.h"
 
-#include <QtGui/QOpenGLContext>
-#include <QtGui/QOpenGLFunctions>
+#include "macros.h"
 
 #include <math.h>
-
-#include <QDebug>
-
-static const QSize minTextureSize = QSize(16, 16);
 
 //////////////////////////////////////////
 /// QMapboxGLAbstractNode
@@ -17,7 +12,8 @@ QMapboxGLAbstractNode::QMapboxGLAbstractNode(const QMapLibre::Settings &settings
                                              QQuickItem *item)
     : QObject(), m_map_size(size), m_item_size(size), m_pixel_ratio(pixelRatio),
       m_device_pixel_ratio(devicePixelRatio) {
-    m_map.reset(new QMapLibre::Map(nullptr, settings, size.expandedTo(minTextureSize), pixelRatio));
+    m_map.reset(
+        new QMapLibre::Map(nullptr, settings, size.expandedTo(MIN_TEXTURE_SIZE), pixelRatio));
 
     QObject::connect(m_map.data(), &QMapLibre::Map::needsRendering, item, &QQuickItem::update);
     QObject::connect(m_map.data(), &QMapLibre::Map::copyrightsChanged, item, &QQuickItem::update);
