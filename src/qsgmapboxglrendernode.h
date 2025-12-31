@@ -1,6 +1,8 @@
 #ifndef QSGMAPBOXGLRENDERNODE_H
 #define QSGMAPBOXGLRENDERNODE_H
 
+#ifdef MLN_RENDER_BACKEND_OPENGL
+
 #include "macros.h"
 
 #if HAS_SGRENDERNODE
@@ -23,6 +25,8 @@ class QSGMapboxGLRenderNode : public QMapboxGLAbstractNode, public QSGRenderNode
     void render(const RenderState *state) override;
     StateFlags changedStates() const override;
 };
+#endif
+
 #endif
 
 #endif // QSGMAPBOXGLRENDERNODE_H

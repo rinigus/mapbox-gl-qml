@@ -1,6 +1,8 @@
 #ifndef QSGMAPBOXGLTEXTURENODE_H
 #define QSGMAPBOXGLTEXTURENODE_H
 
+#ifdef MLN_RENDER_BACKEND_OPENGL
+
 #include "qmapboxglabstractnode.h"
 
 #include <QtGui/QOpenGLFramebufferObject>
@@ -22,5 +24,7 @@ class QSGMapboxGLTextureNode : public QMapboxGLAbstractNode, public QSGSimpleTex
   private:
     QScopedPointer<QOpenGLFramebufferObject> m_fbo;
 };
+
+#endif
 
 #endif // QSGMAPBOXGLTEXTURENODE_H

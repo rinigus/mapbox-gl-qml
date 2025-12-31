@@ -43,7 +43,10 @@
 **
 ****************************************************************************/
 
+#ifdef MLN_RENDER_BACKEND_OPENGL
+
 #include "qsgtextureplain.h"
+
 #include <QtGui/qopenglcontext.h>
 #include <QtGui/qopenglfunctions.h>
 #include <qopenglfunctions.h>
@@ -100,3 +103,5 @@ void QSGTexturePlain::bind() {
     m_texture_size = QSize();
     m_has_alpha = false;
 }
+
+#endif

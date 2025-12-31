@@ -41,6 +41,8 @@
 **
 ****************************************************************************/
 
+#ifdef MLN_RENDER_BACKEND_OPENGL
+
 #include "qsgmapboxgltexturenode.h"
 #include "qsgtextureplain.h"
 
@@ -119,3 +121,5 @@ void QSGMapboxGLTextureNode::render(QQuickWindow *window) {
 
     window->resetOpenGLState();
 }
+
+#endif

@@ -49,7 +49,7 @@ if(USE_CURL_SSL)
 endif()
 
 if(USE_FBO)
-	add_definitions(-DUSE_FBO=1)
+ add_definitions(-DUSE_FBO=1)
 endif()
 
 if(NOT DEFINED QT_INSTALL_QML)

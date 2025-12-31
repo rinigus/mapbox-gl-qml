@@ -41,6 +41,8 @@
 **
 ****************************************************************************/
 
+#ifdef MLN_RENDER_BACKEND_OPENGL
+
 #include "qsgmapboxglrendernode.h"
 
 #include <QSize>
@@ -95,4 +97,5 @@ QSGRenderNode::StateFlags QSGMapboxGLRenderNode::changedStates() const {
            QSGRenderNode::RenderTargetState;
 }
 
+#endif
 #endif

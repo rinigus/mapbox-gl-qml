@@ -46,6 +46,8 @@
 #ifndef QSGTEXTUREPLAIN_H
 #define QSGTEXTUREPLAIN_H
 
+#ifdef MLN_RENDER_BACKEND_OPENGL
+
 #include <QSGTexture>
 
 class QSGTexturePlain : public QSGTexture {
@@ -81,5 +83,7 @@ class QSGTexturePlain : public QSGTexture {
     uint m_mipmaps_generated : 1;
     uint m_retain_image : 1;
 };
+
+#endif
 
 #endif // QSGTEXTUREPLAIN_H

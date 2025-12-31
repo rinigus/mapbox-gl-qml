@@ -13,6 +13,26 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 option(USE_CURL_SSL "Use curl SSL" OFF)
 option(USE_FBO "Use map rendering using FBO" ON)
 
+# Render backend option
+set(RENDER_BACKEND "opengl" CACHE STRING "Render backend to use (opengl, metal, vulkan)")
+set_property(CACHE RENDER_BACKEND PROPERTY STRINGS opengl metal vulkan)
+
+# Validate RENDER_BACKEND value
+if(NOT RENDER_BACKEND STREQUAL "opengl" AND
+   NOT RENDER_BACKEND STREQUAL "metal" AND
+   NOT RENDER_BACKEND STREQUAL "vulkan")
+    message(FATAL_ERROR "Invalid RENDER_BACKEND value: ${RENDER_BACKEND}. Must be one of: opengl, metal, vulkan")
+endif()
+
+# Set render backend compiler definitions
+if(RENDER_BACKEND STREQUAL "opengl")
+ add_definitions(-DMLN_RENDER_BACKEND_OPENGL=1)
+elseif(RENDER_BACKEND STREQUAL "metal")
+ add_definitions(-DMLN_RENDER_BACKEND_METAL=1)
+elseif(RENDER_BACKEND STREQUAL "vulkan")
+ add_definitions(-DMLN_RENDER_BACKEND_VULKAN=1)
+endif()
+
 include(FindPkgConfig)
 include(FeatureSummary)
 include(GNUInstallDirs)
