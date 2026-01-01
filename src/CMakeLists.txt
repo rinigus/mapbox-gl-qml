@@ -15,6 +15,8 @@ endfunction()
 set(SRC
 	qquickitemmapboxgl.cpp
 	basenode.cpp
+	baserendernode.cpp
+	basetexturenode.cpp
 	qt5/texturenode.cpp
 	qt5/rendernode.cpp
 	qt5/textureplain.cpp
@@ -24,6 +26,8 @@ set(HEADERS
 	macros.h
 	sync.h
 	basenode.h
+	baserendernode.h
+	basetexturenode.h
 	qt5/texturenode.h
 	qt5/rendernode.h
 	qquickitemmapboxgl.h

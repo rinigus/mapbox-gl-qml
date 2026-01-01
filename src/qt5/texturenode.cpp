@@ -43,8 +43,6 @@
 
 #include "texturenode.h"
 
-#include "basenode.h"
-
 #if IS_QT5
 
 #include "textureplain.h"
@@ -66,12 +64,9 @@ using namespace MLNQT5;
 
 TextureNode::TextureNode(const QMapLibre::Settings &settings, const QSize &size,
                          qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item)
-    : BaseNode(settings, size, devicePixelRatio, pixelRatio, item), QSGSimpleTextureNode() {
+    : BaseTextureNode(settings, size, devicePixelRatio, pixelRatio, item) {
     qInfo() << "Using TextureNode for map rendering."
             << "devicePixelRatio:" << devicePixelRatio;
-
-    setTextureCoordinatesTransform(QSGSimpleTextureNode::MirrorVertically);
-    setFiltering(QSGTexture::Linear);
 
     resize(size, pixelRatio); // to fill and attach fbo
 }

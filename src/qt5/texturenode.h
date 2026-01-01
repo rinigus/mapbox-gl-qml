@@ -1,18 +1,17 @@
-#ifndef TEXTURENODE_H
-#define TEXTURENODE_H
+#ifndef QT5_TEXTURENODE_H
+#define QT5_TEXTURENODE_H
 
 #include "macros.h"
 
 #if IS_QT5
 
-#include "basenode.h"
+#include "basetexturenode.h"
 
 #include <QtGui/QOpenGLFramebufferObject>
-#include <QtQuick/QSGSimpleTextureNode>
 
 namespace MLNQT5 {
 
-class TextureNode : public BaseNode, public QSGSimpleTextureNode {
+class TextureNode : public BaseTextureNode {
     Q_OBJECT
 
   public:
@@ -31,4 +30,4 @@ class TextureNode : public BaseNode, public QSGSimpleTextureNode {
 
 #endif
 
-#endif // TEXTURENODE_H
+#endif // QT5_TEXTURENODE_H

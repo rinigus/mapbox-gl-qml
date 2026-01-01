@@ -44,6 +44,8 @@
 #include "qquickitemmapboxgl.h"
 
 #include "basenode.h"
+#include "baserendernode.h"
+#include "basetexturenode.h"
 #include "qt5/rendernode.h"
 #include "qt5/texturenode.h"
 
@@ -868,14 +870,12 @@ QSGNode *QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
     m_first_init_done = true;
 
     BaseNode *n = nullptr;
-#ifdef MLN_RENDER_BACKEND_OPENGL
     if (m_useFBO)
-        n = static_cast<MLNQT5::TextureNode *>(node);
+        n = static_cast<BaseTextureNode *>(node);
 #if HAS_SGRENDERNODE
     else
-        n = static_cast<MLNQT5::RenderNode *>(node);
+        n = static_cast<BaseRenderNode *>(node);
 #endif
-#endif // MLN_RENDER_BACKEND_OPENGL
 
     if (!n) {
 #if !HAS_SGRENDERNODE
@@ -901,22 +901,26 @@ QSGNode *QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
         /////////////////////////////////////////////////////
         /// create node and connect all queries
-#ifdef MLN_RENDER_BACKEND_OPENGL
         if (m_useFBO) {
-            MLNQT5::TextureNode *sgn =
+#if IS_QT5
+            BaseTextureNode *sgn =
                 new MLNQT5::TextureNode(m_settings, sz, m_devicePixelRatio, m_pixelRatio, this);
+#ifdef MLN_RENDER_BACKEND_OPENGL
+#endif
             n = sgn;
             node = sgn;
+#endif
         }
 #if HAS_SGRENDERNODE
         else {
+#if IS_QT5
             MLNQT5::RenderNode *sgn =
                 new MLNQT5::RenderNode(m_settings, sz, m_devicePixelRatio, m_pixelRatio, this);
             n = sgn;
             node = sgn;
+#endif
         }
 #endif
-#endif // MLN_RENDER_BACKEND_OPENGL
 
         if (!n) {
             qWarning() << "Failed to allocate QSGMapboxGL rendering node. Maps cannot be "

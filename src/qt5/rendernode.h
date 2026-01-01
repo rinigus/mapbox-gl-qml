@@ -6,13 +6,12 @@
 #if IS_QT5
 
 #if HAS_SGRENDERNODE
-#include <QSGRenderNode>
 
-#include "basenode.h"
+#include "baserendernode.h"
 
 namespace MLNQT5 {
 
-class RenderNode : public BaseNode, public QSGRenderNode {
+class RenderNode : public BaseRenderNode {
     Q_OBJECT
 
   public:
@@ -23,7 +22,6 @@ class RenderNode : public BaseNode, public QSGRenderNode {
 
     // QSGRenderNode
     void render(const RenderState *state) override;
-    StateFlags changedStates() const override;
 };
 
 } // namespace MLNQT5

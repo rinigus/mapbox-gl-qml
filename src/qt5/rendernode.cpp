@@ -43,8 +43,6 @@
 
 #include "rendernode.h"
 
-#include "basenode.h"
-
 #if IS_QT5
 
 #include <QSize>
@@ -64,7 +62,7 @@ using namespace MLNQT5;
 
 RenderNode::RenderNode(const QMapLibre::Settings &settings, const QSize &size,
                        qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item)
-    : BaseNode(settings, size, devicePixelRatio, pixelRatio, item) {
+    : BaseRenderNode(settings, size, devicePixelRatio, pixelRatio, item) {
     qInfo() << "Using RenderNode for map rendering. "
             << "devicePixelRatio:" << devicePixelRatio;
 }
@@ -93,12 +91,6 @@ void RenderNode::render(const RenderState *state) {
     // QTBUG-62861
     f->glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
     f->glDepthRangef(0, 1);
-}
-
-QSGRenderNode::StateFlags RenderNode::changedStates() const {
-    return QSGRenderNode::DepthState | QSGRenderNode::StencilState | QSGRenderNode::ScissorState |
-           QSGRenderNode::ColorState | QSGRenderNode::BlendState | QSGRenderNode::ViewportState |
-           QSGRenderNode::RenderTargetState;
 }
 
 #endif
