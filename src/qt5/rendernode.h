@@ -16,8 +16,8 @@ class RenderNode : public BaseNode, public QSGRenderNode {
     Q_OBJECT
 
   public:
-    RenderNode(const QMapLibre::Settings &, const QSize &, qreal devicePixelRatio,
-                          qreal pixelRatio, QQuickItem *item);
+    RenderNode(const QMapLibre::Settings &, const QSize &, qreal devicePixelRatio, qreal pixelRatio,
+               QQuickItem *item);
 
     void resize(const QSize &size, qreal pixelRatio);
 
@@ -26,7 +26,7 @@ class RenderNode : public BaseNode, public QSGRenderNode {
     StateFlags changedStates() const override;
 };
 
-}
+} // namespace MLNQT5
 
 #endif
 

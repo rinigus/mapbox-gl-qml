@@ -63,8 +63,7 @@ using namespace MLNQT5;
 /// RenderNode
 
 RenderNode::RenderNode(const QMapLibre::Settings &settings, const QSize &size,
-                                             qreal devicePixelRatio, qreal pixelRatio,
-                                             QQuickItem *item)
+                       qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item)
     : BaseNode(settings, size, devicePixelRatio, pixelRatio, item) {
     qInfo() << "Using RenderNode for map rendering. "
             << "devicePixelRatio:" << devicePixelRatio;

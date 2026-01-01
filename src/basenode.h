@@ -11,8 +11,8 @@ class BaseNode : public QObject {
     Q_OBJECT
 
   public:
-    BaseNode(const QMapLibre::Settings &, const QSize &, qreal devicePixelRatio,
-                          qreal pixelRatio, QQuickItem *item);
+    BaseNode(const QMapLibre::Settings &, const QSize &, qreal devicePixelRatio, qreal pixelRatio,
+             QQuickItem *item);
 
     QMapLibre::Map *map() const { return m_map.data(); }
     float height() const { return m_map_size.height(); }

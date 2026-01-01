@@ -88,7 +88,7 @@ class TexturePlain : public QSGTexture {
     uint m_retain_image : 1;
 };
 
-}
+} // namespace MLNQT5
 
 #endif
 

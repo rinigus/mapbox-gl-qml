@@ -7,9 +7,8 @@
 //////////////////////////////////////////
 /// BaseNode
 
-BaseNode::BaseNode(const QMapLibre::Settings &settings, const QSize &size,
-                                             qreal devicePixelRatio, qreal pixelRatio,
-                                             QQuickItem *item)
+BaseNode::BaseNode(const QMapLibre::Settings &settings, const QSize &size, qreal devicePixelRatio,
+                   qreal pixelRatio, QQuickItem *item)
     : QObject(), m_map_size(size), m_item_size(size), m_pixel_ratio(pixelRatio),
       m_device_pixel_ratio(devicePixelRatio) {
     m_map.reset(

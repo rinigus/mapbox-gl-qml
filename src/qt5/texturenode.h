@@ -17,7 +17,7 @@ class TextureNode : public BaseNode, public QSGSimpleTextureNode {
 
   public:
     TextureNode(const QMapLibre::Settings &, const QSize &, qreal devicePixelRatio,
-                           qreal pixelRatio, QQuickItem *item);
+                qreal pixelRatio, QQuickItem *item);
     ~TextureNode();
 
     void resize(const QSize &size, qreal pixelRatio) override;
@@ -27,7 +27,7 @@ class TextureNode : public BaseNode, public QSGSimpleTextureNode {
     QScopedPointer<QOpenGLFramebufferObject> m_fbo;
 };
 
-}
+} // namespace MLNQT5
 
 #endif
 

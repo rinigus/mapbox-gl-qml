@@ -64,11 +64,9 @@ using namespace MLNQT5;
 //////////////////////////////////////////
 /// TextureNode
 
-TextureNode::TextureNode(const QMapLibre::Settings &settings,
-                                               const QSize &size, qreal devicePixelRatio,
-                                               qreal pixelRatio, QQuickItem *item)
-    : BaseNode(settings, size, devicePixelRatio, pixelRatio, item),
-      QSGSimpleTextureNode() {
+TextureNode::TextureNode(const QMapLibre::Settings &settings, const QSize &size,
+                         qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item)
+    : BaseNode(settings, size, devicePixelRatio, pixelRatio, item), QSGSimpleTextureNode() {
     qInfo() << "Using TextureNode for map rendering."
             << "devicePixelRatio:" << devicePixelRatio;
 

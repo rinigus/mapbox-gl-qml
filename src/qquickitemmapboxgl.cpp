@@ -875,7 +875,7 @@ QSGNode *QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
     else
         n = static_cast<MLNQT5::RenderNode *>(node);
 #endif
-#endif //MLN_RENDER_BACKEND_OPENGL
+#endif // MLN_RENDER_BACKEND_OPENGL
 
     if (!n) {
 #if !HAS_SGRENDERNODE
@@ -927,15 +927,15 @@ QSGNode *QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
         map = n->map();
 
-        connect(n, &BaseNode::replySourceExists, this,
-                &QQuickItemMapboxGL::replySourceExists, Qt::QueuedConnection);
-        connect(this, &QQuickItemMapboxGL::querySourceExists, n,
-                &BaseNode::querySourceExists, Qt::QueuedConnection);
+        connect(n, &BaseNode::replySourceExists, this, &QQuickItemMapboxGL::replySourceExists,
+                Qt::QueuedConnection);
+        connect(this, &QQuickItemMapboxGL::querySourceExists, n, &BaseNode::querySourceExists,
+                Qt::QueuedConnection);
 
-        connect(n, &BaseNode::replyLayerExists, this,
-                &QQuickItemMapboxGL::replyLayerExists, Qt::QueuedConnection);
-        connect(this, &QQuickItemMapboxGL::queryLayerExists, n,
-                &BaseNode::queryLayerExists, Qt::QueuedConnection);
+        connect(n, &BaseNode::replyLayerExists, this, &QQuickItemMapboxGL::replyLayerExists,
+                Qt::QueuedConnection);
+        connect(this, &QQuickItemMapboxGL::queryLayerExists, n, &BaseNode::queryLayerExists,
+                Qt::QueuedConnection);
 
         connect(n, &BaseNode::replyCoordinateForPixel, this,
                 &QQuickItemMapboxGL::replyCoordinateForPixel, Qt::QueuedConnection);
