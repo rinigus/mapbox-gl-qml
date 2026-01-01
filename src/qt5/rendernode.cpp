@@ -41,9 +41,11 @@
 **
 ****************************************************************************/
 
-#ifdef MLN_RENDER_BACKEND_OPENGL
+#include "rendernode.h"
 
-#include "qsgmapboxglrendernode.h"
+#include "basenode.h"
+
+#if IS_QT5
 
 #include <QSize>
 #include <QtGui/QOpenGLContext>
@@ -54,25 +56,28 @@
 #include <QDebug>
 
 #if HAS_SGRENDERNODE
-//////////////////////////////////////////
-/// QSGMapboxGLRenderNode
 
-QSGMapboxGLRenderNode::QSGMapboxGLRenderNode(const QMapLibre::Settings &settings, const QSize &size,
+using namespace MLNQT5;
+
+//////////////////////////////////////////
+/// RenderNode
+
+RenderNode::RenderNode(const QMapLibre::Settings &settings, const QSize &size,
                                              qreal devicePixelRatio, qreal pixelRatio,
                                              QQuickItem *item)
-    : QMapboxGLAbstractNode(settings, size, devicePixelRatio, pixelRatio, item) {
-    qInfo() << "Using QSGMapboxGLRenderNode for map rendering. "
+    : BaseNode(settings, size, devicePixelRatio, pixelRatio, item) {
+    qInfo() << "Using RenderNode for map rendering. "
             << "devicePixelRatio:" << devicePixelRatio;
 }
 
-void QSGMapboxGLRenderNode::resize(const QSize &size, qreal pixelRatio) {
+void RenderNode::resize(const QSize &size, qreal pixelRatio) {
     const QSize minSize = size.expandedTo(MIN_TEXTURE_SIZE);
-    QMapboxGLAbstractNode::resize(size, pixelRatio);
+    BaseNode::resize(size, pixelRatio);
     m_map_size = minSize / pixelRatio;
     m_map->resize(m_map_size);
 }
 
-void QSGMapboxGLRenderNode::render(const RenderState *state) {
+void RenderNode::render(const RenderState *state) {
     // QMapLibre assumes we've prepared the viewport prior to render().
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
     f->glViewport(state->scissorRect().x(), state->scissorRect().y(), state->scissorRect().width(),
@@ -91,7 +96,7 @@ void QSGMapboxGLRenderNode::render(const RenderState *state) {
     f->glDepthRangef(0, 1);
 }
 
-QSGRenderNode::StateFlags QSGMapboxGLRenderNode::changedStates() const {
+QSGRenderNode::StateFlags RenderNode::changedStates() const {
     return QSGRenderNode::DepthState | QSGRenderNode::StencilState | QSGRenderNode::ScissorState |
            QSGRenderNode::ColorState | QSGRenderNode::BlendState | QSGRenderNode::ViewportState |
            QSGRenderNode::RenderTargetState;

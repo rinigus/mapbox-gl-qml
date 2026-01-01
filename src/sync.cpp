@@ -1,4 +1,4 @@
-#include "qmapboxsync.h"
+#include "sync.h"
 
 #include <QJsonDocument>
 

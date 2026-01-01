@@ -1,13 +1,13 @@
-#include "qmapboxglabstractnode.h"
+#include "basenode.h"
 
 #include "macros.h"
 
 #include <math.h>
 
 //////////////////////////////////////////
-/// QMapboxGLAbstractNode
+/// BaseNode
 
-QMapboxGLAbstractNode::QMapboxGLAbstractNode(const QMapLibre::Settings &settings, const QSize &size,
+BaseNode::BaseNode(const QMapLibre::Settings &settings, const QSize &size,
                                              qreal devicePixelRatio, qreal pixelRatio,
                                              QQuickItem *item)
     : QObject(), m_map_size(size), m_item_size(size), m_pixel_ratio(pixelRatio),
@@ -19,27 +19,27 @@ QMapboxGLAbstractNode::QMapboxGLAbstractNode(const QMapLibre::Settings &settings
     QObject::connect(m_map.data(), &QMapLibre::Map::copyrightsChanged, item, &QQuickItem::update);
 }
 
-void QMapboxGLAbstractNode::resize(const QSize &size, qreal pixelRatio) {
+void BaseNode::resize(const QSize &size, qreal pixelRatio) {
     m_item_size = size;
     m_pixel_ratio = pixelRatio;
 }
 
-float QMapboxGLAbstractNode::mapToQtPixelRatio() const {
+float BaseNode::mapToQtPixelRatio() const {
     return 0.5 * (width() / m_item_size.width() + height() / m_item_size.height());
 }
 
-/////////////////////////////////
+///////////////////////////////
 /// queries
 
-void QMapboxGLAbstractNode::querySourceExists(const QString &sourceID) {
+void BaseNode::querySourceExists(const QString &sourceID) {
     emit replySourceExists(sourceID, m_map->sourceExists(sourceID));
 }
 
-void QMapboxGLAbstractNode::queryLayerExists(const QString &sourceID) {
+void BaseNode::queryLayerExists(const QString &sourceID) {
     emit replyLayerExists(sourceID, m_map->layerExists(sourceID));
 }
 
-void QMapboxGLAbstractNode::queryCoordinateForPixel(QPointF p, const QVariant &tag) {
+void BaseNode::queryCoordinateForPixel(QPointF p, const QVariant &tag) {
     float rx = ((float)m_map_size.width()) / ((float)m_item_size.width());
     float ry = ((float)m_map_size.height()) / ((float)m_item_size.height());
 

@@ -43,34 +43,36 @@
 **
 ****************************************************************************/
 
-#ifdef MLN_RENDER_BACKEND_OPENGL
+#include "textureplain.h"
 
-#include "qsgtextureplain.h"
+#if IS_QT5
 
 #include <QtGui/qopenglcontext.h>
 #include <QtGui/qopenglfunctions.h>
 #include <qopenglfunctions.h>
 
-QSGTexturePlain::QSGTexturePlain()
+using namespace MLNQT5;
+
+TexturePlain::TexturePlain()
     : QSGTexture(), m_texture_id(0), m_has_alpha(false), m_dirty_texture(false),
       m_dirty_bind_options(false), m_owns_texture(true), m_mipmaps_generated(false),
       m_retain_image(false) {}
 
-QSGTexturePlain::~QSGTexturePlain() {
+TexturePlain::~TexturePlain() {
     if (m_texture_id && m_owns_texture && QOpenGLContext::currentContext())
         QOpenGLContext::currentContext()->functions()->glDeleteTextures(1, &m_texture_id);
 }
 
-int QSGTexturePlain::textureId() const {
+int TexturePlain::textureId() const {
     if (m_dirty_texture) {
         // The actual texture and id will be updated/deleted in a later bind()
-        // or ~QSGTexturePlain so just keep it minimal here.
+        // or ~TexturePlain so just keep it minimal here.
         return 0;
     }
     return m_texture_id;
 }
 
-void QSGTexturePlain::setTextureId(int id) {
+void TexturePlain::setTextureId(int id) {
     if (m_texture_id && m_owns_texture)
         QOpenGLContext::currentContext()->functions()->glDeleteTextures(1, &m_texture_id);
 
@@ -80,7 +82,7 @@ void QSGTexturePlain::setTextureId(int id) {
     m_mipmaps_generated = false;
 }
 
-void QSGTexturePlain::bind() {
+void TexturePlain::bind() {
     QOpenGLContext *context = QOpenGLContext::currentContext();
     QOpenGLFunctions *funcs = context->functions();
     if (!m_dirty_texture) {

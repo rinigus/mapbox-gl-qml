@@ -14,20 +14,20 @@ endfunction()
 
 set(SRC
 	qquickitemmapboxgl.cpp
-	qmapboxglabstractnode.cpp
-	qsgmapboxgltexturenode.cpp
-	qsgmapboxglrendernode.cpp
-	qsgtextureplain.cpp
-	qmapboxsync.cpp
+	basenode.cpp
+	qt5/texturenode.cpp
+	qt5/rendernode.cpp
+	qt5/textureplain.cpp
+	sync.cpp
 	plugin/mapboxglextensionplugin.cpp)
 set(HEADERS
 	macros.h
-	qmapboxsync.h
-	qmapboxglabstractnode.h
-	qsgmapboxgltexturenode.h
-	qsgmapboxglrendernode.h
+	sync.h
+	basenode.h
+	qt5/texturenode.h
+	qt5/rendernode.h
 	qquickitemmapboxgl.h
-	qsgtextureplain.h
+	qt5/textureplain.h
 	plugin/mapboxglextensionplugin.h)
 
 add_library(qmlmapboxglplugin SHARED ${SRC} ${HEADERS})

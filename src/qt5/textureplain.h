@@ -43,18 +43,22 @@
 **
 ****************************************************************************/
 
-#ifndef QSGTEXTUREPLAIN_H
-#define QSGTEXTUREPLAIN_H
+#ifndef QT5_TEXTUREPLAIN_H
+#define QT5_TEXTUREPLAIN_H
 
-#ifdef MLN_RENDER_BACKEND_OPENGL
+#include "macros.h"
+
+#if IS_QT5
 
 #include <QSGTexture>
 
-class QSGTexturePlain : public QSGTexture {
+namespace MLNQT5 {
+
+class TexturePlain : public QSGTexture {
     Q_OBJECT
   public:
-    QSGTexturePlain();
-    virtual ~QSGTexturePlain();
+    TexturePlain();
+    virtual ~TexturePlain();
 
     void setOwnsTexture(bool owns) { m_owns_texture = owns; }
     bool ownsTexture() const { return m_owns_texture; }
@@ -84,6 +88,8 @@ class QSGTexturePlain : public QSGTexture {
     uint m_retain_image : 1;
 };
 
+}
+
 #endif
 
-#endif // QSGTEXTUREPLAIN_H
+#endif // QT5_TEXTUREPLAIN_H

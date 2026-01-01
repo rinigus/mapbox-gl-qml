@@ -1,5 +1,5 @@
-#ifndef QMAPBOXSYNC_H
-#define QMAPBOXSYNC_H
+#ifndef SYNC_H
+#define SYNC_H
 
 #include <QMapLibre/Map>
 
@@ -204,4 +204,4 @@ class ImageList {
 
 } // namespace QMapLibreSync
 
-#endif // QMAPBOXSYNC_H
+#endif // SYNC_H

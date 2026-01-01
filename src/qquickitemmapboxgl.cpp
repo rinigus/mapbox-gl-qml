@@ -43,9 +43,9 @@
 
 #include "qquickitemmapboxgl.h"
 
-#include "qmapboxglabstractnode.h"
-#include "qsgmapboxglrendernode.h"
-#include "qsgmapboxgltexturenode.h"
+#include "basenode.h"
+#include "qt5/rendernode.h"
+#include "qt5/texturenode.h"
 
 #include <mbgl/util/constants.hpp>
 
@@ -867,13 +867,13 @@ QSGNode *QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
     QMapLibre::Map *map = nullptr;
     m_first_init_done = true;
 
-    QMapboxGLAbstractNode *n = nullptr;
+    BaseNode *n = nullptr;
 #ifdef MLN_RENDER_BACKEND_OPENGL
     if (m_useFBO)
-        n = static_cast<QSGMapboxGLTextureNode *>(node);
+        n = static_cast<MLNQT5::TextureNode *>(node);
 #if HAS_SGRENDERNODE
     else
-        n = static_cast<QSGMapboxGLRenderNode *>(node);
+        n = static_cast<MLNQT5::RenderNode *>(node);
 #endif
 #endif //MLN_RENDER_BACKEND_OPENGL
 
@@ -903,15 +903,15 @@ QSGNode *QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
         /// create node and connect all queries
 #ifdef MLN_RENDER_BACKEND_OPENGL
         if (m_useFBO) {
-            QSGMapboxGLTextureNode *sgn =
-                new QSGMapboxGLTextureNode(m_settings, sz, m_devicePixelRatio, m_pixelRatio, this);
+            MLNQT5::TextureNode *sgn =
+                new MLNQT5::TextureNode(m_settings, sz, m_devicePixelRatio, m_pixelRatio, this);
             n = sgn;
             node = sgn;
         }
 #if HAS_SGRENDERNODE
         else {
-            QSGMapboxGLRenderNode *sgn =
-                new QSGMapboxGLRenderNode(m_settings, sz, m_devicePixelRatio, m_pixelRatio, this);
+            MLNQT5::RenderNode *sgn =
+                new MLNQT5::RenderNode(m_settings, sz, m_devicePixelRatio, m_pixelRatio, this);
             n = sgn;
             node = sgn;
         }
@@ -927,20 +927,20 @@ QSGNode *QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
         map = n->map();
 
-        connect(n, &QMapboxGLAbstractNode::replySourceExists, this,
+        connect(n, &BaseNode::replySourceExists, this,
                 &QQuickItemMapboxGL::replySourceExists, Qt::QueuedConnection);
         connect(this, &QQuickItemMapboxGL::querySourceExists, n,
-                &QMapboxGLAbstractNode::querySourceExists, Qt::QueuedConnection);
+                &BaseNode::querySourceExists, Qt::QueuedConnection);
 
-        connect(n, &QMapboxGLAbstractNode::replyLayerExists, this,
+        connect(n, &BaseNode::replyLayerExists, this,
                 &QQuickItemMapboxGL::replyLayerExists, Qt::QueuedConnection);
         connect(this, &QQuickItemMapboxGL::queryLayerExists, n,
-                &QMapboxGLAbstractNode::queryLayerExists, Qt::QueuedConnection);
+                &BaseNode::queryLayerExists, Qt::QueuedConnection);
 
-        connect(n, &QMapboxGLAbstractNode::replyCoordinateForPixel, this,
+        connect(n, &BaseNode::replyCoordinateForPixel, this,
                 &QQuickItemMapboxGL::replyCoordinateForPixel, Qt::QueuedConnection);
         connect(this, &QQuickItemMapboxGL::queryCoordinateForPixel, n,
-                &QMapboxGLAbstractNode::queryCoordinateForPixel, Qt::QueuedConnection);
+                &BaseNode::queryCoordinateForPixel, Qt::QueuedConnection);
 
         /////////////////////////////////////////////////////
         /// connect map changed and failure signals

@@ -41,10 +41,13 @@
 **
 ****************************************************************************/
 
-#ifdef MLN_RENDER_BACKEND_OPENGL
+#include "texturenode.h"
 
-#include "qsgmapboxgltexturenode.h"
-#include "qsgtextureplain.h"
+#include "basenode.h"
+
+#if IS_QT5
+
+#include "textureplain.h"
 
 #include "macros.h"
 
@@ -56,15 +59,17 @@
 
 #include <QDebug>
 
-//////////////////////////////////////////
-/// QSGMapboxGLTextureNode
+using namespace MLNQT5;
 
-QSGMapboxGLTextureNode::QSGMapboxGLTextureNode(const QMapLibre::Settings &settings,
+//////////////////////////////////////////
+/// TextureNode
+
+TextureNode::TextureNode(const QMapLibre::Settings &settings,
                                                const QSize &size, qreal devicePixelRatio,
                                                qreal pixelRatio, QQuickItem *item)
-    : QMapboxGLAbstractNode(settings, size, devicePixelRatio, pixelRatio, item),
+    : BaseNode(settings, size, devicePixelRatio, pixelRatio, item),
       QSGSimpleTextureNode() {
-    qInfo() << "Using QSGMapboxGLTextureNode for map rendering."
+    qInfo() << "Using TextureNode for map rendering."
             << "devicePixelRatio:" << devicePixelRatio;
 
     setTextureCoordinatesTransform(QSGSimpleTextureNode::MirrorVertically);
@@ -73,11 +78,11 @@ QSGMapboxGLTextureNode::QSGMapboxGLTextureNode(const QMapLibre::Settings &settin
     resize(size, pixelRatio); // to fill and attach fbo
 }
 
-QSGMapboxGLTextureNode::~QSGMapboxGLTextureNode() {}
+TextureNode::~TextureNode() {}
 
-void QSGMapboxGLTextureNode::resize(const QSize &size, qreal pixelRatio) {
+void TextureNode::resize(const QSize &size, qreal pixelRatio) {
     const QSize minSize = size.expandedTo(MIN_TEXTURE_SIZE);
-    QMapboxGLAbstractNode::resize(minSize, pixelRatio);
+    BaseNode::resize(minSize, pixelRatio);
 
     const QSize fbSize = minSize * m_device_pixel_ratio;         // physical pixels
     m_map_size = minSize * m_device_pixel_ratio / m_pixel_ratio; // ensure zoom
@@ -88,9 +93,9 @@ void QSGMapboxGLTextureNode::resize(const QSize &size, qreal pixelRatio) {
         new QOpenGLFramebufferObject(fbSize, QOpenGLFramebufferObject::CombinedDepthStencil));
     m_map->setOpenGLFramebufferObject(m_fbo->handle(), fbSize);
 
-    QSGTexturePlain *fboTexture = static_cast<QSGTexturePlain *>(texture());
+    TexturePlain *fboTexture = static_cast<TexturePlain *>(texture());
     if (!fboTexture)
-        fboTexture = new QSGTexturePlain;
+        fboTexture = new TexturePlain;
 
     fboTexture->setTextureId(m_fbo->texture());
     fboTexture->setTextureSize(fbSize);
@@ -103,7 +108,7 @@ void QSGMapboxGLTextureNode::resize(const QSize &size, qreal pixelRatio) {
     setRect(QRectF(QPointF(), minSize));
 }
 
-void QSGMapboxGLTextureNode::render(QQuickWindow *window) {
+void TextureNode::render(QQuickWindow *window) {
     QOpenGLFunctions *f = window->openglContext()->functions();
     f->glViewport(0, 0, m_fbo->width(), m_fbo->height());
 

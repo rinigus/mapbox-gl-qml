@@ -1,5 +1,5 @@
-#ifndef QMAPBOXGLABSTRACTNODE_H
-#define QMAPBOXGLABSTRACTNODE_H
+#ifndef BASENODE_H
+#define BASENODE_H
 
 #include <QGeoCoordinate>
 #include <QQuickItem>
@@ -7,11 +7,11 @@
 #include <QMapLibre/Map>
 #include <QMapLibre/Settings>
 
-class QMapboxGLAbstractNode : public QObject {
+class BaseNode : public QObject {
     Q_OBJECT
 
   public:
-    QMapboxGLAbstractNode(const QMapLibre::Settings &, const QSize &, qreal devicePixelRatio,
+    BaseNode(const QMapLibre::Settings &, const QSize &, qreal devicePixelRatio,
                           qreal pixelRatio, QQuickItem *item);
 
     QMapLibre::Map *map() const { return m_map.data(); }
@@ -41,4 +41,4 @@ class QMapboxGLAbstractNode : public QObject {
     qreal m_device_pixel_ratio{1};
 };
 
-#endif // QMAPBOXGLABSTRACTNODE_H
+#endif // BASENODE_H
