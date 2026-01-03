@@ -50,24 +50,15 @@ void TextureNodeOpenGL::render(QQuickWindow *window) {
     if (!m_map || m_map_size.isEmpty())
         return;
 
-    const QOpenGLContext *glContext = QOpenGLContext::currentContext();
-    if (glContext == nullptr) {
-        qWarning() << "TextureNodeOpenGL::render: no current QOpenGLContext";
-        return;
-    }
-
-    // Ensure renderer is created first
-    if (!m_renderer_bound) {
-        m_map->createRenderer();
-        m_renderer_bound = true;
-    }
-
-    QQuickOpenGLUtils::resetOpenGLState();
-
-    m_map->render();
-
     // setup texture if it is missing
     if (!m_texture) {
+        // check if we ahave GL context
+        const QOpenGLContext *glContext = QOpenGLContext::currentContext();
+        if (glContext == nullptr) {
+            qWarning() << "TextureNodeOpenGL::render: no current QOpenGLContext";
+            return;
+        }
+
         const GLuint maplibreTextureId = static_cast<GLuint>(m_fbo->texture());
 
         if (maplibreTextureId == 0) {
@@ -87,6 +78,16 @@ void TextureNodeOpenGL::render(QQuickWindow *window) {
         setTexture(m_texture.get());
         setOwnsTexture(false);
     }
+
+    // Ensure renderer is created first
+    if (!m_renderer_bound) {
+        m_map->createRenderer();
+        m_renderer_bound = true;
+    }
+
+    QQuickOpenGLUtils::resetOpenGLState();
+
+    m_map->render();
 
     markDirty(QSGNode::DirtyMaterial);
 
