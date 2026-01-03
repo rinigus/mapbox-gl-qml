@@ -660,7 +660,7 @@ void QQuickItemMapboxGL::updateSourcePoints(const QString &sourceID,
         QGeoCoordinate c = coordinates[i].value<QGeoCoordinate>();
         if (c.isValid()) {
             QString name;
-            if (i < names.size() && names[i].type() == QVariant::String)
+            if (i < names.size() && names[i].canConvert<QString>())
                 name = names[i].toString();
 
             points.append(pointJson(c.latitude(), c.longitude(), name));
@@ -850,13 +850,14 @@ void QQuickItemMapboxGL::clearCache() {
         QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", const_connection_name);
         db.setDatabaseName(cacheDatabasePath());
         if (db.open()) {
-            db.exec("PRAGMA foreign_keys = ON");
-            db.exec("DELETE FROM region_resources");
-            db.exec("DELETE FROM region_tiles");
-            db.exec("DELETE FROM regions");
-            db.exec("DELETE FROM tiles");
-            db.exec("DELETE FROM resources");
-            db.exec("VACUUM");
+            QSqlQuery query(db);
+            query.exec("PRAGMA foreign_keys = ON");
+            query.exec("DELETE FROM region_resources");
+            query.exec("DELETE FROM region_tiles");
+            query.exec("DELETE FROM regions");
+            query.exec("DELETE FROM tiles");
+            query.exec("DELETE FROM resources");
+            query.exec("VACUUM");
             db.close();
         }
     }

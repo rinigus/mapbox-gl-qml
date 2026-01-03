@@ -15,9 +15,9 @@ void SourceList::SourceAction::apply(QMapLibre::Map *map) {
     // special treatment of "data" field
     if (m_asset.params.contains("data")) {
         QVariant data_orig = m_asset.params["data"];
-        if (data_orig.type() == QVariant::String)
+        if (data_orig.canConvert<QString>())
             m_asset.params["data"] = data_orig.toString().toUtf8();
-        else if (data_orig.type() == QVariant::Map)
+        else if (data_orig.canConvert<QVariantMap>())
             m_asset.params["data"] = QJsonDocument::fromVariant(data_orig).toJson();
     }
 
