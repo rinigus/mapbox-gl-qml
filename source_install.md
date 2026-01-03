@@ -1,7 +1,7 @@
 # Installation from source
 
 To install unofficial Mapbox GL Native bindings for Qt QML from
-sources, you would have to install Qt version of MapboxGL native
+sources, you would have to install Qt version of MapLibre native
 library. For that, please follow instructions at
 https://github.com/rinigus/pkg-mapbox-gl-native
 
