@@ -12,6 +12,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 option(USE_CURL_SSL "Use curl SSL" OFF)
 option(USE_FBO "Use map rendering using FBO" ON)
+option(BUILD_DEMO_APP "Build the demo application" OFF)
 
 # Render backend option
 set(RENDER_BACKEND "opengl" CACHE STRING "Render backend to use (opengl, metal, vulkan)")
@@ -83,5 +84,9 @@ if(USE_CURL_SSL)
 endif()
 
 add_subdirectory(src)
+
+if(BUILD_DEMO_APP)
+    add_subdirectory(app)
+endif()
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)

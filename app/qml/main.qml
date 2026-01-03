@@ -1,9 +1,9 @@
-import QtQuick 2.0
-import QtQuick.Controls 1.0
-import QtQuick.Layouts 1.0
-import QtPositioning 5.3
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import QtPositioning
 
-import MapboxMap 1.0
+import MapboxMap
 
 import "."
 
@@ -84,11 +84,7 @@ ApplicationWindow {
 
         //accessToken: "INSERT_THE_TOKEN_OR_DEFINE_IN_ENVIRONMENT"
 
-        property string styleUrlOrig: "http://localhost:8553/v1/mbgl/style?style=osmbright"
-        property int styleIndex: 0
-
-        //styleUrl: "mapbox://styles/mapbox/outdoors-v10" //"mapbox://styles/mapbox/streets-v10"
-        styleUrl: styleUrlOrig
+        styleUrl: "https://tiles.openfreemap.org/styles/bright"
 
         urlDebug: true
 
@@ -317,12 +313,6 @@ ApplicationWindow {
 
         focus: true
         Keys.onPressed: {
-            if (event.key === Qt.Key_R) {
-                var src = map.styleUrlOrig;
-                map.styleIndex += 1;
-                map.styleUrl = src + "&index=" + String(map.styleIndex);
-                console.log("Reloaded");
-            }
             if (event.key === Qt.Key_C) {
                 map.clearCache();
             }
@@ -352,7 +342,7 @@ ApplicationWindow {
 
             anchors.left: parent.left
             anchors.right: parent.right
-            maximumValue: 180
+            to: 180
         }
 
         Label {
@@ -364,7 +354,7 @@ ApplicationWindow {
 
             anchors.left: parent.left
             anchors.right: parent.right
-            maximumValue: 60
+            to: 60
         }
     }
 
