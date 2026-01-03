@@ -43,17 +43,22 @@
 **
 ****************************************************************************/
 
-#ifndef QSGTEXTUREPLAIN_H
-#define QSGTEXTUREPLAIN_H
+#ifndef QT5_TEXTUREPLAIN_H
+#define QT5_TEXTUREPLAIN_H
+
+#include "macros.h"
+
+#if IS_QT5
 
 #include <QSGTexture>
 
-class QSGTexturePlain : public QSGTexture
-{
+namespace MLNQT5 {
+
+class TexturePlain : public QSGTexture {
     Q_OBJECT
-public:
-    QSGTexturePlain();
-    virtual ~QSGTexturePlain();
+  public:
+    TexturePlain();
+    virtual ~TexturePlain();
 
     void setOwnsTexture(bool owns) { m_owns_texture = owns; }
     bool ownsTexture() const { return m_owns_texture; }
@@ -70,7 +75,7 @@ public:
 
     void bind() override;
 
-protected:
+  protected:
     uint m_texture_id;
     QSize m_texture_size;
     QRectF m_texture_rect;
@@ -80,7 +85,11 @@ protected:
     uint m_dirty_bind_options : 1;
     uint m_owns_texture : 1;
     uint m_mipmaps_generated : 1;
-    uint m_retain_image: 1;
+    uint m_retain_image : 1;
 };
 
-#endif // QSGTEXTUREPLAIN_H
+} // namespace MLNQT5
+
+#endif
+
+#endif // QT5_TEXTUREPLAIN_H

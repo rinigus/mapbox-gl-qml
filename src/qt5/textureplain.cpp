@@ -43,74 +43,67 @@
 **
 ****************************************************************************/
 
-#include "qsgtextureplain.h"
-#include <qopenglfunctions.h>
+#include "textureplain.h"
+
+#if IS_QT5
+
 #include <QtGui/qopenglcontext.h>
 #include <QtGui/qopenglfunctions.h>
+#include <qopenglfunctions.h>
 
-QSGTexturePlain::QSGTexturePlain()
-  : QSGTexture()
-  , m_texture_id(0)
-  , m_has_alpha(false)
-  , m_dirty_texture(false)
-  , m_dirty_bind_options(false)
-  , m_owns_texture(true)
-  , m_mipmaps_generated(false)
-  , m_retain_image(false)
-{
+using namespace MLNQT5;
+
+TexturePlain::TexturePlain()
+    : QSGTexture(), m_texture_id(0), m_has_alpha(false), m_dirty_texture(false),
+      m_dirty_bind_options(false), m_owns_texture(true), m_mipmaps_generated(false),
+      m_retain_image(false) {}
+
+TexturePlain::~TexturePlain() {
+    if (m_texture_id && m_owns_texture && QOpenGLContext::currentContext())
+        QOpenGLContext::currentContext()->functions()->glDeleteTextures(1, &m_texture_id);
 }
 
-
-QSGTexturePlain::~QSGTexturePlain()
-{
-  if (m_texture_id && m_owns_texture && QOpenGLContext::currentContext())
-    QOpenGLContext::currentContext()->functions()->glDeleteTextures(1, &m_texture_id);
-}
-
-
-int QSGTexturePlain::textureId() const
-{
-  if (m_dirty_texture) {
-      // The actual texture and id will be updated/deleted in a later bind()
-      // or ~QSGTexturePlain so just keep it minimal here.
-      return 0;
+int TexturePlain::textureId() const {
+    if (m_dirty_texture) {
+        // The actual texture and id will be updated/deleted in a later bind()
+        // or ~TexturePlain so just keep it minimal here.
+        return 0;
     }
-  return m_texture_id;
+    return m_texture_id;
 }
 
-void QSGTexturePlain::setTextureId(int id)
-{
-  if (m_texture_id && m_owns_texture)
-    QOpenGLContext::currentContext()->functions()->glDeleteTextures(1, &m_texture_id);
+void TexturePlain::setTextureId(int id) {
+    if (m_texture_id && m_owns_texture)
+        QOpenGLContext::currentContext()->functions()->glDeleteTextures(1, &m_texture_id);
 
-  m_texture_id = id;
-  m_dirty_texture = false;
-  m_dirty_bind_options = true;
-  m_mipmaps_generated = false;
+    m_texture_id = id;
+    m_dirty_texture = false;
+    m_dirty_bind_options = true;
+    m_mipmaps_generated = false;
 }
 
-void QSGTexturePlain::bind()
-{
-  QOpenGLContext *context = QOpenGLContext::currentContext();
-  QOpenGLFunctions *funcs = context->functions();
-  if (!m_dirty_texture) {
-      funcs->glBindTexture(GL_TEXTURE_2D, m_texture_id);
-      if (mipmapFiltering() != QSGTexture::None && !m_mipmaps_generated) {
-          funcs->glGenerateMipmap(GL_TEXTURE_2D);
-          m_mipmaps_generated = true;
+void TexturePlain::bind() {
+    QOpenGLContext *context = QOpenGLContext::currentContext();
+    QOpenGLFunctions *funcs = context->functions();
+    if (!m_dirty_texture) {
+        funcs->glBindTexture(GL_TEXTURE_2D, m_texture_id);
+        if (mipmapFiltering() != QSGTexture::None && !m_mipmaps_generated) {
+            funcs->glGenerateMipmap(GL_TEXTURE_2D);
+            m_mipmaps_generated = true;
         }
-      updateBindOptions(m_dirty_bind_options);
-      m_dirty_bind_options = false;
-      return;
+        updateBindOptions(m_dirty_bind_options);
+        m_dirty_bind_options = false;
+        return;
     }
 
-  m_dirty_texture = false;
+    m_dirty_texture = false;
 
-  if (m_texture_id && m_owns_texture) {
-      funcs->glDeleteTextures(1, &m_texture_id);
+    if (m_texture_id && m_owns_texture) {
+        funcs->glDeleteTextures(1, &m_texture_id);
     }
-  m_texture_id = 0;
-  m_texture_size = QSize();
-  m_has_alpha = false;
-
+    m_texture_id = 0;
+    m_texture_size = QSize();
+    m_has_alpha = false;
 }
+
+#endif

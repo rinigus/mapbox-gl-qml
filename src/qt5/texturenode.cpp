@@ -1,0 +1,123 @@
+/****************************************************************************
+**
+** Based on the implementation of Mapbox GL Native QtLocation plugin at
+** https://github.com/qt/qtlocation/tree/5.9/src/plugins/geoservices/mapboxgl
+** and later versions. Developed further for integration with the plugin
+**
+** The original code license is below
+**
+** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2017 Mapbox, Inc.
+** Contact: http://www.qt.io/licensing/
+**
+** This file is part of the QtLocation module of the Qt Toolkit.
+**
+** $QT_BEGIN_LICENSE:LGPL3$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 3 as published by the Free Software
+** Foundation and appearing in the file LICENSE.LGPLv3 included in the
+** packaging of this file. Please review the following information to
+** ensure the GNU Lesser General Public License version 3 requirements
+** will be met: https://www.gnu.org/licenses/lgpl.html.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License version 2.0 or later as published by the Free
+** Software Foundation and appearing in the file LICENSE.GPL included in
+** the packaging of this file. Please review the following information to
+** ensure the GNU General Public License version 2.0 requirements will be
+** met: http://www.gnu.org/licenses/gpl-2.0.html.
+**
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+#include "texturenode.h"
+
+#if IS_QT5
+
+#include "textureplain.h"
+
+#include "macros.h"
+
+#include <QtGui/QOpenGLContext>
+#include <QtGui/QOpenGLFunctions>
+#include <QtQuick/QQuickWindow>
+
+#include <math.h>
+
+#include <QDebug>
+
+using namespace MLNQT5;
+
+//////////////////////////////////////////
+/// TextureNode
+
+TextureNode::TextureNode(const QMapLibre::Settings &settings, const QSize &size,
+                         qreal devicePixelRatio, qreal pixelRatio, QQuickItem *item)
+    : BaseTextureNode(settings, size, devicePixelRatio, pixelRatio, item) {
+    qInfo() << "Using TextureNode for map rendering."
+            << "devicePixelRatio:" << devicePixelRatio;
+
+    resize(size, pixelRatio); // to fill and attach fbo
+}
+
+TextureNode::~TextureNode() {}
+
+void TextureNode::resize(const QSize &size, qreal pixelRatio) {
+    const QSize minSize = size.expandedTo(MIN_TEXTURE_SIZE);
+    BaseNode::resize(minSize, pixelRatio);
+
+    const QSize fbSize = minSize * m_device_pixel_ratio;         // physical pixels
+    m_map_size = minSize * m_device_pixel_ratio / m_pixel_ratio; // ensure zoom
+
+    m_map->resize(m_map_size);
+
+    m_fbo.reset(
+        new QOpenGLFramebufferObject(fbSize, QOpenGLFramebufferObject::CombinedDepthStencil));
+    m_map->setOpenGLFramebufferObject(m_fbo->handle(), fbSize);
+
+    TexturePlain *fboTexture = static_cast<TexturePlain *>(texture());
+    if (!fboTexture)
+        fboTexture = new TexturePlain;
+
+    fboTexture->setTextureId(m_fbo->texture());
+    fboTexture->setTextureSize(fbSize);
+
+    if (!texture()) {
+        setTexture(fboTexture);
+        setOwnsTexture(true);
+    }
+
+    setRect(QRectF(QPointF(), minSize));
+}
+
+void TextureNode::render(QQuickWindow *window) {
+    QOpenGLFunctions *f = window->openglContext()->functions();
+    f->glViewport(0, 0, m_fbo->width(), m_fbo->height());
+
+    GLint alignment;
+    f->glGetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);
+
+    m_fbo->bind();
+    m_map->render();
+    //    m_logo.render();
+    m_fbo->release();
+
+    // QTBUG-62861
+    f->glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
+    f->glDepthRangef(0, 1);
+
+    window->resetOpenGLState();
+}
+
+#endif
