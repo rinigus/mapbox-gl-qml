@@ -20,7 +20,7 @@ class BaseNode : public QObject {
     float mapToQtPixelRatio() const;
 
     virtual void resize(const QSize &size, qreal pixelRatio);
-    virtual void render(QQuickWindow *) {}
+    virtual void render(QQuickWindow *) = 0;
 
   public slots:
     void querySourceExists(const QString &id);

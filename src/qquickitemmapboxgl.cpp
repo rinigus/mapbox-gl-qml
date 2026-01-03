@@ -48,6 +48,7 @@
 #include "basetexturenode.h"
 #include "qt5/rendernode.h"
 #include "qt5/texturenode.h"
+#include "qt6/texturenodeopengl.h"
 
 #include <mbgl/util/constants.hpp>
 
@@ -902,14 +903,15 @@ QSGNode *QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
         /////////////////////////////////////////////////////
         /// create node and connect all queries
         if (m_useFBO) {
-#if IS_QT5
             BaseTextureNode *sgn =
+#if IS_QT5
                 new MLNQT5::TextureNode(m_settings, sz, m_devicePixelRatio, m_pixelRatio, this);
-#ifdef MLN_RENDER_BACKEND_OPENGL
+#elif defined(MLN_RENDER_BACKEND_OPENGL)
+                new MLNQT6::TextureNodeOpenGL(m_settings, sz, m_devicePixelRatio, m_pixelRatio,
+                                              this);
 #endif
             n = sgn;
             node = sgn;
-#endif
         }
 #if HAS_SGRENDERNODE
         else {

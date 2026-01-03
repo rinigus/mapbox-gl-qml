@@ -15,10 +15,7 @@ class BaseRenderNode : public BaseNode, public QSGRenderNode {
     BaseRenderNode(const QMapLibre::Settings &, const QSize &, qreal devicePixelRatio,
                    qreal pixelRatio, QQuickItem *item);
 
-    virtual void resize(const QSize &size, qreal pixelRatio) = 0;
-
     // QSGRenderNode
-    virtual void render(const RenderState *state) = 0;
     StateFlags changedStates() const override;
 };
 

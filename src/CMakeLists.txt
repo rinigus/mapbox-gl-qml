@@ -20,6 +20,7 @@ set(SRC
 	qt5/texturenode.cpp
 	qt5/rendernode.cpp
 	qt5/textureplain.cpp
+	qt6/texturenodeopengl.cpp
 	sync.cpp
 	plugin/mapboxglextensionplugin.cpp)
 set(HEADERS
@@ -28,10 +29,11 @@ set(HEADERS
 	basenode.h
 	baserendernode.h
 	basetexturenode.h
-	qt5/texturenode.h
 	qt5/rendernode.h
-	qquickitemmapboxgl.h
+	qt5/texturenode.h
 	qt5/textureplain.h
+	qt6/texturenodeopengl.h
+	qquickitemmapboxgl.h
 	plugin/mapboxglextensionplugin.h)
 
 add_library(qmlmapboxglplugin SHARED ${SRC} ${HEADERS})

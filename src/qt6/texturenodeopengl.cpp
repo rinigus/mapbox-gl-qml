@@ -1,104 +1,96 @@
+// Based on code from MapLibre Native Qt and earlier codes from Qt5 support
+//
 // Copyright (C) 2023 MapLibre contributors
+// Copyright (C) 2026 Rinigus
 
 // SPDX-License-Identifier: BSD-2-Clause
 
+#include "texturenodeopengl.h"
+
+#if IS_QT6
+
 #include <QtGui/qopenglcontext.h>
-#include "texture_node_opengl_p.hpp"
 
 #include <QtGui/QOpenGLContext>
 #include <QtGui/QOpenGLFunctions>
 #include <QtQuick/QQuickOpenGLUtils>
 
-namespace {
-constexpr int DefaultSize = 64;
-} // namespace
+using namespace MLNQT6;
 
-namespace QMapLibre {
+TextureNodeOpenGL::~TextureNodeOpenGL() {}
 
-TextureNodeOpenGL::~TextureNodeOpenGL() {
-    // Clean up framebuffer
-    if (m_fbo != 0) {
-        if (const QOpenGLContext *glContext = QOpenGLContext::currentContext()) {
-            QOpenGLFunctions *gl = glContext->functions();
-            gl->glDeleteFramebuffers(1, &m_fbo);
-        }
-    }
-}
-
-void TextureNodeOpenGL::resize(const QSize &size, qreal pixelRatio, QQuickWindow * /* window */) {
-    m_size = size.expandedTo(QSize(DefaultSize, DefaultSize));
-    m_pixelRatio = pixelRatio;
-    // Pass logical size; mbgl::Map handles DPI scaling internally via pixelRatio passed at construction
-    m_map->resize(m_size, m_pixelRatio);
-}
-
-void TextureNodeOpenGL::render(QQuickWindow *window) {
+void TextureNodeOpenGL::resize(const QSize &size, qreal pixelRatio) {
     if (!m_map) {
         return;
     }
 
-    // Check for valid size
-    if (m_size.isEmpty()) {
-        return;
+    const QSize minSize = size.expandedTo(MIN_TEXTURE_SIZE);
+    BaseNode::resize(minSize, pixelRatio);
+    setRect(QRectF(QPointF(0, 0), m_item_size));
+
+    const QSize fbSize = minSize * m_device_pixel_ratio;         // physical pixels
+    m_map_size = minSize * m_device_pixel_ratio / m_pixel_ratio; // ensure zoom
+
+    m_map->resize(m_map_size);
+
+    if (!m_fbo || m_fbo->size() != fbSize) {
+        QOpenGLFramebufferObjectFormat fmt;
+        fmt.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
+        fmt.setTextureTarget(GL_TEXTURE_2D);
+        fmt.setInternalTextureFormat(GL_RGBA);
+
+        m_fbo.reset(new QOpenGLFramebufferObject(fbSize, fmt));
+        m_texture.reset();
     }
+
+    m_map->setOpenGLFramebufferObject(static_cast<quint32>(m_fbo->handle()), fbSize);
+}
+
+void TextureNodeOpenGL::render(QQuickWindow *window) {
+    if (!m_map || m_map_size.isEmpty())
+        return;
 
     const QOpenGLContext *glContext = QOpenGLContext::currentContext();
     if (glContext == nullptr) {
+        qWarning() << "TextureNodeOpenGL::render: no current QOpenGLContext";
         return;
     }
 
     // Ensure renderer is created first
-    if (!m_rendererBound) {
-        m_map->createRenderer(nullptr);
-        m_rendererBound = true;
+    if (!m_renderer_bound) {
+        m_map->createRenderer();
+        m_renderer_bound = true;
     }
 
-    // Update map size if needed - pass logical size, mbgl::Map handles DPI internally
-    m_map->resize(m_size, m_pixelRatio);
-
-    // CRITICAL: Set up framebuffer for texture sharing before rendering
-    QOpenGLFunctions *gl = glContext->functions();
-    if (m_fbo == 0) {
-        gl->glGenFramebuffers(1, &m_fbo);
-    }
-
-    // Update the size
-    m_map->updateRenderer(m_size, m_pixelRatio, m_fbo);
-
-    // Save and restore OpenGL state to prevent conflicts
-    GLint prevFbo{};
-    gl->glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFbo);
-
-    // Begin external commands before MapLibre render
-    window->beginExternalCommands();
+    QQuickOpenGLUtils::resetOpenGLState();
 
     m_map->render();
 
-    // Ensure we flush the OpenGL commands
-    gl->glFlush();
+    // setup texture if it is missing
+    if (!m_texture) {
+        const GLuint maplibreTextureId = static_cast<GLuint>(m_fbo->texture());
 
-    // End external commands after MapLibre render
-    window->endExternalCommands();
-
-    // Restore previous framebuffer
-    gl->glBindFramebuffer(GL_FRAMEBUFFER, prevFbo);
-
-    // Try to get MapLibre's OpenGL framebuffer texture ID for zero-copy sharing
-    const GLuint maplibreTextureId = m_map->getFramebufferTextureId();
-    if (maplibreTextureId > 0) {
-        // Wrap it directly as QSGTexture (zero-copy!)
-        const QSize physicalSize = m_size * m_pixelRatio;
-        QSGTexture *qtTexture = QNativeInterface::QSGOpenGLTexture::fromNative(
-            maplibreTextureId, window, physicalSize, QQuickWindow::TextureHasAlphaChannel);
-
-        if (qtTexture != nullptr) {
-            setTexture(qtTexture);
-            setRect(QRectF(QPointF(), m_size));
-            setFiltering(QSGTexture::Linear);
-            setOwnsTexture(false); // Don't delete MapLibre's texture!
-            markDirty(QSGNode::DirtyMaterial);
+        if (maplibreTextureId == 0) {
+            qDebug() << "Missing FBO texture ID";
+            return;
         }
+
+        m_texture.reset(QNativeInterface::QSGOpenGLTexture::fromNative(
+            maplibreTextureId, window, m_map_size, QQuickWindow::TextureHasAlphaChannel));
+
+        if (!m_texture) {
+            qWarning()
+                << "TextureNodeOpenGL::render: failed to create QSG texture from native GL texture";
+            return;
+        }
+
+        setTexture(m_texture.get());
+        setOwnsTexture(false);
     }
+
+    markDirty(QSGNode::DirtyMaterial);
+
+    QQuickOpenGLUtils::resetOpenGLState();
 }
 
-} // namespace QMapLibre
+#endif

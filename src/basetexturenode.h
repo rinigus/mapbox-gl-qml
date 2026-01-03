@@ -12,9 +12,6 @@ class BaseTextureNode : public BaseNode, public QSGSimpleTextureNode {
     BaseTextureNode(const QMapLibre::Settings &, const QSize &, qreal devicePixelRatio,
                     qreal pixelRatio, QQuickItem *item);
     ~BaseTextureNode();
-
-    virtual void resize(const QSize &size, qreal pixelRatio) = 0;
-    virtual void render(QQuickWindow *) = 0;
 };
 
 #endif // TEXTURENODE_H

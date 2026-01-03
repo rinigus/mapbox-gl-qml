@@ -1,27 +1,41 @@
+// Based on code from MapLibre Native Qt
+
 // Copyright (C) 2023 MapLibre contributors
+// Copyright (C) 2026 Rinigus
 
 // SPDX-License-Identifier: BSD-2-Clause
 
-#pragma once
+#ifndef QT6_TEXTURENODEOPENGL_H
+#define QT6_TEXTURENODEOPENGL_H
 
-#include "export_quick_p.hpp"
-#include "texture_node_base_p.hpp"
+#include "macros.h"
 
+#if IS_QT6
+
+#include "basetexturenode.h"
+
+#include <QOpenGLFramebufferObject>
 #include <QtGui/qopengl.h>
 
-namespace QMapLibre {
+#include <memory>
 
-class Q_MAPLIBRE_QUICKPRIVATE_EXPORT TextureNodeOpenGL final : public TextureNodeBase {
-public:
-    using TextureNodeBase::TextureNodeBase;
+namespace MLNQT6 {
+
+class TextureNodeOpenGL final : public BaseTextureNode {
+  public:
+    using BaseTextureNode::BaseTextureNode;
     ~TextureNodeOpenGL() final;
 
-    void resize(const QSize &size, qreal pixelRatio, QQuickWindow *window) final;
+    void resize(const QSize &size, qreal pixelRatio) final;
     void render(QQuickWindow *window) final;
 
-private:
-    bool m_rendererBound{};
-    GLuint m_fbo{};
+  private:
+    bool m_renderer_bound{};
+    std::unique_ptr<QOpenGLFramebufferObject> m_fbo{};
+    std::unique_ptr<QSGTexture> m_texture{};
 };
 
-} // namespace QMapLibre
+} // namespace MLNQT6
+
+#endif
+#endif
