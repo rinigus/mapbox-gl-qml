@@ -34,25 +34,46 @@ void TextureNodeOpenGL::resize(const QSize &size, qreal pixelRatio) {
     m_map->resize(m_map_size);
 
     if (!m_fbo || m_fbo->size() != fbSize) {
+        // check if we have GL context
+        const QOpenGLContext *glContext = QOpenGLContext::currentContext();
+        if (glContext == nullptr) {
+            qWarning() << "TextureNodeOpenGL::render: no current QOpenGLContext";
+            return;
+        }
+
         QOpenGLFramebufferObjectFormat fmt;
         fmt.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
         fmt.setTextureTarget(GL_TEXTURE_2D);
         fmt.setInternalTextureFormat(GL_RGBA);
 
+        // keep old texture/fbo before we set new texture in render
+        m_prev_texture.reset(m_texture.release());
+        m_prev_fbo.reset(m_fbo.release());
         m_fbo.reset(new QOpenGLFramebufferObject(fbSize, fmt));
-        m_texture.reset();
+
+        if (!m_fbo || !m_fbo->isValid()) {
+            qWarning() << "Failed to create FBO or FBO is invalid after creation";
+            m_fbo.reset();
+            return;
+        }
     }
 
     m_map->setOpenGLFramebufferObject(static_cast<quint32>(m_fbo->handle()), fbSize);
 }
 
 void TextureNodeOpenGL::render(QQuickWindow *window) {
-    if (!m_map || m_map_size.isEmpty())
+    if (!m_map || m_map_size.isEmpty() || !m_fbo)
         return;
+
+    // Ensure renderer is created first
+    if (!m_renderer_bound) {
+        m_map->createRenderer();
+        m_renderer_bound = true;
+    }
 
     // setup texture if it is missing
     if (!m_texture) {
-        // check if we ahave GL context
+        // check if we have GL context
         const QOpenGLContext *glContext = QOpenGLContext::currentContext();
         if (glContext == nullptr) {
             qWarning() << "TextureNodeOpenGL::render: no current QOpenGLContext";
@@ -77,12 +98,10 @@ void TextureNodeOpenGL::render(QQuickWindow *window) {
 
         setTexture(m_texture.get());
         setOwnsTexture(false);
-    }
 
-    // Ensure renderer is created first
-    if (!m_renderer_bound) {
-        m_map->createRenderer();
-        m_renderer_bound = true;
+        // drop unused objects
+        m_prev_texture.reset();
+        m_prev_fbo.reset();
     }
 
     QQuickOpenGLUtils::resetOpenGLState();

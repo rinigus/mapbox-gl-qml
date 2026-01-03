@@ -33,6 +33,8 @@ class TextureNodeOpenGL final : public BaseTextureNode {
     bool m_renderer_bound{};
     std::unique_ptr<QOpenGLFramebufferObject> m_fbo{};
     std::unique_ptr<QSGTexture> m_texture{};
+    std::unique_ptr<QOpenGLFramebufferObject> m_prev_fbo{};
+    std::unique_ptr<QSGTexture> m_prev_texture{};
 };
 
 } // namespace MLNQT6
