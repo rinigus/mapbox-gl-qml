@@ -2,7 +2,7 @@
 
 This is a description of an API that was written for platforms lacking
 QtLocation 5.9 support. I would like to acknowledge the use of QtLocation 5.9
-Mapbox GL plugin documentation while this API documentation.
+Mapbox GL plugin documentation while this API documentation was written.
 
 API consists of two items:
 [MapboxMap](#qquickitemmapboxgl-c--mapboxmap-qml) for displaying the
@@ -37,7 +37,8 @@ QML Quick Item for displaying maps using Mapbox GL. See
 `qquickitemmapboxgl.h` for specific syntax, if needed.
 
 In QML, `MapboxMap` type is defined by this plugin. In C++, use
-`QQuickItemMapboxGL` class.
+`QQuickItemMapboxGL` class. It is recommended to use the bindings through
+QML.
 
 ## Include statements
 
@@ -160,8 +161,8 @@ first created map.
 * `bool `**`useFBO`** When set to `true` (default), Mapbox GL will use
     a framebuffer object to render a map. When set to `false`, the map
     is rendered issuing OpenGL commands directly, through a
-    QSGRenderNode. This is supported only for platforms starting with
-    Qt version 5.8.
+    QSGRenderNode. Rendering directly is supported only for Qt versions from 5.8 till 5.15.
+    Such rendering is not implemented for Qt 6.
 
 
 ### Map rendering
