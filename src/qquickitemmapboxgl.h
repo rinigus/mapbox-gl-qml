@@ -447,7 +447,6 @@ class QQuickItemMapboxGL : public QQuickItem {
     QString m_styleUrl;
     QString m_styleJson;
     bool m_useUrlForStyle = true;
-    bool m_useFBO = true;
 
     QMutex m_resourceTransformMutex;
     std::string m_urlSuffix;

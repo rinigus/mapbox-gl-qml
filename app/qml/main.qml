@@ -1,9 +1,9 @@
-import QtQuick
-import QtQuick.Controls
-import QtQuick.Layouts
-import QtPositioning
+import QtQuick 2.0
+import QtQuick.Controls 2
+import QtQuick.Layouts 2
+import QtPositioning 5
 
-import MapboxMap
+import MapboxMap 1
 
 import "."
 

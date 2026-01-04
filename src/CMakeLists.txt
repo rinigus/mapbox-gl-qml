@@ -15,10 +15,8 @@ endfunction()
 set(SRC
 	qquickitemmapboxgl.cpp
 	basenode.cpp
-	baserendernode.cpp
 	basetexturenode.cpp
 	qt5/texturenode.cpp
-	qt5/rendernode.cpp
 	qt5/textureplain.cpp
 	qt6/texturenodeopengl.cpp
 	sync.cpp
@@ -27,9 +25,7 @@ set(HEADERS
 	macros.h
 	sync.h
 	basenode.h
-	baserendernode.h
 	basetexturenode.h
-	qt5/rendernode.h
 	qt5/texturenode.h
 	qt5/textureplain.h
 	qt6/texturenodeopengl.h
@@ -52,10 +48,6 @@ if(USE_CURL_SSL)
 	target_link_libraries(qmlmapboxglplugin PRIVATE
 		PkgConfig::CURL
 		PkgConfig::OPENSSL)
-endif()
-
-if(USE_FBO)
- add_definitions(-DUSE_FBO=1)
 endif()
 
 if(NOT DEFINED QT_INSTALL_QML)
