@@ -44,9 +44,7 @@
 #include "qquickitemmapboxgl.h"
 
 #include "basenode.h"
-#include "baserendernode.h"
 #include "basetexturenode.h"
-#include "qt5/rendernode.h"
 #include "qt5/texturenode.h"
 #include "qt6/texturenodeopengl.h"
 
@@ -127,14 +125,6 @@ static void kill_locks(void) {
 
 QQuickItemMapboxGL::QQuickItemMapboxGL(QQuickItem *parent)
     : QQuickItem(parent), m_margins(0, 0, 0, 0) {
-#if HAS_SGRENDERNODE
-#ifndef USE_FBO
-    m_useFBO = false;
-#else
-    m_useFBO = true;
-#endif
-#endif
-
     setFlag(ItemHasContents);
 
     m_styleUrl = QStringLiteral("mapbox://styles/mapbox/streets-v10");
@@ -286,19 +276,11 @@ void QQuickItemMapboxGL::setCacheDatabaseStoreSettings(bool s) {
         emit cacheDatabaseStoreSettingsChanged(s);
 }
 
-bool QQuickItemMapboxGL::useFBO() const { return m_useFBO; }
+bool QQuickItemMapboxGL::useFBO() const { return true; }
 
 void QQuickItemMapboxGL::setUseFBO(bool fbo) {
-    if (m_first_init_done) {
-        qWarning() << "Use FBO cannot be changed after the initialization of the map. Set it at "
-                      "creation of the widget";
-        return;
-    }
-
-#if HAS_SGRENDERNODE
-    m_useFBO = fbo;
-#endif
-    emit useFBOChanged(fbo);
+    qWarning()
+        << "Support for rendering without FBO has been dropped (useFBO is set to true always)";
 }
 
 /// Error feedback
@@ -872,22 +854,9 @@ QSGNode *QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
     m_first_init_done = true;
 
     BaseNode *n = nullptr;
-    if (m_useFBO)
-        n = static_cast<BaseTextureNode *>(node);
-#if HAS_SGRENDERNODE
-    else
-        n = static_cast<BaseRenderNode *>(node);
-#endif
+    n = static_cast<BaseTextureNode *>(node);
 
     if (!n) {
-#if !HAS_SGRENDERNODE
-        if (!m_useFBO) {
-            qCritical() << "Requesting map rendering via QSGRenderNode while on the platform "
-                           "without it. Error in QML plugin, this shouldn't happen.";
-            return node;
-        }
-#endif
-
         bool wasFitView = (m_syncState & FitViewNeedsSync);
         bool wasFitCenterView = (m_syncState & FitViewCenterNeedsSync);
 
@@ -903,7 +872,7 @@ QSGNode *QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
 
         /////////////////////////////////////////////////////
         /// create node and connect all queries
-        if (m_useFBO) {
+        {
             BaseTextureNode *sgn =
 #if IS_QT5
                 new MLNQT5::TextureNode(m_settings, sz, m_devicePixelRatio, m_pixelRatio, this);
@@ -914,21 +883,10 @@ QSGNode *QQuickItemMapboxGL::updatePaintNode(QSGNode *node, UpdatePaintNodeData 
             n = sgn;
             node = sgn;
         }
-#if HAS_SGRENDERNODE
-        else {
-#if IS_QT5
-            MLNQT5::RenderNode *sgn =
-                new MLNQT5::RenderNode(m_settings, sz, m_devicePixelRatio, m_pixelRatio, this);
-            n = sgn;
-            node = sgn;
-#endif
-        }
-#endif
 
         if (!n) {
-            qWarning() << "Failed to allocate QSGMapboxGL rendering node. Maps cannot be "
-                          "displayed. useFBO:"
-                       << m_useFBO;
+            qWarning()
+                << "Failed to allocate QSGMapboxGL rendering node. Maps cannot be displayed.";
             return node;
         }
 

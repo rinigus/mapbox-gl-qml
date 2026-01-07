@@ -147,9 +147,7 @@ first created map.
     construction of the map widget. This should correspond to the true
     physical to logical pixel ratio as given in Qt via
     devicePixelRatio method of QScreen. This property allows sharp
-    rendering of the widget in HiDPI cases if the rendering through
-    framebuffer is used (see `useFBO`). For direct rendering case
-    (`useFBO=false`), `devicePixelRatio` is not used.
+    rendering of the widget in HiDPI cases.
 
     If `devicePixelRatio` is not specified, it is determined on the
     basis of the parent QQuickItem, or if absent, on the basis of the
@@ -158,11 +156,8 @@ first created map.
     See also `pixelRatio` that can be changed after the widget is
     constructed.
 
-* `bool `**`useFBO`** When set to `true` (default), Mapbox GL will use
-    a framebuffer object to render a map. When set to `false`, the map
-    is rendered issuing OpenGL commands directly, through a
-    QSGRenderNode. Rendering directly is supported only for Qt versions from 5.8 till 5.15.
-    Such rendering is not implemented for Qt 6.
+* `bool `**`useFBO`** No-OP option - kept for compatibility with older
+    software. Please remove it from your software.
 
 
 ### Map rendering

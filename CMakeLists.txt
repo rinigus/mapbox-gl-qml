@@ -11,7 +11,6 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 option(USE_CURL_SSL "Use curl SSL" OFF)
-option(USE_FBO "Use map rendering using FBO" ON)
 option(BUILD_DEMO_APP "Build the demo application" OFF)
 
 # Render backend option
