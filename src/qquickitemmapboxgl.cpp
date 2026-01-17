@@ -730,6 +730,8 @@ bool QQuickItemMapboxGL::addImagePath(const QString &name, const QString &path, 
     QString furl = "file://";
     if (path.startsWith(furl))
         p = path.right(path.size() - furl.size());
+    else if (path.startsWith("qrc:/"))
+        p = path.mid(3);
     else
         p = path;
 
