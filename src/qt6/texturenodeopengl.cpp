@@ -106,6 +106,11 @@ void TextureNodeOpenGL::render(QQuickWindow *window) {
 
     QQuickOpenGLUtils::resetOpenGLState();
 
+    if (QOpenGLContext *context = QOpenGLContext::currentContext()) {
+        QOpenGLFunctions *f = context->functions();
+        f->glViewport(0, 0, m_fbo->width(), m_fbo->height());
+    }
+
     m_map->render();
 
     markDirty(QSGNode::DirtyMaterial);
